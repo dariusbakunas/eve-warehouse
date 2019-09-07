@@ -1,0 +1,28 @@
+sudo: false
+language: node_js
+node_js:
+  - '10'
+services:
+  - docker
+env:
+  global:
+    - NODE_ENV=CI
+stages:
+  - install
+  - test
+  - build
+jobs:
+  include:
+    - stage: install
+      script:
+        - npm install
+    - stage: test
+      script:
+        - CI=true npm run coveralls
+    - stage: build
+      script:
+        - npm run build
+        - npm prune --production && npm install --production
+        - docker build -t travis-ci-build-stage -f Dockerfile.ci .
+        - docker tag travis-ci-build-stage gcr.io/$GC_PROJECT_ID/eve-app:$TRAVIS_BUILD_NUMBER
+      if: "(branch = dev OR branch = master) AND type = push"
