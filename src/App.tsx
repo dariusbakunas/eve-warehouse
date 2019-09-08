@@ -1,15 +1,28 @@
 import React from 'react';
+import { Router, Route, Switch } from "react-router-dom";
 import './App.css';
-import Button from '@material-ui/core/Button';
-
+import history from './utils/history';
+import PrivateRoute from "./components/PrivateRoute";
+import { useAuth0 } from "./react-auth0-spa";
+import Profile from "./routes/Profile";
+import Home from "./routes/Home";
 
 const App: React.FC = () => {
+  const { loading } = useAuth0() || {};
+
+  if (loading) {
+    return <div>loading</div>;
+  }
+
   return (
-    <div className="App">
-      <Button variant="contained" color="primary">
-        Hello World
-      </Button>
-    </div>
+    <Router history={history}>
+      <div className="App">
+        <Switch>
+          <Route path="/" exact component={Home} />
+          <PrivateRoute path="/profile" component={Profile} />
+        </Switch>
+      </div>
+    </Router>
   );
 }
 
