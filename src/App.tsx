@@ -6,6 +6,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import { useAuth0 } from "./react-auth0-spa";
 import Profile from "./routes/Profile";
 import Home from "./routes/Home";
+import VerifyEmail from './routes/VerifyEmail'
 
 const App: React.FC = () => {
   const { loading } = useAuth0() || {};
@@ -19,6 +20,7 @@ const App: React.FC = () => {
       <div className="App">
         <Switch>
           <Route path="/" exact component={Home} />
+          <PrivateRoute path="/verify-email" component={VerifyEmail} />
           <PrivateRoute path="/profile" component={Profile} />
         </Switch>
       </div>

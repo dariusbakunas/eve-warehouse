@@ -15,7 +15,7 @@ interface IAuthContext {
   popupOpen: boolean,
   user: {
     email: string,
-    emailVerified: boolean,
+    email_verified: boolean,
     name: string,
     picture: string,
   }
