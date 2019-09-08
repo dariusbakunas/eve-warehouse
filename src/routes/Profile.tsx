@@ -1,6 +1,6 @@
 import React from "react";
 import Button from '@material-ui/core/Button';
-import { RouteComponentProps, withRouter } from 'react-router'
+import { RouteComponentProps } from 'react-router'
 import { useAuth0 } from "../react-auth0-spa";
 
 const Profile = (props: RouteComponentProps) => {
