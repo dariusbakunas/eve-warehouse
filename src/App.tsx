@@ -40,7 +40,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
   const { getTokenSilently, loginWithRedirect, logout } = auth0Client || {};
 
   const { loading: gqlLoading } = useQuery(testQuery, {
-    skip: !isAuthenticated || !token,
+    skip: !token,
     context: {
       headers: {
         Authorization: `Bearer ${token}`
@@ -52,7 +52,6 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
     const getToken = async () => {
       if (isAuthenticated && getTokenSilently) {
         const newToken = await getTokenSilently();
-        console.log(newToken);
         setToken(newToken);
       }
     };
@@ -64,6 +63,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
     return item.indexOf("auth0.is.authenticated=true") >= 0;
   }).length;
 
+  // try logging back in if auth0 cookie is set
   useEffect(() => {
     if (authCookieExists && loginWithRedirect && !isAuthenticated && !loading) {
       loginWithRedirect({

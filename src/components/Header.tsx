@@ -48,12 +48,12 @@ interface IHeaderProps {
   onSideMenuOpen?: () => void;
   onLoginClick?: () => void;
   onLogoutClick?: () => void;
-  sideMenuOpen: boolean;
+  sideMenuOpen?: boolean;
   sideMenuEnabled?: boolean;
   title: string;
 }
 
-export const Header: React.FC<IHeaderProps> = ({ isAuthenticated, onLoginClick, onLogoutClick, onSideMenuOpen, sideMenuOpen, sideMenuEnabled = true, title }) => {
+export const Header: React.FC<IHeaderProps> = ({ isAuthenticated, onLoginClick, onLogoutClick, onSideMenuOpen, sideMenuOpen, sideMenuEnabled, title }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
 
@@ -85,7 +85,7 @@ export const Header: React.FC<IHeaderProps> = ({ isAuthenticated, onLoginClick, 
   return (
     <AppBar position="absolute" className={clsx(classes.appBar, sideMenuOpen && classes.appBarShift)}>
       <Toolbar className={classes.toolbar}>
-        {isAuthenticated && sideMenuEnabled && (
+        {sideMenuEnabled && (
           <IconButton edge="start" color="inherit" aria-label="open drawer" onClick={onSideMenuOpen} className={clsx(classes.menuButton, sideMenuOpen && classes.menuButtonHidden)}>
             <MenuIcon />
           </IconButton>
