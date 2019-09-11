@@ -1,38 +1,42 @@
 import React, { useState, useEffect, useContext } from "react";
 import createAuth0Client from "@auth0/auth0-spa-js";
-import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client'
+import Auth0Client from "@auth0/auth0-spa-js/dist/typings/Auth0Client";
 
 interface IAuthContext {
-  getIdTokenClaims: (options?: getIdTokenClaimsOptions) => Promise<IdToken>,
-  getTokenSilently: (options?: GetTokenSilentlyOptions) => Promise<any>,
-  getTokenWithPopup: (options?: GetTokenWithPopupOptions, config?: PopupConfigOptions) => Promise<string>,
-  handleRedirectCallback: () => Promise<void>,
-  isAuthenticated: boolean,
-  loading: boolean,
-  logout: (options?: LogoutOptions) => void,
-  loginWithPopup: (options?: PopupLoginOptions, config?: PopupConfigOptions) => Promise<void>,
-  loginWithRedirect: (options?: RedirectLoginOptions) => Promise<void>,
-  popupOpen: boolean,
+  auth0Client?: {
+    getIdTokenClaims: (options?: getIdTokenClaimsOptions) => Promise<IdToken>;
+    getTokenSilently: (options?: GetTokenSilentlyOptions) => Promise<any>;
+    getTokenWithPopup: (options?: GetTokenWithPopupOptions, config?: PopupConfigOptions) => Promise<string>;
+    handleRedirectCallback: () => Promise<void>;
+    loginWithPopup: (options?: PopupLoginOptions, config?: PopupConfigOptions) => Promise<void>;
+    loginWithRedirect: (options?: RedirectLoginOptions) => Promise<void>;
+    logout: (options?: LogoutOptions) => void;
+  };
+  isAuthenticated: boolean;
+  loading: boolean;
+  popupOpen: boolean;
   user: {
-    email: string,
-    email_verified: boolean,
-    name: string,
-    picture: string,
-  }
+    email: string;
+    email_verified: boolean;
+    name: string;
+    picture: string;
+  };
 }
 
-const DEFAULT_REDIRECT_CALLBACK = (appState: any) =>
-  window.history.replaceState({}, document.title, window.location.pathname);
+const DEFAULT_REDIRECT_CALLBACK = () => window.history.replaceState({}, document.title, window.location.pathname);
 
 export const Auth0Context = React.createContext<Partial<IAuthContext>>({
-  loading: true,
+  loading: true
 });
 export const useAuth0 = () => useContext(Auth0Context);
 export const Auth0Provider = ({
   children,
   onRedirectCallback = DEFAULT_REDIRECT_CALLBACK,
   ...initOptions
-}: { children: any, onRedirectCallback: (appState: any) => void} & Auth0ClientOptions) => {
+}: {
+  children: any;
+  onRedirectCallback: (appState: any) => void;
+} & Auth0ClientOptions) => {
   const [isAuthenticated, setIsAuthenticated] = useState();
   const [user, setUser] = useState();
   const [auth0Client, setAuth0] = useState<Auth0Client>();
@@ -65,7 +69,7 @@ export const Auth0Provider = ({
   }, []);
 
   const loginWithPopup = async (params = {}) => {
-    if (!auth0Client){
+    if (!auth0Client) {
       return;
     }
 
@@ -95,27 +99,24 @@ export const Auth0Provider = ({
     setUser(user);
   };
 
-  if (!auth0Client) {
-    return null;
+  const context: IAuthContext = {
+    isAuthenticated,
+    user,
+    loading,
+    popupOpen
+  };
+
+  if (auth0Client) {
+    context.auth0Client = {
+      loginWithPopup,
+      handleRedirectCallback,
+      getIdTokenClaims: (options?: getIdTokenClaimsOptions) => auth0Client.getIdTokenClaims(options),
+      loginWithRedirect: (options?: RedirectLoginOptions) => auth0Client.loginWithRedirect(options),
+      getTokenSilently: (options?: GetTokenSilentlyOptions) => auth0Client.getTokenSilently(options),
+      getTokenWithPopup: (options?: GetTokenWithPopupOptions, config?: PopupConfigOptions) => auth0Client.getTokenWithPopup(options, config),
+      logout: (options?: LogoutOptions) => auth0Client.logout(options)
+    };
   }
 
-  return (
-    <Auth0Context.Provider
-      value={{
-        isAuthenticated,
-        user,
-        loading,
-        popupOpen,
-        loginWithPopup,
-        handleRedirectCallback,
-        getIdTokenClaims: (options?: getIdTokenClaimsOptions) => auth0Client.getIdTokenClaims(options),
-        loginWithRedirect: (options?: RedirectLoginOptions) => auth0Client.loginWithRedirect(options),
-        getTokenSilently: (options?: GetTokenSilentlyOptions) => auth0Client.getTokenSilently(options),
-        getTokenWithPopup: (options?: GetTokenWithPopupOptions, config?: PopupConfigOptions) => auth0Client.getTokenWithPopup(options, config),
-        logout: (options?: LogoutOptions) => auth0Client.logout(options)
-      }}
-    >
-      {children}
-    </Auth0Context.Provider>
-  );
+  return <Auth0Context.Provider value={context}>{children}</Auth0Context.Provider>;
 };
