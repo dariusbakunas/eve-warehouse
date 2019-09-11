@@ -13,6 +13,8 @@ import { useAuth0 } from "./react-auth0-spa";
 import Profile from "./routes/Profile";
 import Home from "./routes/Home";
 import VerifyEmail from "./routes/VerifyEmail";
+import { useQuery } from "@apollo/react-hooks";
+import { testQuery } from "./queries";
 
 const useStyles = makeStyles(theme => ({
   appBarSpacer: theme.mixins.toolbar,
@@ -32,13 +34,31 @@ const useStyles = makeStyles(theme => ({
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
   const [open, setOpen] = React.useState(false);
+  const [token, setToken] = React.useState<string>();
   const classes = useStyles();
   const { loading, isAuthenticated = false, auth0Client } = useAuth0() || {};
-  const { loginWithRedirect, logout } = auth0Client || {};
+  const { getTokenSilently, loginWithRedirect, logout } = auth0Client || {};
 
-  // const { loading: gqlLoading, data } = useQuery(testQuery, {
-  //   skip: !isAuthenticated
-  // });
+  const { loading: gqlLoading } = useQuery(testQuery, {
+    skip: !isAuthenticated || !token,
+    context: {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  });
+
+  useEffect(() => {
+    const getToken = async () => {
+      if (isAuthenticated && getTokenSilently) {
+        const newToken = await getTokenSilently();
+        console.log(newToken);
+        setToken(newToken);
+      }
+    };
+
+    getToken();
+  }, [isAuthenticated, !!getTokenSilently]);
 
   const authCookieExists = !!document.cookie.split(";").filter(function(item) {
     return item.indexOf("auth0.is.authenticated=true") >= 0;
@@ -77,7 +97,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
         sideMenuEnabled={false}
         title="Eve Toolkit"
       />
-      {loading && (
+      {(loading || gqlLoading) && (
         <Grid container spacing={0} direction="column" alignItems="center" justify="center" style={{ minHeight: "100vh" }}>
           <Grid item xs={3}>
             <CircularProgress />
