@@ -1,0 +1,20 @@
+# source: http://localhost:4000/graphql
+# timestamp: Fri Sep 13 2019 15:01:21 GMT-0400 (Eastern Daylight Time)
+
+type Query {
+  currentUser: User
+  scopes: [Scope!]!
+}
+
+type Scope {
+  id: ID!
+  name: String!
+}
+
+type User {
+  name: String!
+  nickname: String!
+  email: String!
+  email_verified: Boolean!
+  picture: String!
+}
