@@ -4,6 +4,7 @@ import passport from "passport";
 import Auth0Strategy from "passport-auth0";
 import uid from "uid-safe";
 import session from "express-session";
+import bodyParser from "body-parser";
 import authRoutes from "./auth";
 
 const port = parseInt(process.env.PORT, 10) || 3000;
@@ -43,7 +44,9 @@ app.prepare().then(() => {
 
   server.use(passport.initialize());
   server.use(passport.session());
-  server.use(authRoutes);
+
+  server.use(bodyParser.json());
+  server.use("/auth", authRoutes);
 
   const restrictAccess = (req, res, next) => {
     if (!req.isAuthenticated()) return res.redirect("/login");

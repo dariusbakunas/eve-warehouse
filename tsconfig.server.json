@@ -6,6 +6,7 @@
     "outDir": ".next/production-server/"
   },
   "include": [
-    "src/server.ts"
+    "src/server.ts",
+    "src/auth.ts"
   ]
 }

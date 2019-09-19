@@ -6,6 +6,11 @@ const router = express.Router();
 interface IAuthRequest extends Request {
   logIn: (user, options, done?) => void;
   logOut: () => void;
+  session: {
+    passport?: {
+      user: any;
+    };
+  };
 }
 
 router.get(
@@ -15,6 +20,12 @@ router.get(
   }),
   (req, res) => res.redirect("/")
 );
+
+router.get("/user", (req: IAuthRequest, res) => {
+  res.setHeader("Content-Type", "application/json");
+  const user = req.session && req.session.passport && req.session.passport.user ? req.session.passport.user : null;
+  res.json(user);
+});
 
 router.get("/callback", (req: IAuthRequest, res, next) => {
   passport.authenticate("auth0", (err, user) => {
