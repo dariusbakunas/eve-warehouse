@@ -27,10 +27,14 @@ router.get("/user", (req: IAuthRequest, res) => {
   res.json(user);
 });
 
+/**
+ * Auth0 redirects back to this URL and appends additional parameters to it,
+ * including an access code which will be exchanged for an id_token, access_token and refresh_token.
+ */
 router.get("/callback", (req: IAuthRequest, res, next) => {
   passport.authenticate("auth0", (err, user) => {
     if (err) return next(err);
-    if (!user) return res.redirect("/login");
+    if (!user) return res.redirect("/auth/login");
     req.logIn(user, err => {
       if (err) return next(err);
       res.redirect("/");

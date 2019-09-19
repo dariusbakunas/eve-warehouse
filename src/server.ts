@@ -24,6 +24,10 @@ app.prepare().then(() => {
     saveUninitialized: true
   };
 
+  if (!dev) {
+    session.cookie.secure = true;
+  }
+
   server.use(session(sessionConfig));
 
   const auth0Strategy = new Auth0Strategy(
@@ -53,7 +57,11 @@ app.prepare().then(() => {
     next();
   };
 
-  server.use("/home", restrictAccess);
+  server.get("/login", (req, res) => {
+    return handle(req, res);
+  });
+
+  server.use("/$", restrictAccess);
 
   server.all("*", (req, res) => {
     return handle(req, res);
