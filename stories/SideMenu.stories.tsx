@@ -6,7 +6,7 @@ import Header from "../src/components/Header";
 import SideMenu from "../src/components/SideMenu";
 
 const MenuExample: React.FC = () => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   return (
     <div style={{ display: "flex", flexGrow: 1, height: "100vh" }}>
