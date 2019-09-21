@@ -53,7 +53,15 @@ interface IHeaderProps {
   title: string;
 }
 
-export const Header: React.FC<IHeaderProps> = ({ isAuthenticated, onLoginClick, onLogoutClick, onSideMenuOpen, sideMenuOpen, sideMenuEnabled, title }) => {
+export const Header: React.FC<IHeaderProps> = ({
+  isAuthenticated,
+  onLoginClick,
+  onLogoutClick,
+  onSideMenuOpen,
+  sideMenuOpen,
+  sideMenuEnabled,
+  title
+}) => {
   const classes = useStyles({});
   const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
 
@@ -86,7 +94,13 @@ export const Header: React.FC<IHeaderProps> = ({ isAuthenticated, onLoginClick, 
     <AppBar position="absolute" className={clsx(classes.appBar, sideMenuOpen && classes.appBarShift)}>
       <Toolbar className={classes.toolbar}>
         {sideMenuEnabled && (
-          <IconButton edge="start" color="inherit" aria-label="open drawer" onClick={onSideMenuOpen} className={clsx(classes.menuButton, sideMenuOpen && classes.menuButtonHidden)}>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="open drawer"
+            onClick={onSideMenuOpen}
+            className={clsx(classes.menuButton, sideMenuOpen && classes.menuButtonHidden)}
+          >
             <MenuIcon />
           </IconButton>
         )}
@@ -100,7 +114,14 @@ export const Header: React.FC<IHeaderProps> = ({ isAuthenticated, onLoginClick, 
         )}
         {isAuthenticated && (
           <React.Fragment>
-            <IconButton edge="end" aria-label="account of current user" aria-controls={menuId} aria-haspopup="true" onClick={handleAccountMenuOpen} color="inherit">
+            <IconButton
+              edge="end"
+              aria-label="account of current user"
+              aria-controls={menuId}
+              aria-haspopup="true"
+              onClick={handleAccountMenuOpen}
+              color="inherit"
+            >
               <AccountCircle />
             </IconButton>
             {accountMenu}
