@@ -1,16 +1,34 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import next from "next";
 import passport from "passport";
 import Auth0Strategy from "passport-auth0";
 import uid from "uid-safe";
 import session from "express-session";
 import bodyParser from "body-parser";
+import proxy, { Config } from "http-proxy-middleware";
 import authRoutes from "./auth";
+import logger from "./logger";
 
-const port = parseInt(process.env.PORT, 10) || 3000;
+const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev, dir: "./src" });
 const handle = app.getRequestHandler();
+
+const apiProxyConfig: Config = {
+  changeOrigin: true,
+  onError: (err, req, res) => {
+    res.writeHead(500, {
+      "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify({ message: err.message }));
+  },
+  onProxyReq: (proxyReq, req: Request & { user: any }) => {
+    logger.debug("Setting Auth header in proxy");
+    proxyReq.setHeader("authorization", `Bearer ${req.user.accessToken}`);
+  },
+  target: process.env.EVE_API_HOST
+};
 
 app.prepare().then(() => {
   const server = express();
@@ -18,15 +36,12 @@ app.prepare().then(() => {
   const sessionConfig = {
     secret: uid.sync(18),
     cookie: {
-      maxAge: 86400 * 1000 // 24 hours in milliseconds
+      maxAge: 86400 * 1000, // 24 hours in milliseconds
+      secure: !dev
     },
     resave: false,
     saveUninitialized: true
   };
-
-  if (!dev) {
-    session.cookie.secure = true;
-  }
 
   server.use(session(sessionConfig));
 
@@ -37,23 +52,34 @@ app.prepare().then(() => {
       clientSecret: process.env.AUTH0_CLIENT_SECRET,
       callbackURL: process.env.AUTH0_CALLBACK_URL
     },
-    (accessToken, refreshToken, extraParams, profile, done) => {
-      return done(null, profile);
+    (accessToken: string, refreshToken: string, extraParams: object, profile: object, done: any) => {
+      const user = {
+        accessToken,
+        refreshToken,
+        extraParams,
+        profile
+      };
+
+      return done(null, user);
     }
   );
 
   passport.use(auth0Strategy);
-  passport.serializeUser((user, done) => done(null, user));
-  passport.deserializeUser((user, done) => done(null, user));
+  passport.serializeUser((user: any, done: (err: any, user: any) => void) => done(null, user));
+  passport.deserializeUser((user: any, done: (err: any, user: any) => void) => done(null, user));
 
   server.use(passport.initialize());
   server.use(passport.session());
 
+  server.use("/api", proxy(apiProxyConfig));
+
   server.use(bodyParser.json());
   server.use("/auth", authRoutes);
 
-  const restrictAccess = (req, res, next) => {
-    if (!req.isAuthenticated()) return res.redirect("/login");
+  const restrictAccess = (req: Request, res: Response, next: NextFunction) => {
+    const request = req as Request & { isAuthenticated: () => boolean };
+
+    if (!request.isAuthenticated()) return res.redirect("/login");
     next();
   };
 

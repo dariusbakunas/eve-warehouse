@@ -1,9 +1,8 @@
 import React from "react";
+import withApollo from "../lib/withApollo";
 
 const Characters = () => {
-  return (
-    <div>Characters</div>
-  );
+  return <div>Characters</div>;
 };
 
-export default Characters;
+export default withApollo(Characters);

@@ -1,4 +1,5 @@
 import React from "react";
+import { Request } from "express";
 import App from "next/app";
 import Head from "next/head";
 import fetch from "isomorphic-fetch";
@@ -9,12 +10,15 @@ import { ThemeProvider } from "@material-ui/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import theme from "../theme";
 import Router from "next/router";
+import { WithApolloProps } from "next-with-apollo";
+import { Theme } from "@material-ui/core";
+import { AppContextType } from "next-server/dist/lib/utils";
 
 interface IPageProps {
   user?: any;
 }
 
-const styles = theme => ({
+const styles = (theme: Theme) => ({
   appBarSpacer: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
@@ -23,25 +27,32 @@ const styles = theme => ({
   },
   root: {
     display: "flex"
-  },
+  }
 });
 
 interface IState {
   sideMenuOpen: boolean;
 }
 
-class EveApp extends App<{ classes: any }, IState> {
+interface IProps extends WithApolloProps<any> {
+  classes: any;
+}
+
+class EveApp extends App<IProps, IState> {
   readonly state = { sideMenuOpen: false };
 
-  static async getInitialProps({ Component, ctx }) {
+  static async getInitialProps({ Component, ctx }: AppContextType) {
     let pageProps: IPageProps = {};
     if (Component.getInitialProps) {
       pageProps = await Component.getInitialProps(ctx);
     }
-    if (ctx.req && ctx.req.session.passport) {
-      pageProps.user = ctx.req.session.passport.user;
+
+    const request: Request = ctx.req as Request;
+
+    if (request && request.session && request.session.passport) {
+      pageProps.user = request.session.passport.user;
     } else {
-      const baseURL = ctx.req ? `${ctx.req.protocol}://${ctx.req.get("Host")}` : "";
+      const baseURL = request ? `${request.protocol}://${request.get("Host")}` : "";
       const res = await fetch(`${baseURL}/auth/user`);
       pageProps.user = await res.json();
     }
@@ -52,7 +63,7 @@ class EveApp extends App<{ classes: any }, IState> {
   componentDidMount() {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector("#jss-server-side");
-    if (jssStyles) {
+    if (jssStyles && jssStyles.parentNode) {
       jssStyles.parentNode.removeChild(jssStyles);
     }
   }
@@ -63,14 +74,14 @@ class EveApp extends App<{ classes: any }, IState> {
     });
   };
 
-  setSideMenuOpen = open => {
+  setSideMenuOpen = (open: boolean) => {
     this.setState({
       sideMenuOpen: open
     });
   };
 
   render() {
-    const { classes, Component, pageProps } = this.props;
+    const { apollo, classes, Component, pageProps } = this.props;
 
     return (
       <React.Fragment>
@@ -83,7 +94,14 @@ class EveApp extends App<{ classes: any }, IState> {
           <div className={classes.root}>
             {!!pageProps.user && (
               <React.Fragment>
-                <Header isAuthenticated={true} title="EVE APP" sideMenuOpen={this.state.sideMenuOpen} onSideMenuOpen={() => this.setSideMenuOpen(true)} onLogoutClick={this.handleLogoutClick} sideMenuEnabled={true} />
+                <Header
+                  isAuthenticated={true}
+                  title="EVE APP"
+                  sideMenuOpen={this.state.sideMenuOpen}
+                  onSideMenuOpen={() => this.setSideMenuOpen(true)}
+                  onLogoutClick={this.handleLogoutClick}
+                  sideMenuEnabled={true}
+                />
                 <SideMenu sideMenuOpen={this.state.sideMenuOpen} onSideMenuClose={() => this.setSideMenuOpen(false)} />
               </React.Fragment>
             )}

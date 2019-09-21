@@ -11,7 +11,6 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Drawer from "@material-ui/core/Drawer";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import CharactersIcon from "../icons/CharactersIcon";
-import Router from "next/router";
 import { withRouter } from "next/router";
 import { WithRouterProps } from "next/dist/client/with-router";
 
@@ -56,7 +55,7 @@ export const SideMenu: React.FC<ISideMenuProps> = ({ onSideMenuClose, sideMenuOp
   const classes = useStyles({});
   const { pathname, push } = router;
 
-  const handleNavigate = route => {
+  const handleNavigate = (route: string) => {
     push({
       pathname: route
     });
