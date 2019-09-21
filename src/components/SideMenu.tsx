@@ -10,6 +10,10 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Drawer from "@material-ui/core/Drawer";
 import DashboardIcon from "@material-ui/icons/Dashboard";
+import CharactersIcon from "../icons/CharactersIcon";
+import Router from "next/router";
+import { withRouter } from "next/router";
+import { WithRouterProps } from "next/dist/client/with-router";
 
 const drawerWidth = 240;
 
@@ -43,17 +47,24 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-interface ISideMenuProps {
+interface ISideMenuProps extends WithRouterProps {
   onSideMenuClose: () => void;
   sideMenuOpen: boolean;
 }
 
-export const SideMenu: React.FC<ISideMenuProps> = ({ onSideMenuClose, sideMenuOpen }) => {
+export const SideMenu: React.FC<ISideMenuProps> = ({ onSideMenuClose, sideMenuOpen, router }) => {
   const classes = useStyles({});
+  const { pathname } = router;
+
+  const handleNavigate = route => {
+    Router.push({
+      pathname: route
+    });
+  };
 
   return (
     <Drawer
-      variant="persistent"
+      variant="permanent"
       classes={{
         paper: clsx(classes.drawerPaper, !sideMenuOpen && classes.drawerPaperClose)
       }}
@@ -66,15 +77,21 @@ export const SideMenu: React.FC<ISideMenuProps> = ({ onSideMenuClose, sideMenuOp
       </div>
       <Divider />
       <List>
-        <ListItem button>
+        <ListItem button selected={pathname === "/"} onClick={() => handleNavigate("/")}>
           <ListItemIcon>
             <DashboardIcon />
           </ListItemIcon>
           <ListItemText primary="Dashboard" />
+        </ListItem>
+        <ListItem button selected={pathname === "/characters"} onClick={() => handleNavigate("/characters")}>
+          <ListItemIcon>
+            <CharactersIcon />
+          </ListItemIcon>
+          <ListItemText primary="Characters" />
         </ListItem>
       </List>
     </Drawer>
   );
 };
 
-export default SideMenu;
+export default withRouter(SideMenu);

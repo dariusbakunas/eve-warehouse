@@ -54,7 +54,7 @@ interface IHeaderProps {
 }
 
 export const Header: React.FC<IHeaderProps> = ({ isAuthenticated, onLoginClick, onLogoutClick, onSideMenuOpen, sideMenuOpen, sideMenuEnabled, title }) => {
-  const classes = useStyles();
+  const classes = useStyles({});
   const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
 
   const handleMenuClose = () => {
