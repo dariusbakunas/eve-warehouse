@@ -54,10 +54,10 @@ interface ISideMenuProps extends WithRouterProps {
 
 export const SideMenu: React.FC<ISideMenuProps> = ({ onSideMenuClose, sideMenuOpen, router }) => {
   const classes = useStyles({});
-  const { pathname } = router;
+  const { pathname, push } = router;
 
   const handleNavigate = route => {
-    Router.push({
+    push({
       pathname: route
     });
   };
