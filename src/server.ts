@@ -62,6 +62,7 @@ app.prepare().then(() => {
   });
 
   server.use("/$", restrictAccess);
+  server.use("/characters", restrictAccess);
 
   server.all("*", (req, res) => {
     return handle(req, res);
