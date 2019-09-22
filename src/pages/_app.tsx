@@ -13,7 +13,6 @@ import Router from "next/router";
 import { WithApolloProps } from "next-with-apollo";
 import { Theme } from "@material-ui/core";
 import { AppContextType } from "next-server/dist/lib/utils";
-import withApollo from "../lib/withApollo";
 
 interface IPageProps {
   user?: any;
@@ -82,7 +81,7 @@ class EveApp extends App<IProps, IState> {
   };
 
   render() {
-    const { apollo, classes, Component, pageProps } = this.props;
+    const { classes, Component, pageProps } = this.props;
 
     return (
       <React.Fragment>
@@ -107,7 +106,7 @@ class EveApp extends App<IProps, IState> {
               </React.Fragment>
             )}
             <main className={classes.content}>
-              <div className={classes.appBarSpacer} />
+              {pageProps.user && <div className={classes.appBarSpacer} />}
               <Component {...pageProps} />
             </main>
           </div>
@@ -117,4 +116,4 @@ class EveApp extends App<IProps, IState> {
   }
 }
 
-export default withStyles(styles(theme))(withApollo(EveApp));
+export default withStyles(styles(theme))(EveApp);

@@ -1,28 +1,23 @@
 import React, { useMemo } from "react";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { ApolloClient, InMemoryCache, HttpLink, NormalizedCacheObject } from "apollo-boost";
-import { NextComponentType } from "next";
+import { NextComponentType, NextPageContext } from "next";
 import Head from "next/head";
 import { setContext } from "apollo-link-context";
-import { AppContext } from "next/app";
 
-export interface ApolloContext<C = any> extends AppContext {
+export interface ApolloContext<C = any> extends NextPageContext {
   AppTree: any;
-  req: {
-    user?: {
-      accessToken: string;
-    };
-  };
 }
 
 // client-side
 let apolloClient: ApolloClient<NormalizedCacheObject>;
 
-const initApolloClient = (ctx: ApolloContext | null, initialState = {}) => {
+const initApolloClient = (ctx: NextPageContext | null, initialState = {}) => {
   if (typeof window === "undefined") {
-    const authLink = setContext((_, { headers }) => {
-      const token = ctx && ctx.req.user ? ctx.req.user.accessToken : null;
+    // @ts-ignore
+    const token = ctx && ctx.req && ctx.req.user ? ctx.req.user.accessToken : null;
 
+    const authLink = setContext((_, { headers }) => {
       return {
         headers: {
           ...headers,
@@ -83,13 +78,13 @@ const withApollo = <P extends object>(PageComponent: NextComponentType<ApolloCon
         pageProps = await PageComponent.getInitialProps(ctx);
       }
 
-      // Run all GraphQL queries in the component tree
-      // and extract the resulting data
+      if (ctx && ctx.res && (ctx.res.headersSent || ctx.res.finished)) {
+        return {};
+      }
+
       const apolloClient = initApolloClient(ctx);
 
       try {
-        console.log("Executing queries server-side");
-
         // Run all GraphQL queries
         await require("@apollo/react-ssr").getDataFromTree(
           <AppTree
@@ -116,6 +111,20 @@ const withApollo = <P extends object>(PageComponent: NextComponentType<ApolloCon
       return {
         ...pageProps,
         apolloState
+      };
+    };
+  } else {
+    WithApollo.getInitialProps = async (ctx: NextPageContext) => {
+      const getInitialProps = PageComponent.getInitialProps;
+
+      let appProps = {};
+
+      if (getInitialProps) {
+        appProps = await getInitialProps(ctx);
+      }
+
+      return {
+        ...appProps
       };
     };
   }
