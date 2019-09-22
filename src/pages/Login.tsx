@@ -1,11 +1,12 @@
 import React from "react";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
-import Router from "next/router";
+import { withRouter } from "next/router";
+import { WithRouterProps } from "next/dist/client/with-router";
 
-const Login = () => {
+const Login: React.FC<WithRouterProps> = ({ router }) => {
   const handleLoginClick = () => {
-    Router.push({
+    router.push({
       pathname: "/auth/login"
     });
   };
@@ -21,4 +22,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default withRouter(Login);
