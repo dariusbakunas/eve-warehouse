@@ -9,6 +9,7 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Button from "@material-ui/core/Button";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
+import Avatar from "@material-ui/core/Avatar";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 
 const drawerWidth = 240;
@@ -51,6 +52,11 @@ interface IHeaderProps {
   sideMenuOpen?: boolean;
   sideMenuEnabled?: boolean;
   title: string;
+  user?: {
+    displayName?: string;
+    nickname?: string;
+    picture: string;
+  };
 }
 
 export const Header: React.FC<IHeaderProps> = ({
@@ -60,7 +66,8 @@ export const Header: React.FC<IHeaderProps> = ({
   onSideMenuOpen,
   sideMenuOpen,
   sideMenuEnabled,
-  title
+  title,
+  user
 }) => {
   const classes = useStyles({});
   const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
@@ -122,7 +129,7 @@ export const Header: React.FC<IHeaderProps> = ({
               onClick={handleAccountMenuOpen}
               color="inherit"
             >
-              <AccountCircle />
+              {user && user.picture ? <Avatar alt={user.displayName || user.nickname || "Account"} src={user.picture} /> : <AccountCircle />}
             </IconButton>
             {accountMenu}
           </React.Fragment>

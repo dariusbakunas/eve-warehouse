@@ -49,7 +49,7 @@ class EveApp extends App<IProps, IState> {
 
     const request: Request = ctx.req as Request;
 
-    if (request && request.session && request.session.passport) {
+    if (request && request.session && request.session.passport && request.session.passport.user) {
       pageProps.user = request.session.passport.user.profile;
     } else {
       const baseURL = request ? `${request.protocol}://${request.get("Host")}` : "";
@@ -101,6 +101,7 @@ class EveApp extends App<IProps, IState> {
                   onSideMenuOpen={() => this.setSideMenuOpen(true)}
                   onLogoutClick={this.handleLogoutClick}
                   sideMenuEnabled={true}
+                  user={pageProps.user}
                 />
                 <SideMenu sideMenuOpen={this.state.sideMenuOpen} onSideMenuClose={() => this.setSideMenuOpen(false)} />
               </React.Fragment>
