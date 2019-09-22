@@ -3,8 +3,8 @@ FROM node:10-alpine
 WORKDIR /usr/src/app
 
 COPY package.json .
-COPY build ./build
+COPY src/.next ./src/.next
 COPY node_modules ./node_modules
 
 EXPOSE 5000
-CMD [ "npm", "run", "serve" ]
+CMD [ "npm", "run", "start" ]
