@@ -20,8 +20,6 @@ let apolloClient: ApolloClient<NormalizedCacheObject>;
 
 const initApolloClient = (ctx: ApolloContext | null, initialState = {}) => {
   if (typeof window === "undefined") {
-    console.log("Creating ApolloClient server side");
-
     const authLink = setContext((_, { headers }) => {
       const token = ctx && ctx.req.user ? ctx.req.user.accessToken : null;
 
@@ -46,8 +44,6 @@ const initApolloClient = (ctx: ApolloContext | null, initialState = {}) => {
     });
   } else {
     if (!apolloClient) {
-      console.log("Creating ApolloClient client side");
-
       // client-side
       apolloClient = new ApolloClient({
         cache: new InMemoryCache().restore(initialState || {}),

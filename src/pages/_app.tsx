@@ -13,6 +13,7 @@ import Router from "next/router";
 import { WithApolloProps } from "next-with-apollo";
 import { Theme } from "@material-ui/core";
 import { AppContextType } from "next-server/dist/lib/utils";
+import withApollo from "../lib/withApollo";
 
 interface IPageProps {
   user?: any;
@@ -116,4 +117,4 @@ class EveApp extends App<IProps, IState> {
   }
 }
 
-export default withStyles(styles(theme))(EveApp);
+export default withStyles(styles(theme))(withApollo(EveApp));

@@ -7,7 +7,6 @@ import session from "express-session";
 import bodyParser from "body-parser";
 import proxy, { Config } from "http-proxy-middleware";
 import authRoutes from "./auth";
-import logger from "./logger";
 
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const dev = process.env.NODE_ENV !== "production";
@@ -24,8 +23,9 @@ const apiProxyConfig: Config = {
     res.end(JSON.stringify({ message: err.message }));
   },
   onProxyReq: (proxyReq, req: Request & { user: any }) => {
-    logger.debug("Setting Auth header in proxy");
-    proxyReq.setHeader("authorization", `Bearer ${req.user.accessToken}`);
+    if (req.user) {
+      proxyReq.setHeader("authorization", `Bearer ${req.user.accessToken}`);
+    }
   },
   target: process.env.EVE_API_HOST
 };
