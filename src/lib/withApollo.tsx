@@ -3,25 +3,44 @@ import { ApolloProvider } from "@apollo/react-hooks";
 import { ApolloClient, InMemoryCache, HttpLink, NormalizedCacheObject } from "apollo-boost";
 import { NextComponentType } from "next";
 import Head from "next/head";
+import { setContext } from "apollo-link-context";
 import { AppContext } from "next/app";
 
 export interface ApolloContext<C = any> extends AppContext {
   AppTree: any;
+  req: {
+    user?: {
+      accessToken: string;
+    };
+  };
 }
 
 // client-side
 let apolloClient: ApolloClient<NormalizedCacheObject>;
 
-const initApolloClient = (initialState = {}) => {
+const initApolloClient = (ctx: ApolloContext | null, initialState = {}) => {
   if (typeof window === "undefined") {
     console.log("Creating ApolloClient server side");
+
+    const authLink = setContext((_, { headers }) => {
+      const token = ctx && ctx.req.user ? ctx.req.user.accessToken : null;
+
+      return {
+        headers: {
+          ...headers,
+          authorization: token ? `Bearer ${token}` : ""
+        }
+      };
+    });
 
     // server-side
     return new ApolloClient({
       cache: new InMemoryCache().restore(initialState || {}),
-      link: new HttpLink({
-        uri: "http://localhost:4000/graphql"
-      }),
+      link: authLink.concat(
+        new HttpLink({
+          uri: process.env.EVE_API_HOST
+        })
+      ),
       connectToDevTools: false,
       ssrMode: true
     });
@@ -32,7 +51,7 @@ const initApolloClient = (initialState = {}) => {
       // client-side
       apolloClient = new ApolloClient({
         cache: new InMemoryCache().restore(initialState || {}),
-        connectToDevTools: false,
+        connectToDevTools: true,
         link: new HttpLink({
           uri: "/api"
         }),
@@ -50,7 +69,7 @@ const withApollo = <P extends object>(PageComponent: NextComponentType<ApolloCon
     apolloState,
     ...pageProps
   }) => {
-    const client = useMemo(() => apolloClient || initApolloClient(apolloState), []);
+    const client = useMemo(() => apolloClient || initApolloClient(null, apolloState), []);
 
     return (
       <ApolloProvider client={client}>
@@ -70,7 +89,7 @@ const withApollo = <P extends object>(PageComponent: NextComponentType<ApolloCon
 
       // Run all GraphQL queries in the component tree
       // and extract the resulting data
-      const apolloClient = initApolloClient();
+      const apolloClient = initApolloClient(ctx);
 
       try {
         console.log("Executing queries server-side");

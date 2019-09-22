@@ -50,7 +50,7 @@ class EveApp extends App<IProps, IState> {
     const request: Request = ctx.req as Request;
 
     if (request && request.session && request.session.passport) {
-      pageProps.user = request.session.passport.user;
+      pageProps.user = request.session.passport.user.profile;
     } else {
       const baseURL = request ? `${request.protocol}://${request.get("Host")}` : "";
       const res = await fetch(`${baseURL}/auth/user`);

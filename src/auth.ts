@@ -14,7 +14,7 @@ router.get(
 
 router.get("/user", (req: Request, res) => {
   res.setHeader("Content-Type", "application/json");
-  const user = req.session && req.session.passport && req.session.passport.user ? req.session.passport.user : null;
+  const user = req.session && req.session.passport && req.session.passport.user ? req.session.passport.user.profile : null;
   res.json(user);
 });
 
