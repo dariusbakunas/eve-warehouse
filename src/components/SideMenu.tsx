@@ -1,5 +1,5 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { ReactNode, useContext } from "react";
+import { makeStyles, Theme } from "@material-ui/core/styles";
 import clsx from "clsx";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
@@ -11,48 +11,39 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Drawer from "@material-ui/core/Drawer";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import CharactersIcon from "../icons/CharactersIcon";
-import { withRouter } from "next/router";
+import { withRouter, useRouter } from "next/router";
 import { WithRouterProps } from "next/dist/client/with-router";
+import LayoutContext, { ILayoutContext } from "../context/LayoutContext";
 
-const drawerWidth = 240;
-
-const useStyles = makeStyles(theme => ({
-  drawerPaper: {
-    position: "relative",
-    whiteSpace: "nowrap",
-    width: drawerWidth,
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen
+const useStyles = makeStyles<Theme, { drawerWidth: number }>(({ breakpoints, spacing, transitions, mixins }) => ({
+  container: {
+    overflow: "hidden",
+    display: "flex",
+    flexGrow: 1,
+    flexDirection: "column",
+    transition: transitions.create(["width"], {
+      easing: transitions.easing.sharp,
+      duration: transitions.duration.leavingScreen
     })
   },
-  drawerPaperClose: {
-    overflowX: "hidden",
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    }),
-    width: theme.spacing(7),
-    [theme.breakpoints.up("sm")]: {
-      width: theme.spacing(9)
-    }
-  },
-  toolbarIcon: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    padding: "0 8px",
-    ...theme.mixins.toolbar
+  content: {
+    flexGrow: 1,
+    overflow: "auto"
   }
 }));
 
-interface ISideMenuProps extends WithRouterProps {
-  onSideMenuClose: () => void;
-  sideMenuOpen: boolean;
+interface SideMenuProps {
+  header?: (context: ILayoutContext) => ReactNode;
+  children?: ReactNode;
 }
 
-export const SideMenu: React.FC<ISideMenuProps> = ({ onSideMenuClose, sideMenuOpen, router }) => {
-  const classes = useStyles({});
+export const SideMenu: React.FC<SideMenuProps> = ({ children, header }) => {
+  const layoutContext = useContext(LayoutContext)!;
+  const { drawerWidth, opened, setOpened } = layoutContext;
+  const router = useRouter();
+  const classes = useStyles({
+    drawerWidth
+  });
   const { pathname, push } = router;
 
   const handleNavigate = (route: string) => {
@@ -62,35 +53,13 @@ export const SideMenu: React.FC<ISideMenuProps> = ({ onSideMenuClose, sideMenuOp
   };
 
   return (
-    <Drawer
-      variant="permanent"
-      classes={{
-        paper: clsx(classes.drawerPaper, !sideMenuOpen && classes.drawerPaperClose)
-      }}
-      open={sideMenuOpen}
-    >
-      <div className={classes.toolbarIcon}>
-        <IconButton onClick={onSideMenuClose}>
-          <ChevronLeftIcon />
-        </IconButton>
+    <Drawer anchor="left" variant="persistent" open={opened} onClose={() => setOpened(false)}>
+      <div className={classes.container} style={{ width: drawerWidth }}>
+        {header && header(layoutContext)}
+        <div className={classes.content}>{children}</div>
       </div>
-      <Divider />
-      <List>
-        <ListItem button selected={pathname === "/"} onClick={() => handleNavigate("/")}>
-          <ListItemIcon>
-            <DashboardIcon />
-          </ListItemIcon>
-          <ListItemText primary="Dashboard" />
-        </ListItem>
-        <ListItem button selected={pathname === "/characters"} onClick={() => handleNavigate("/characters")}>
-          <ListItemIcon>
-            <CharactersIcon />
-          </ListItemIcon>
-          <ListItemText primary="Characters" />
-        </ListItem>
-      </List>
     </Drawer>
   );
 };
 
-export default withRouter(SideMenu);
+export default SideMenu;

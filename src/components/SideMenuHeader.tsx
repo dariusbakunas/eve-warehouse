@@ -32,12 +32,16 @@ const SideMenuHeader: React.FC<ISideMenuHeaderProps> = ({ user }) => {
       <div className={classes.root}>
         <Avatar className={classes.avatar} src={user && user.picture} />
         <div style={{ paddingBottom: 16 }} />
-        <Typography variant={"h6"} noWrap>
-          {user && user.name}
-        </Typography>
-        <Typography color={"textSecondary"} noWrap gutterBottom>
-          {user && user.email}
-        </Typography>
+        {user && (
+          <React.Fragment>
+            <Typography variant={"h6"} noWrap>
+              {user.name}
+            </Typography>
+            <Typography color={"textSecondary"} noWrap gutterBottom>
+              {user.email}
+            </Typography>
+          </React.Fragment>
+        )}
       </div>
       <Divider />
     </React.Fragment>

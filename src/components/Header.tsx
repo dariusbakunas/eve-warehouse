@@ -1,5 +1,5 @@
-import React, { MouseEvent } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { MouseEvent, useContext } from "react";
+import { makeStyles, Theme } from "@material-ui/core/styles";
 import clsx from "clsx";
 import AppBar from "@material-ui/core/AppBar/AppBar";
 import IconButton from "@material-ui/core/IconButton";
@@ -11,10 +11,11 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import Avatar from "@material-ui/core/Avatar";
 import AccountCircle from "@material-ui/icons/AccountCircle";
+import ChevronLeft from "@material-ui/icons/ChevronLeft";
+import MenuRounded from "@material-ui/icons/MenuRounded";
+import LayoutContext from "../context/LayoutContext";
 
-const drawerWidth = 240;
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<Theme, { drawerWidth: number }>(theme => ({
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(["width", "margin"], {
@@ -23,8 +24,8 @@ const useStyles = makeStyles(theme => ({
     })
   },
   appBarShift: {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: props => props.drawerWidth,
+    width: props => `calc(100% - ${props.drawerWidth}px)`,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen
@@ -32,9 +33,6 @@ const useStyles = makeStyles(theme => ({
   },
   menuButton: {
     marginRight: 36
-  },
-  menuButtonHidden: {
-    display: "none"
   },
   title: {
     flexGrow: 1
@@ -46,11 +44,8 @@ const useStyles = makeStyles(theme => ({
 
 interface IHeaderProps {
   isAuthenticated: boolean;
-  onSideMenuOpen?: () => void;
   onLoginClick?: () => void;
   onLogoutClick?: () => void;
-  sideMenuOpen?: boolean;
-  sideMenuEnabled?: boolean;
   title: string;
   user?: {
     displayName?: string;
@@ -59,17 +54,12 @@ interface IHeaderProps {
   };
 }
 
-export const Header: React.FC<IHeaderProps> = ({
-  isAuthenticated,
-  onLoginClick,
-  onLogoutClick,
-  onSideMenuOpen,
-  sideMenuOpen,
-  sideMenuEnabled,
-  title,
-  user
-}) => {
-  const classes = useStyles({});
+export const Header: React.FC<IHeaderProps> = ({ isAuthenticated, onLoginClick, onLogoutClick, title, user }) => {
+  const { drawerWidth, opened, setOpened } = useContext(LayoutContext)!;
+
+  const classes = useStyles({
+    drawerWidth
+  });
   const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
 
   const handleMenuClose = () => {
@@ -84,7 +74,6 @@ export const Header: React.FC<IHeaderProps> = ({
       getContentAnchorEl={null}
       id={menuId}
       keepMounted
-      transformOrigin={{ vertical: "top", horizontal: "right" }}
       open={!!anchorEl}
       onClose={handleMenuClose}
     >
@@ -98,19 +87,11 @@ export const Header: React.FC<IHeaderProps> = ({
   }
 
   return (
-    <AppBar position="absolute" className={clsx(classes.appBar, sideMenuOpen && classes.appBarShift)}>
+    <AppBar position="static" elevation={0} className={clsx(classes.appBar, opened && classes.appBarShift)}>
       <Toolbar className={classes.toolbar}>
-        {sideMenuEnabled && (
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={onSideMenuOpen}
-            className={clsx(classes.menuButton, sideMenuOpen && classes.menuButtonHidden)}
-          >
-            <MenuIcon />
-          </IconButton>
-        )}
+        <IconButton edge="start" color="inherit" aria-label="open drawer" onClick={() => setOpened(!opened)} className={classes.menuButton}>
+          {opened ? <ChevronLeft /> : <MenuRounded />}
+        </IconButton>
         <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
           {title}
         </Typography>
