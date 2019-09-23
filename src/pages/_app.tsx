@@ -19,6 +19,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import CharactersIcon from "../icons/CharactersIcon";
 import List from "@material-ui/core/List";
 import SideMenuHeader from "../components/SideMenuHeader";
+import Container from "@material-ui/core/Container";
 
 interface IPageProps {
   user?: {
@@ -80,9 +81,9 @@ class EveApp extends App<IProps, IState> {
     }
   }
 
-  handleLogoutClick = () => {
+  handleNavigate = (url: string) => {
     Router.push({
-      pathname: "/auth/logout"
+      pathname: url
     });
   };
 
@@ -103,7 +104,7 @@ class EveApp extends App<IProps, IState> {
         <Root>
           {!!pageProps.user && (
             <React.Fragment>
-              <Header isAuthenticated={true} title="EVE APP" onLogoutClick={this.handleLogoutClick} user={pageProps.user} />
+              <Header isAuthenticated={true} title="EVE APP" onLogoutClick={() => this.handleNavigate("/auth/logout")} user={pageProps.user} />
               <SideMenu
                 header={() => (
                   <SideMenuHeader
@@ -116,13 +117,13 @@ class EveApp extends App<IProps, IState> {
                 )}
               >
                 <List>
-                  <ListItem selected={true} button>
+                  <ListItem selected={true} button onClick={() => this.handleNavigate("/")}>
                     <ListItemIcon>
                       <DashboardIcon />
                     </ListItemIcon>
                     <ListItemText primary="Dashboard" primaryTypographyProps={{ noWrap: true }} />
                   </ListItem>
-                  <ListItem selected={false} button>
+                  <ListItem selected={false} button onClick={() => this.handleNavigate("/characters")}>
                     <ListItemIcon>
                       <CharactersIcon />
                     </ListItemIcon>
@@ -132,9 +133,9 @@ class EveApp extends App<IProps, IState> {
               </SideMenu>
             </React.Fragment>
           )}
-          <main className={classes.content}>
+          <Container className={classes.content}>
             <Component {...pageProps} />
-          </main>
+          </Container>
         </Root>
       </React.Fragment>
     );
