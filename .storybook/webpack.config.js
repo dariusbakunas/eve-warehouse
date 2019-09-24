@@ -11,6 +11,11 @@ module.exports = ({ config }) => {
       presets: [["react-app", { flow: false, typescript: true }]]
     }
   });
+  config.module.rules.push({
+    test: /\.(graphql|gql)$/,
+    exclude: /node_modules/,
+    loader: "graphql-tag/loader"
+  });
   config.resolve.extensions.push(".ts", ".tsx");
   return config;
 };
