@@ -3,10 +3,9 @@ module.exports = {
     service: {
       addTypename: true,
       name: "eve-app",
-      includes: ["./src/queries.ts"],
-      tagName: "gql",
+      includes: ["src/queries/*.graphql"],
       localSchemaFile: "src/__generated__/schema.graphql"
     },
-    excludes: ["src/gql/__generated__/schema.graphql"]
+    excludes: ["src/__generated__/schema.graphql"]
   }
 };
