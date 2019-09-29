@@ -1,0 +1,7 @@
+query GetCharacters {
+  characters {
+    id
+    name
+    scopes
+  }
+}

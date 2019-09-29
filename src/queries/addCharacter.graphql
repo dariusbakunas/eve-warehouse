@@ -1,0 +1,5 @@
+mutation AddCharacter($input: CharacterInput!) {
+  addCharacter(input: $input) {
+    id
+  }
+}
