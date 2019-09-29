@@ -1,9 +1,23 @@
 # source: http://localhost:4000/graphql
-# timestamp: Fri Sep 13 2019 15:01:21 GMT-0400 (Eastern Daylight Time)
+# timestamp: Sun Sep 29 2019 08:57:07 GMT-0400 (Eastern Daylight Time)
+
+type Character {
+  id: ID!
+  name: String!
+  scopes: [String!]
+}
+
+input CharacterInput {
+  code: String!
+}
+
+type Mutation {
+  addCharacter(input: CharacterInput!): Character!
+}
 
 type Query {
-  currentUser: User
   scopes: [Scope!]!
+  characters: [Character!]
 }
 
 type Scope {
@@ -12,9 +26,6 @@ type Scope {
 }
 
 type User {
-  name: String!
-  nickname: String!
+  id: ID!
   email: String!
-  email_verified: Boolean!
-  picture: String!
 }
