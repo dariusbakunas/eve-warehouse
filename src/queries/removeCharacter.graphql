@@ -1,0 +1,3 @@
+mutation RemoveCharacter($id: ID!) {
+  removeCharacter(id: $id)
+}
