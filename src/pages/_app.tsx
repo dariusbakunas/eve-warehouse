@@ -18,8 +18,7 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import ListItemText from '@material-ui/core/ListItemText';
 import CharactersIcon from '../icons/CharactersIcon';
 import List from '@material-ui/core/List';
-import SideMenuHeader from '../components/SideMenuHeader';
-import Container from '@material-ui/core/Container';
+import Divider from '@material-ui/core/Divider';
 
 interface IPageProps {
   user?: {
@@ -36,8 +35,7 @@ const styles = (theme: Theme) => ({
   appBarSpacer: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
-    overflow: 'auto',
-    paddingTop: theme.spacing(2),
+    padding: theme.spacing(3),
   },
   root: {
     display: 'flex',
@@ -119,51 +117,13 @@ class EveApp extends App<IProps, IState> {
                 onLogoutClick={() => this.handleNavigate('/auth/logout')}
                 user={pageProps.user}
               />
-              <SideMenu
-                header={() => (
-                  <SideMenuHeader
-                    user={{
-                      name: pageProps.user.nickname,
-                      email: pageProps.user.emails[0].value,
-                      picture: pageProps.user.picture,
-                    }}
-                  />
-                )}
-              >
-                <List>
-                  <ListItem
-                    selected={true}
-                    button
-                    onClick={() => this.handleNavigate('/')}
-                  >
-                    <ListItemIcon>
-                      <DashboardIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Dashboard"
-                      primaryTypographyProps={{ noWrap: true }}
-                    />
-                  </ListItem>
-                  <ListItem
-                    selected={false}
-                    button
-                    onClick={() => this.handleNavigate('/characters')}
-                  >
-                    <ListItemIcon>
-                      <CharactersIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Characters"
-                      primaryTypographyProps={{ noWrap: true }}
-                    />
-                  </ListItem>
-                </List>
-              </SideMenu>
+              <SideMenu />
             </React.Fragment>
           )}
-          <Container className={classes.content}>
+          <main className={classes.content}>
+            <div className={classes.appBarSpacer} />
             <Component {...pageProps} />
-          </Container>
+          </main>
         </Root>
       </React.Fragment>
     );
