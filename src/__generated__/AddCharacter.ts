@@ -11,6 +11,8 @@ import { CharacterInput } from "./globalTypes";
 export interface AddCharacter_addCharacter {
   __typename: "Character";
   id: string;
+  name: string;
+  scopes: string[] | null;
 }
 
 export interface AddCharacter {

@@ -14,5 +14,5 @@ export interface GetCharacters_characters {
 }
 
 export interface GetCharacters {
-  characters: GetCharacters_characters[] | null;
+  characters: GetCharacters_characters[];
 }
