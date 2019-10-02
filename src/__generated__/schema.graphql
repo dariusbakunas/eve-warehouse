@@ -1,15 +1,49 @@
 # source: http://localhost:4000/graphql
-# timestamp: Sun Sep 29 2019 13:19:06 GMT-0400 (Eastern Daylight Time)
+# timestamp: Wed Oct 02 2019 13:39:22 GMT-0400 (Eastern Daylight Time)
+
+type Alliance {
+  id: ID!
+  name: String!
+  ticker: String!
+}
 
 type Character {
   id: ID!
+  corporation: Corporation!
   name: String!
+  gender: String!
   scopes: [String!]
+  birthday: DateTime!
+  securityStatus: Float!
 }
 
 input CharacterInput {
   code: String!
 }
+
+type Corporation {
+  id: ID!
+  alliance: Alliance
+  dateFounded: DateTime
+  name: String!
+  memberCount: Int!
+  taxRate: Float!
+  ticker: String!
+}
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format
+outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for
+representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the
+`date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO
+8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
 
 type Mutation {
   addCharacter(input: CharacterInput!): Character!
@@ -25,6 +59,13 @@ type Scope {
   id: ID!
   name: String!
 }
+
+"""
+A time string at UTC, such as 10:15:30Z, compliant with the `full-time` format
+outlined in section 5.6 of the RFC 3339profile of the ISO 8601 standard for
+representation of dates and times using the Gregorian calendar.
+"""
+scalar Time
 
 type User {
   id: ID!

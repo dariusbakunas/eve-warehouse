@@ -121,7 +121,7 @@ class EveApp extends App<IProps, IState> {
             </React.Fragment>
           )}
           <main className={classes.content}>
-            <div className={classes.appBarSpacer} />
+            {pageProps.user && <div className={classes.appBarSpacer} />}
             <Component {...pageProps} />
           </main>
         </Root>

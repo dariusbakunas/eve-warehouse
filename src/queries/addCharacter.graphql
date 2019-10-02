@@ -1,7 +1,19 @@
 mutation AddCharacter($input: CharacterInput!) {
   addCharacter(input: $input) {
     id
+    birthday
+    corporation {
+      id
+      name
+      ticker
+      alliance {
+        id
+        name
+        ticker
+      }
+    }
     name
     scopes
+    securityStatus
   }
 }

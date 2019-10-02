@@ -1,12 +1,10 @@
 import React from 'react';
-import { makeStyles, Theme } from '@material-ui/core';
+import { CardContent, makeStyles, Theme } from '@material-ui/core';
 import CardHeader from '@material-ui/core/CardHeader';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+import moment from 'moment';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -15,6 +13,7 @@ import { GetCharacters_characters as Character } from '../__generated__/GetChara
 
 const useStyles = makeStyles<Theme>(theme => ({
   card: {
+    height: 'calc(100% - 5px)',
     width: 'calc(100% - 5px)',
     display: 'flex',
     flexDirection: 'column',
@@ -33,7 +32,7 @@ const CharacterTile: React.FC<CharacterTileProps> = ({
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const menuOpen = Boolean(anchorEl);
   const classes = useStyles();
-  const { id, name } = character;
+  const { id, name, birthday, corporation, securityStatus } = character;
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -67,7 +66,22 @@ const CharacterTile: React.FC<CharacterTileProps> = ({
             </IconButton>
           }
           title={name}
+          subheader={`Born: ${moment(birthday).format('YYYY-MM-DD LT')}`}
         />
+        <CardContent>
+          {corporation.alliance && (
+            <div>
+              <strong>Alliance:</strong> {corporation.alliance.name} [{corporation.alliance.ticker}]
+            </div>
+          )}
+          <div>
+            <strong>Corporation:</strong> {corporation.name} [
+            {corporation.ticker}]
+          </div>
+          <div>
+            <strong>Security status:</strong> {securityStatus.toFixed(2)}
+          </div>
+        </CardContent>
       </Card>
       <Menu
         id={`character-menu-${id}`}

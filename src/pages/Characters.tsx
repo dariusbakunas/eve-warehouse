@@ -134,13 +134,15 @@ export const Characters: React.FC = () => {
     );
   };
 
+  const cellHeight = charactersLoading ? 120 : 'auto';
+
   return (
     <React.Fragment>
-      <GridList cellHeight={80} cols={3} spacing={10}>
+      <GridList cellHeight={cellHeight} cols={3} spacing={10}>
         {charactersLoading &&
           [0, 1, 2].map(i => (
             <GridListTile key={i}>
-              <Skeleton variant="rect" height={80} />
+              <Skeleton variant="rect" height={cellHeight} />
             </GridListTile>
           ))}
         {data &&
@@ -155,7 +157,7 @@ export const Characters: React.FC = () => {
           ))}
         {characterAddLoading && (
           <GridListTile>
-            <Skeleton variant="rect" height={80} />
+            <Skeleton variant="rect" height={cellHeight} />
           </GridListTile>
         )}
       </GridList>
