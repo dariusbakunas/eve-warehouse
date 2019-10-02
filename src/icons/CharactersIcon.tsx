@@ -1,29 +1,103 @@
-import React from "react";
-import SvgIcon, { SvgIconProps } from "@material-ui/core/SvgIcon";
+import React from 'react';
+import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 
 const CharactersIcon = (props: SvgIconProps) => {
   return (
-    <SvgIcon {...props} viewBox="0 0 273 249">
+    <SvgIcon {...props} viewBox="0 0 90.23 83.13">
       <defs>
-        <linearGradient id="b603d4e4-7772-4740-8c94-5890341ed7c7" x1="162" y1="249" x2="162" y2="28" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#6f7071" />
-          <stop offset="1" stopColor="#d1dbe2" />
+        <clipPath
+          id="e7bcccdb-636a-4fdb-8da1-32930af12a10"
+          transform="translate(-18.77 -19.77)"
+        >
+          <rect width="128" height="128" style={{ fill: 'none' }} />
+        </clipPath>
+        <clipPath
+          id="bbe6b726-bc3c-4de5-9a3c-dccda25ef384"
+          transform="translate(-18.77 -19.77)"
+        >
+          <rect
+            x="18.77"
+            y="19.77"
+            width="48.81"
+            height="72.53"
+            style={{ fill: 'none' }}
+          />
+        </clipPath>
+        <clipPath
+          id="aef2e137-fe65-4894-8b7e-361eb75bd9cf"
+          transform="translate(-18.77 -19.77)"
+        >
+          <path
+            d="M31.75,89l3.11-1.27c.15-.06,15.1-6.14,21-9,.65-.3,1.1-2.45,1-4.52a12.58,12.58,0,0,1-2.08-5.19c-.14-.94-.3-1.93-.43-2.8a7.52,7.52,0,0,1-2.12-3.06,25.94,25.94,0,0,1-1.42-4.92c-1.31-6.25-.18-8.66.95-10.06l.31-.35c0-4.1.89-11.08,5.53-16.31a18.35,18.35,0,0,1,9.92-5.67c-2.25-3.43-6.1-6.15-12.69-6.15C36.89,19.77,39.29,40,39.29,40c0,.5-.16.63-.36.63a2.34,2.34,0,0,1-.53-.15h-.07c-1.59,0-.92,4.3-.53,6.16A22,22,0,0,0,39,50.85a1.93,1.93,0,0,0,1.8,1.44H41s.44,2.9.84,5.44a7.46,7.46,0,0,0,2,4s1.27,8.59-3.74,11c-6.13,2.92-21.3,9.09-21.3,9.09V92.3h13Z"
+            style={{ fill: 'none' }}
+          />
+        </clipPath>
+        <linearGradient
+          id="af5b27cc-394a-4cd6-be16-391003c6f031"
+          x1="-339.58"
+          y1="-136.63"
+          x2="-338.58"
+          y2="-136.63"
+          gradientTransform="matrix(0, -72.53, -72.53, 0, -9885.32, -24556.97)"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0" stopColor="#666" />
+          <stop offset="1" stopColor="#d5dfe6" />
         </linearGradient>
-        <linearGradient id="a3dc32bc-2b62-4376-888e-601bb007b06d" x1="74.9" y1="221" x2="74.9" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#b8b9b9" />
-          <stop offset="1" stopColor="#e6ebed" />
-        </linearGradient>
+        <clipPath
+          id="f084aa28-e9ff-4ef5-8b42-17fe28040505"
+          transform="translate(-18.77 -19.77)"
+        >
+          <path
+            d="M57.26,50.64c0,.5-.16.63-.36.63a2.34,2.34,0,0,1-.53-.15h-.06c-1.6,0-.93,4.3-.53,6.16A20.61,20.61,0,0,0,57,61.45a1.92,1.92,0,0,0,1.79,1.44.76.76,0,0,0,.19,0s.45,2.9.84,5.44a7.41,7.41,0,0,0,2,4s1.28,8.6-3.74,11c-6.12,2.92-21.29,9.08-21.29,9.08v10.5H109V92.4s-15.17-6.16-21.3-9.08c-5-2.39-3.74-11-3.74-11a7.41,7.41,0,0,0,2-4c.4-2.54.84-5.44.84-5.44a.91.91,0,0,0,.2,0,1.92,1.92,0,0,0,1.79-1.44A22,22,0,0,0,90,57.28c.39-1.86,1.06-6.16-.53-6.16h-.07a2.34,2.34,0,0,1-.53.15c-.2,0-.37-.13-.36-.63,0,0,2.41-20.27-15.61-20.27S57.26,50.64,57.26,50.64"
+            style={{ fill: 'none' }}
+          />
+        </clipPath>
+        <linearGradient
+          id="aa0182f2-0951-402f-b73b-d69384e25d70"
+          x1="-339.58"
+          y1="-136.63"
+          x2="-338.58"
+          y2="-136.63"
+          gradientTransform="matrix(0, -72.53, -72.53, 0, -9855.63, -24546.37)"
+          xlinkHref="#af5b27cc-394a-4cd6-be16-391003c6f031"
+        />
       </defs>
-      <title>characters</title>
-      <g id="bf7073c8-30bc-4861-bf39-376f526fb5db" data-name="Icon">
-        <path
-          d="M162.5,249H273V221s-75-21-75-58c0-35,6-33,6-33s2,3,7,0,10-43,3-41,5-61-52-61-45,63-52,61-2,38,3,41,7,0,7,0,6-2,6,33c0,37-75,58-75,58v28Z"
-          fill="url(#b603d4e4-7772-4740-8c94-5890341ed7c7)"
-        />
-        <path
-          d="M40.5,213l7.67-2.15a207.16,207.16,0,0,0,35.71-14.45c11.81-6.25,31.62-18.9,31.62-33.44,0-11-.63-17.61-1.24-21.4a19.83,19.83,0,0,1-6.66-2.6c-2.45-1.47-7.55-4.52-10.47-25.46-1.2-8.66-2-20.4.89-27.14a13.74,13.74,0,0,1,4.37-5.61c.13-.9.26-1.86.38-2.75,1.24-9.44,3.13-23.7,11-36.33,8.06-12.93,20.15-20.72,36-23.27C143.05,8.12,131.48,0,111,0,54,0,66,63,59,61s-2,38,3,41,7,0,7,0,6-2,6,33c0,37-75,58-75,58v28H40.5Z"
-          fill="url(#a3dc32bc-2b62-4376-888e-601bb007b06d)"
-        />
+      <g style={{ clipPath: 'url(#e7bcccdb-636a-4fdb-8da1-32930af12a10)' }}>
+        <g style={{ clipPath: 'url(#e7bcccdb-636a-4fdb-8da1-32930af12a10)' }}>
+          <g style={{ clipPath: 'url(#e7bcccdb-636a-4fdb-8da1-32930af12a10)' }}>
+            <g style={{ opacity: 0.5 }}>
+              <g
+                style={{
+                  clipPath: 'url(#bbe6b726-bc3c-4de5-9a3c-dccda25ef384)',
+                }}
+              >
+                <g
+                  style={{
+                    clipPath: 'url(#aef2e137-fe65-4894-8b7e-361eb75bd9cf)',
+                  }}
+                >
+                  <rect
+                    width="48.81"
+                    height="72.53"
+                    style={{
+                      fill: 'url(#af5b27cc-394a-4cd6-be16-391003c6f031)',
+                    }}
+                  />
+                </g>
+              </g>
+            </g>
+          </g>
+          <g style={{ clipPath: 'url(#f084aa28-e9ff-4ef5-8b42-17fe28040505)' }}>
+            <rect
+              x="17.97"
+              y="10.6"
+              width="72.26"
+              height="72.53"
+              style={{ fill: 'url(#aa0182f2-0951-402f-b73b-d69384e25d70)' }}
+            />
+          </g>
+        </g>
       </g>
     </SvgIcon>
   );
