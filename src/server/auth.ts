@@ -1,5 +1,6 @@
 import express, { NextFunction, Request } from 'express';
 import passport from 'passport';
+import getUser from '../auth/getUser';
 
 const router = express.Router();
 
@@ -12,12 +13,9 @@ router.get(
   (req, res) => res.redirect('/')
 );
 
-router.get('/user', (req: Request, res) => {
+router.get('/user', async (req: Request, res) => {
   res.setHeader('Content-Type', 'application/json');
-  const user =
-    req.session && req.session.passport && req.session.passport.user
-      ? req.session.passport.user.profile
-      : null;
+  const user = await getUser(req);
   res.json(user);
 });
 
@@ -34,9 +32,16 @@ router.get('/callback', (req: Request, res, next: NextFunction) => {
     if (err) return next(err);
     if (!user) return res.redirect('/login');
 
-    request.logIn(user, err => {
+    // accessToken, refreshToken(undefined), profile, status = GUEST
+
+    return request.logIn(user, loginErr => {
       if (err) return next(err);
-      res.redirect('/');
+
+      if (user && user.status === 'GUEST') {
+        return res.redirect('/register');
+      }
+
+      return res.redirect('/');
     });
   })(req, res, next);
 });

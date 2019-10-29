@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Wed Oct 02 2019 13:39:22 GMT-0400 (Eastern Daylight Time)
+# timestamp: Mon Oct 28 2019 07:58:29 GMT-0400 (Eastern Daylight Time)
 
 type Alliance {
   id: ID!
@@ -15,6 +15,7 @@ type Character {
   scopes: [String!]
   birthday: DateTime!
   securityStatus: Float!
+  totalSp: Int
 }
 
 input CharacterInput {
@@ -48,11 +49,21 @@ scalar DateTime
 type Mutation {
   addCharacter(input: CharacterInput!): Character!
   removeCharacter(id: ID!): ID!
+  register(input: RegistrationInput!): User
 }
 
 type Query {
   scopes: [Scope!]!
   characters: [Character!]!
+  userByEmail(email: String!): User
+}
+
+input RegistrationInput {
+  firstName: String
+  lastName: String
+  username: String!
+  email: String!
+  code: String!
 }
 
 type Scope {
@@ -69,5 +80,14 @@ scalar Time
 
 type User {
   id: ID!
+  username: String!
+  firstName: String
+  lastName: String
   email: String!
+  status: UserStatus!
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
 }

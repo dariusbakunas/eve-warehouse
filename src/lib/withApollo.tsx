@@ -1,66 +1,76 @@
-import React, { useMemo } from "react";
-import { ApolloProvider } from "@apollo/react-hooks";
-import { ApolloClient, InMemoryCache, HttpLink, NormalizedCacheObject } from "apollo-boost";
-import { NextComponentType, NextPageContext } from "next";
-import Head from "next/head";
-import { setContext } from "apollo-link-context";
+import React, { useMemo } from 'react';
+import { ApolloProvider } from '@apollo/react-hooks';
+import {
+  ApolloClient,
+  InMemoryCache,
+  HttpLink,
+  NormalizedCacheObject,
+} from 'apollo-boost';
+import { NextComponentType, NextPageContext } from 'next';
+import Head from 'next/head';
+import { setContext } from 'apollo-link-context';
+import { IncomingMessage } from 'http';
 
 export interface ApolloContext<C = any> extends NextPageContext {
   AppTree: any;
 }
 
 // client-side
-let apolloClient: ApolloClient<NormalizedCacheObject>;
+let sharedClient: ApolloClient<NormalizedCacheObject>;
 
 const initApolloClient = (ctx: NextPageContext | null, initialState = {}) => {
-  if (typeof window === "undefined") {
-    // @ts-ignore
-    const token = ctx && ctx.req && ctx.req.user ? ctx.req.user.accessToken : null;
+  if (typeof window === 'undefined') {
+    const request = ctx ? ctx.req as IncomingMessage & { user?: any } : null;
 
-    const authLink = setContext((_, { headers }) => {
-      return {
-        headers: {
-          ...headers,
-          authorization: token ? `Bearer ${token}` : ""
-        }
-      };
-    });
+    // @ts-ignore
+    const token = request && request.user ? request.user.accessToken : null;
+
+    const authLink = setContext((_, { headers }) => ({
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : '',
+      },
+    }));
 
     // server-side
     return new ApolloClient({
       cache: new InMemoryCache().restore(initialState || {}),
       link: authLink.concat(
         new HttpLink({
-          uri: process.env.EVE_API_HOST
+          uri: process.env.EVE_API_HOST,
         })
       ),
       connectToDevTools: false,
-      ssrMode: true
+      ssrMode: true,
     });
-  } else {
-    if (!apolloClient) {
-      // client-side
-      apolloClient = new ApolloClient({
-        cache: new InMemoryCache().restore(initialState || {}),
-        connectToDevTools: true,
-        link: new HttpLink({
-          uri: "/api"
-        }),
-        ssrMode: true
-      });
-    }
-
-    return apolloClient;
   }
+  if (!sharedClient) {
+    // client-side
+    sharedClient = new ApolloClient({
+      cache: new InMemoryCache().restore(initialState || {}),
+      connectToDevTools: true,
+      link: new HttpLink({
+        uri: '/api',
+      }),
+      ssrMode: true,
+    });
+  }
+
+  return sharedClient;
 };
 
-const withApollo = <P extends object>(PageComponent: NextComponentType<ApolloContext, {}, P>) => {
-  const WithApollo: NextComponentType<ApolloContext, {}, P & { apolloClient: ApolloClient<NormalizedCacheObject>; apolloState: any }> = ({
-    apolloClient,
-    apolloState,
-    ...pageProps
-  }) => {
-    const client = useMemo(() => apolloClient || initApolloClient(null, apolloState), []);
+const withApollo = <P extends object>(
+  PageComponent: NextComponentType<ApolloContext, {}, P>
+) => {
+  const WithApollo: NextComponentType<
+    ApolloContext,
+    {},
+    P & { apolloClient: ApolloClient<NormalizedCacheObject>; apolloState: any }
+  > = ({ apolloClient, apolloState, ...pageProps }) => {
+    const client = useMemo(
+      () => apolloClient || initApolloClient(null, apolloState),
+      []
+    );
 
     return (
       <ApolloProvider client={client}>
@@ -69,7 +79,7 @@ const withApollo = <P extends object>(PageComponent: NextComponentType<ApolloCon
     );
   };
 
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     WithApollo.getInitialProps = async (ctx: ApolloContext) => {
       const { AppTree } = ctx;
 
@@ -82,15 +92,16 @@ const withApollo = <P extends object>(PageComponent: NextComponentType<ApolloCon
         return {};
       }
 
-      const apolloClient = initApolloClient(ctx);
+      const serverClient = initApolloClient(ctx);
 
       try {
         // Run all GraphQL queries
-        await require("@apollo/react-ssr").getDataFromTree(
+        // eslint-disable-next-line global-require
+        await require('@apollo/react-ssr').getDataFromTree(
           <AppTree
             pageProps={{
               ...pageProps,
-              apolloClient
+              serverClient,
             }}
           />
         );
@@ -98,7 +109,7 @@ const withApollo = <P extends object>(PageComponent: NextComponentType<ApolloCon
         // Prevent Apollo Client GraphQL errors from crashing SSR.
         // Handle them in components via the data.error prop:
         // https://www.apollographql.com/docs/react/api/react-apollo.html#graphql-query-data-error
-        console.error("Error while running `getDataFromTree`", error);
+        console.error('Error while running `getDataFromTree`', error);
       }
 
       // getDataFromTree does not call componentWillUnmount
@@ -106,16 +117,16 @@ const withApollo = <P extends object>(PageComponent: NextComponentType<ApolloCon
       Head.rewind();
 
       // Extract query data from the Apollo store
-      const apolloState = apolloClient.cache.extract();
+      const apolloState = serverClient.cache.extract();
 
       return {
         ...pageProps,
-        apolloState
+        apolloState,
       };
     };
   } else {
     WithApollo.getInitialProps = async (ctx: NextPageContext) => {
-      const getInitialProps = PageComponent.getInitialProps;
+      const { getInitialProps } = PageComponent;
 
       let appProps = {};
 
@@ -124,7 +135,7 @@ const withApollo = <P extends object>(PageComponent: NextComponentType<ApolloCon
       }
 
       return {
-        ...appProps
+        ...appProps,
       };
     };
   }

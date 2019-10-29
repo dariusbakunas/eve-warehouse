@@ -6,7 +6,20 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum UserStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+}
+
 export interface CharacterInput {
+  code: string;
+}
+
+export interface RegistrationInput {
+  firstName?: string | null;
+  lastName?: string | null;
+  username: string;
+  email: string;
   code: string;
 }
 

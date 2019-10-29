@@ -12,31 +12,27 @@ import { WithApolloProps } from 'next-with-apollo';
 import { Theme } from '@material-ui/core';
 import { AppContextType } from 'next-server/dist/lib/utils';
 import Root from '../components/Root';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import ListItemText from '@material-ui/core/ListItemText';
-import CharactersIcon from '../icons/CharactersIcon';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
+import getUser from '../auth/getUser';
+import { IUser } from '../auth/auth0Verify';
+import Container from '@material-ui/core/Container';
 
 interface IPageProps {
-  user?: {
-    displayName: string;
-    id: string;
-    user_id: string;
-    emails: Array<{ value: string }>;
-    picture: string;
-    nickname: string;
-  };
+  user?: IUser;
 }
 
 const styles = (theme: Theme) => ({
-  appBarSpacer: theme.mixins.toolbar,
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
+  '@global': {
+    html: {
+      height: '100%',
+    },
+    body: {
+      minHeight: '100%',
+    },
+    '#__next': {
+      minHeight: '100%',
+    },
   },
+  appBarSpacer: theme.mixins.toolbar,
   root: {
     display: 'flex',
     backgroundColor: '#EEEEEE',
@@ -62,20 +58,7 @@ class EveApp extends App<IProps, IState> {
 
     const request: Request = ctx.req as Request;
 
-    if (
-      request &&
-      request.session &&
-      request.session.passport &&
-      request.session.passport.user
-    ) {
-      pageProps.user = request.session.passport.user.profile;
-    } else {
-      const baseURL = request
-        ? `${request.protocol}://${request.get('Host')}`
-        : '';
-      const res = await fetch(`${baseURL}/auth/user`);
-      pageProps.user = await res.json();
-    }
+    pageProps.user = await getUser(request);
 
     return { pageProps };
   }
@@ -109,20 +92,17 @@ class EveApp extends App<IProps, IState> {
           <title>Eve APP</title>
         </Head>
         <Root>
-          {!!pageProps.user && (
+          {!!pageProps.user && pageProps.user.status === 'ACTIVE' && (
             <React.Fragment>
-              <Header
-                isAuthenticated={true}
-                title="EVE APP"
-                onLogoutClick={() => this.handleNavigate('/auth/logout')}
-                user={pageProps.user}
-              />
+              <Header isAuthenticated={true} title="EVE APP" onLogoutClick={() => this.handleNavigate('/auth/logout')} user={pageProps.user} />
               <SideMenu />
             </React.Fragment>
           )}
           <main className={classes.content}>
-            {pageProps.user && <div className={classes.appBarSpacer} />}
-            <Component {...pageProps} />
+            {pageProps.user && pageProps.user.status === 'ACTIVE' && <div className={classes.appBarSpacer} />}
+            <Container maxWidth="lg">
+              <Component {...pageProps} />
+            </Container>
           </main>
         </Root>
       </React.Fragment>
