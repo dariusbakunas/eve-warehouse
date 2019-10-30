@@ -12,7 +12,7 @@ import { WithApolloProps } from 'next-with-apollo';
 import { Theme } from '@material-ui/core';
 import { AppContextType } from 'next-server/dist/lib/utils';
 import Root from '../components/Root';
-import getUser from '../auth/getUser';
+import getCurrentUser from '../auth/getCurrentUser';
 import { IUser } from '../auth/auth0Verify';
 import Container from '@material-ui/core/Container';
 
@@ -33,9 +33,8 @@ const styles = (theme: Theme) => ({
     },
   },
   appBarSpacer: theme.mixins.toolbar,
-  root: {
-    display: 'flex',
-    backgroundColor: '#EEEEEE',
+  content: {
+    marginTop: theme.spacing(2),
   },
 });
 
@@ -58,7 +57,7 @@ class EveApp extends App<IProps, IState> {
 
     const request: Request = ctx.req as Request;
 
-    pageProps.user = await getUser(request);
+    pageProps.user = await getCurrentUser(request);
 
     return { pageProps };
   }

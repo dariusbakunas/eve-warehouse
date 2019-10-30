@@ -1,6 +1,6 @@
 import express, { NextFunction, Request } from 'express';
 import passport from 'passport';
-import getUser from '../auth/getUser';
+import getCurrentUser from '../auth/getCurrentUser';
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ router.get(
 
 router.get('/user', async (req: Request, res) => {
   res.setHeader('Content-Type', 'application/json');
-  const user = await getUser(req);
+  const user = await getCurrentUser(req);
   res.json(user);
 });
 

@@ -12,7 +12,7 @@ import withApollo from '../lib/withApollo';
 import { GraphQLError } from 'graphql';
 import { useRouter } from 'next/router';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import { IUser } from '../auth/auth0Verify'
+import { IUser } from '../auth/auth0Verify';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

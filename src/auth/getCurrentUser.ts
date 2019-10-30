@@ -2,7 +2,7 @@ import { Request } from 'express';
 import fetch from 'isomorphic-fetch';
 import { ISessionUser, IUser } from './auth0Verify';
 
-const getUser: (req: Request & { user?: ISessionUser }) => Promise<IUser> = async req => {
+const getCurrentUser: (req: Request & { user?: ISessionUser }) => Promise<IUser> = async req => {
   if (typeof window === 'undefined') {
     if (req && req.user) {
       const user: ISessionUser = req.user;
@@ -21,4 +21,4 @@ const getUser: (req: Request & { user?: ISessionUser }) => Promise<IUser> = asyn
   }
 };
 
-export default getUser;
+export default getCurrentUser;

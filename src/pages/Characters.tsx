@@ -14,14 +14,8 @@ import removeCharacterMutation from '../queries/removeCharacter.graphql';
 import getCharactersQuery from '../queries/getCharacters.graphql';
 import useConfirmDialog from '../hooks/useConfirmDialog';
 import CharacterTile from '../components/CharacterTile';
-import {
-  AddCharacterVariables,
-  AddCharacter as NewCharacterResponse,
-} from '../__generated__/AddCharacter';
-import {
-  RemoveCharacter,
-  RemoveCharacterVariables,
-} from '../__generated__/RemoveCharacter';
+import { AddCharacterVariables, AddCharacter as NewCharacterResponse } from '../__generated__/AddCharacter';
+import { RemoveCharacter, RemoveCharacterVariables } from '../__generated__/RemoveCharacter';
 import { GetCharacters as CharactersResponse } from '../__generated__/GetCharacters';
 import { makeStyles, Theme } from '@material-ui/core';
 
@@ -43,17 +37,11 @@ export const Characters: React.FC = () => {
   const [scopeDialogOpen, setScopeDialogOpen] = React.useState(false);
   const router = useRouter();
 
-  const [
-    addCharacter,
-    { loading: characterAddLoading, error: characterAddError },
-  ] = useMutation<NewCharacterResponse, AddCharacterVariables>(
+  const [addCharacter, { loading: characterAddLoading, error: characterAddError }] = useMutation<NewCharacterResponse, AddCharacterVariables>(
     addCharacterMutation,
     {
       onCompleted: data => {
-        enqueueSnackbar(
-          `Character '${data.addCharacter.name}' added successfully`,
-          { variant: 'success', autoHideDuration: 5000 }
-        );
+        enqueueSnackbar(`Character '${data.addCharacter.name}' added successfully`, { variant: 'success', autoHideDuration: 5000 });
         router.push('/characters');
       },
       update(cache, { data }) {
@@ -66,9 +54,7 @@ export const Characters: React.FC = () => {
             cache.writeQuery({
               query: getCharactersQuery,
               data: {
-                characters: queryResponse.characters.concat([
-                  data.addCharacter,
-                ]),
+                characters: queryResponse.characters.concat([data.addCharacter]),
               },
             });
           }
@@ -77,16 +63,12 @@ export const Characters: React.FC = () => {
     }
   );
 
-  const [
-    removeCharacter,
-    { loading: characterRemovalLoading, error: characterRemovalError },
-  ] = useMutation<RemoveCharacter, RemoveCharacterVariables>(
-    removeCharacterMutation
-  );
+  const [removeCharacter, { loading: characterRemovalLoading, error: characterRemovalError }] = useMutation<
+    RemoveCharacter,
+    RemoveCharacterVariables
+  >(removeCharacterMutation);
 
-  const { loading: charactersLoading, data, error } = useQuery<
-    CharactersResponse
-  >(getCharactersQuery);
+  const { loading: charactersLoading, data, error } = useQuery<CharactersResponse>(getCharactersQuery);
 
   const { query } = router;
 
@@ -106,32 +88,23 @@ export const Characters: React.FC = () => {
     setScopeDialogOpen(false);
 
     if (scopes && scopes.length) {
-      const url = `${
-        process.env.EVE_LOGIN_URL
-      }/oauth/authorize?response_type=code&redirect_uri=${
-        process.env.EVE_CHARACTER_REDIRECT_URL
-      }&client_id=${process.env.EVE_CLIENT_ID}&scope=${scopes.join(' ')}`;
+      const url = `${process.env.EVE_LOGIN_URL}/oauth/authorize?response_type=code&redirect_uri=${process.env.EVE_CHARACTER_REDIRECT_URL}&client_id=${
+        process.env.EVE_CLIENT_ID
+      }&scope=${scopes.join(' ')}`;
       window.location.href = url;
     }
   };
 
-  const handleRemoveCharacter = (
-    characterId: string,
-    characterName: string
-  ) => {
-    showAlert(
-      `Remove '${characterName}'?`,
-      `Character '${characterName}' will be removed and future updates disabled`,
-      confirm => {
-        if (confirm) {
-          removeCharacter({
-            variables: {
-              id: characterId,
-            },
-          });
-        }
+  const handleRemoveCharacter = (characterId: string, characterName: string) => {
+    showAlert(`Remove '${characterName}'?`, `Character '${characterName}' will be removed and future updates disabled`, confirm => {
+      if (confirm) {
+        removeCharacter({
+          variables: {
+            id: characterId,
+          },
+        });
       }
-    );
+    });
   };
 
   const cellHeight = charactersLoading ? 120 : 'auto';
@@ -149,10 +122,7 @@ export const Characters: React.FC = () => {
           data.characters &&
           data.characters.map(character => (
             <GridListTile key={character.id}>
-              <CharacterTile
-                character={character}
-                onRemove={handleRemoveCharacter}
-              />
+              <CharacterTile character={character} onRemove={handleRemoveCharacter} />
             </GridListTile>
           ))}
         {characterAddLoading && (
@@ -165,10 +135,7 @@ export const Characters: React.FC = () => {
         Add Character
       </Button>
       <ConfirmDialog {...confirmDialogProps} />
-      <CharacterScopeDialog
-        open={scopeDialogOpen}
-        onClose={handleAddCharacter}
-      />
+      <CharacterScopeDialog open={scopeDialogOpen} onClose={handleAddCharacter} />
     </React.Fragment>
   );
 };
