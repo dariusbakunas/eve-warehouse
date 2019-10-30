@@ -1,15 +1,11 @@
 import React, { useMemo } from 'react';
 import { ApolloProvider } from '@apollo/react-hooks';
-import {
-  ApolloClient,
-  InMemoryCache,
-  HttpLink,
-  NormalizedCacheObject,
-} from 'apollo-boost';
+import { ApolloClient, InMemoryCache, HttpLink, NormalizedCacheObject } from 'apollo-boost';
 import { NextComponentType, NextPageContext } from 'next';
 import Head from 'next/head';
 import { setContext } from 'apollo-link-context';
 import { IncomingMessage } from 'http';
+import { ISessionUser } from '../auth/auth0Verify';
 
 export interface ApolloContext<C = any> extends NextPageContext {
   AppTree: any;
@@ -20,9 +16,7 @@ let sharedClient: ApolloClient<NormalizedCacheObject>;
 
 const initApolloClient = (ctx: NextPageContext | null, initialState = {}) => {
   if (typeof window === 'undefined') {
-    const request = ctx ? ctx.req as IncomingMessage & { user?: any } : null;
-
-    // @ts-ignore
+    const request = ctx ? (ctx.req as IncomingMessage & { user?: ISessionUser }) : null;
     const token = request && request.user ? request.user.accessToken : null;
 
     const authLink = setContext((_, { headers }) => ({
@@ -59,18 +53,13 @@ const initApolloClient = (ctx: NextPageContext | null, initialState = {}) => {
   return sharedClient;
 };
 
-const withApollo = <P extends object>(
-  PageComponent: NextComponentType<ApolloContext, {}, P>
-) => {
-  const WithApollo: NextComponentType<
-    ApolloContext,
-    {},
-    P & { apolloClient: ApolloClient<NormalizedCacheObject>; apolloState: any }
-  > = ({ apolloClient, apolloState, ...pageProps }) => {
-    const client = useMemo(
-      () => apolloClient || initApolloClient(null, apolloState),
-      []
-    );
+const withApollo = <P extends object>(PageComponent: NextComponentType<ApolloContext, {}, P>) => {
+  const WithApollo: NextComponentType<ApolloContext, {}, P & { apolloClient: ApolloClient<NormalizedCacheObject>; apolloState: any }> = ({
+    apolloClient,
+    apolloState,
+    ...pageProps
+  }) => {
+    const client = useMemo(() => apolloClient || initApolloClient(null, apolloState), []);
 
     return (
       <ApolloProvider client={client}>
@@ -101,7 +90,7 @@ const withApollo = <P extends object>(
           <AppTree
             pageProps={{
               ...pageProps,
-              serverClient,
+              apolloClient: serverClient,
             }}
           />
         );
