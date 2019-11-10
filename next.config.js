@@ -2,15 +2,10 @@ const { parsed: localEnv } = require('dotenv').config();
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const webpack = require('webpack');
 
-const CLIENT_ENV_WHITELIST = [
-  'EVE_API_HOST',
-  'EVE_LOGIN_URL',
-  'EVE_CLIENT_ID',
-  'EVE_CHARACTER_REDIRECT_URL',
-];
+const CLIENT_ENV_WHITELIST = ['EVE_API_HOST', 'EVE_LOGIN_URL', 'EVE_CLIENT_ID', 'EVE_CHARACTER_REDIRECT_URL'];
 
 const env = CLIENT_ENV_WHITELIST.reduce((acc, key) => {
-  const val = localEnv[key];
+  const val = localEnv ? localEnv[key] : process.env[key];
   if (val) {
     acc[key] = val;
   }

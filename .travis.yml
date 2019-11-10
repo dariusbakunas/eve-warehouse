@@ -7,6 +7,10 @@ services:
 env:
   global:
   - NODE_ENV=CI
+  - EVE_API_HOST=http://eve-api:4000/graphql
+  - EVE_LOGIN_URL=https://login.eveonline.com
+  - EVE_CLIENT_ID=cA4W1Eh4uVCrT3jYWCBZXLZEnr4HS8Ah
+  - EVE_CHARACTER_REDIRECT_URL=https://eve-app.geekspace.us/characters
 stages:
 - install
 - test
