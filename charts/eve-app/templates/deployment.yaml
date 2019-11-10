@@ -38,6 +38,33 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: AUTH0_CLIENT_ID
+              value: {{ .Values.auth0ClientID }}
+            - name: AUTH0_DOMAIN
+              value: {{ .Values.auth0Domain }}
+            - name: AUTH0_AUDIENCE
+              value: {{ .Values.auth0Audience }}
+            - name: EVE_API_HOST
+              value: {{ .Values.eveApiHost }}
+            - name: EVE_LOGIN_URL
+              value: {{ .Values.eveLoginURL }}
+            - name: EVE_CLIENT_ID
+              value: {{ .Values.eveClientID }}
+            - name: EVE_CHARACTER_REDIRECT_URL
+                value: {{ .Values.eveCharacterRedirectURL }}
+            - name: EVE_CLIENT_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ include "eve-app.name" . }}-secret
+                    key: eve-client-secret
+            - name: AUTH0_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "eve-app.name" . }}-secret
+                  key: auth0-client-secret
+            - name: NODE_ENV
+              value: {{ .Values.nodeEnv }}'
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
