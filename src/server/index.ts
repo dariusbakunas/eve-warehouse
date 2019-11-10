@@ -4,7 +4,6 @@ import passport from 'passport';
 import Auth0Strategy from 'passport-auth0';
 import uid from 'uid-safe';
 import session from 'express-session';
-import bodyParser from 'body-parser';
 import proxy, { Config } from 'http-proxy-middleware';
 import authRoutes from './auth';
 import auth0Verify, { ISessionUser } from '../auth/auth0Verify';
