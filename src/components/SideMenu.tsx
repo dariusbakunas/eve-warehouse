@@ -10,6 +10,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import ListItemText from '@material-ui/core/ListItemText';
 import CharactersIcon from '../icons/CharactersIcon';
+import SkillsIcon from '../icons/SkillsIcon';
 import List from '@material-ui/core/List';
 
 const useStyles = makeStyles<Theme, { drawerWidth: number }>(theme => ({
@@ -105,6 +106,19 @@ export const SideMenu: React.FC<SideMenuProps> = ({ children, header }) => {
           </ListItemIcon>
           <ListItemText
             primary="Characters"
+            primaryTypographyProps={{ noWrap: true }}
+          />
+        </ListItem>
+        <ListItem
+          selected={pathname === '/skills'}
+          button
+          onClick={() => handleNavigate('/skills')}
+        >
+          <ListItemIcon>
+            <SkillsIcon />
+          </ListItemIcon>
+          <ListItemText
+            primary="Skills"
             primaryTypographyProps={{ noWrap: true }}
           />
         </ListItem>

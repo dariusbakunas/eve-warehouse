@@ -32,7 +32,14 @@ const CharacterTile: React.FC<CharacterTileProps> = ({
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const menuOpen = Boolean(anchorEl);
   const classes = useStyles();
-  const { id, name, birthday, corporation, securityStatus } = character;
+  const {
+    id,
+    name,
+    birthday,
+    corporation,
+    securityStatus,
+    totalSp,
+  } = character;
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -71,7 +78,8 @@ const CharacterTile: React.FC<CharacterTileProps> = ({
         <CardContent>
           {corporation.alliance && (
             <div>
-              <strong>Alliance:</strong> {corporation.alliance.name} [{corporation.alliance.ticker}]
+              <strong>Alliance:</strong> {corporation.alliance.name} [
+              {corporation.alliance.ticker}]
             </div>
           )}
           <div>
@@ -81,6 +89,11 @@ const CharacterTile: React.FC<CharacterTileProps> = ({
           <div>
             <strong>Security status:</strong> {securityStatus.toFixed(2)}
           </div>
+          {totalSp && (
+            <div>
+              <strong>Total SP:</strong> {totalSp.toLocaleString()}
+            </div>
+          )}
         </CardContent>
       </Card>
       <Menu

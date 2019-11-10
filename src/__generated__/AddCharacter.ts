@@ -31,6 +31,7 @@ export interface AddCharacter_addCharacter {
   name: string;
   scopes: string[] | null;
   securityStatus: number;
+  totalSp: number | null;
 }
 
 export interface AddCharacter {

@@ -15,5 +15,6 @@ query GetCharacters {
     name
     scopes
     securityStatus
+    totalSp
   }
 }

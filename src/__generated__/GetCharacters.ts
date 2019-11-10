@@ -29,6 +29,7 @@ export interface GetCharacters_characters {
   name: string;
   scopes: string[] | null;
   securityStatus: number;
+  totalSp: number | null;
 }
 
 export interface GetCharacters {

@@ -15,5 +15,6 @@ mutation AddCharacter($input: CharacterInput!) {
     name
     scopes
     securityStatus
+    totalSp
   }
 }
