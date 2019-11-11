@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: nginx
-  tag: stable
+  repository: gcr.io/personal-248114/eve-app
+    tag: 21
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
