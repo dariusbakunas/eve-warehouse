@@ -54,10 +54,10 @@ spec:
             - name: EVE_CHARACTER_REDIRECT_URL
               value: {{ .Values.eveCharacterRedirectURL }}
             - name: EVE_CLIENT_SECRET
-                valueFrom:
-                  secretKeyRef:
-                    name: {{ include "eve-app.name" . }}-secret
-                    key: eve-client-secret
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "eve-app.name" . }}-secret
+                  key: eve-client-secret
             - name: AUTH0_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
