@@ -31,11 +31,11 @@ spec:
           livenessProbe:
             httpGet:
               path: /health-check
-              port: 3000
+              port: http
           readinessProbe:
             httpGet:
               path: /health-check
-              port: 3000
+              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon",
     "test": "jest",
-    "build": "next build ./src",
+    "build": "next build ./src && tsc --project tsconfig.server.json",
     "start": "next start ./src",
     "storybook": "start-storybook -p 6006 -c .storybook",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",

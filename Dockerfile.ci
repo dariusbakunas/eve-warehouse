@@ -4,6 +4,7 @@ WORKDIR /usr/src/app
 
 COPY package.json .
 COPY src/.next ./src/.next
+COPY .next .next
 COPY node_modules ./node_modules
 
 EXPOSE 3000
