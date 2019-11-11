@@ -59,6 +59,11 @@ app.prepare().then(() => {
   passport.serializeUser((user: any, done: (err: any, user: any) => void) => done(null, user));
   passport.deserializeUser((user: any, done: (err: any, user: any) => void) => done(null, user));
 
+  server.get('/health-check', (req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Status: OK!');
+  });
+
   server.use(passport.initialize());
   server.use(passport.session());
 
