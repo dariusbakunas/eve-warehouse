@@ -18,7 +18,7 @@ service:
   port: 80
 
 cert:
-  enabled: true
+  enabled: false
 
 ingress:
   enabled: true
