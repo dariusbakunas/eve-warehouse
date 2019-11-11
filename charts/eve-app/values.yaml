@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: gcr.io/personal-248114/eve-app
-    tag: 21
+  tag: 21
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
