@@ -7,7 +7,7 @@
     "dev": "nodemon",
     "test": "jest",
     "build": "next build ./src && tsc --project tsconfig.server.json",
-    "start": "NODE_ENV=production node .next/production-server/server/index.js ",
+    "start": "NODE_ENV=production node .next/production-server/src/server/index.js ",
     "storybook": "start-storybook -p 6006 -c .storybook",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
     "schema:update": "graphql get-schema",
