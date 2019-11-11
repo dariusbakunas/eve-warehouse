@@ -45,6 +45,8 @@ spec:
               value: {{ .Values.auth0Domain }}
             - name: AUTH0_AUDIENCE
               value: {{ .Values.auth0Audience }}
+            - name: AUTH0_CALLBACK_URL
+              value: {{ .Values.auth0CallbackURL }}
             - name: EVE_API_HOST
               value: {{ .Values.eveApiHost }}
             - name: EVE_LOGIN_URL
