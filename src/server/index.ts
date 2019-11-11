@@ -7,11 +7,18 @@ import session from 'express-session';
 import proxy, { Config } from 'http-proxy-middleware';
 import authRoutes from './auth';
 import auth0Verify, { ISessionUser } from '../auth/auth0Verify';
+import * as Sentry from '@sentry/node';
+import pJson from '../../package.json';
 
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev, dir: './src' });
 const handle = app.getRequestHandler();
+
+Sentry.init({
+  dsn: 'https://45c7dca4f55f43c38bec427d60cb08a1@sentry.io/1816311',
+  release: `${pJson.name}@${pJson.version}`,
+});
 
 const apiProxyConfig: Config = {
   changeOrigin: true,
@@ -32,6 +39,7 @@ const apiProxyConfig: Config = {
 
 app.prepare().then(() => {
   const server = express();
+  server.use(Sentry.Handlers.requestHandler());
 
   const sessionConfig = {
     secret: uid.sync(18),
@@ -98,6 +106,8 @@ app.prepare().then(() => {
   server.all('*', (req, res) => {
     return handle(req, res);
   });
+
+  server.use(Sentry.Handlers.errorHandler());
 
   server.listen(port, err => {
     if (err) throw err;

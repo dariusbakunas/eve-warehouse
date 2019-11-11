@@ -28,6 +28,7 @@
     "@material-ui/core": "^4.4.2",
     "@material-ui/icons": "^4.4.1",
     "@material-ui/lab": "^4.0.0-alpha.27",
+    "@sentry/node": "^5.8.0",
     "apollo-boost": "^0.4.4",
     "apollo-link-context": "^1.0.19",
     "body-parser": "^1.19.0",

@@ -3,7 +3,8 @@
   "compilerOptions": {
     "noEmit": false,
     "module": "commonjs",
-    "outDir": ".next/production-server/"
+    "outDir": ".next/production-server/",
+    "resolveJsonModule": true
   },
   "include": [
     "src/server/*.ts"
