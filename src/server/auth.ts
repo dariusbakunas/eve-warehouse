@@ -25,12 +25,13 @@ router.get('/user', async (req: Request, res) => {
  * including an access code which will be exchanged for an id_token, access_token and refresh_token.
  */
 router.get('/callback', (req: Request, res, next: NextFunction) => {
-  logger.debug('auth/callback: passport.authenticate')
+  logger.debug('auth/callback: passport.authenticate');
   const request = req as Request & {
     logIn: (user: any, callback: (err?: any) => void) => void;
   };
 
   passport.authenticate('auth0', (err?: any, user?: any) => {
+    logger.debug(`passport.authenticate, user: ${ user ? JSON.stringify(user) : null }`);
     if (err) {
       logger.error(err);
       return next(err);
