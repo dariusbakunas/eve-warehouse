@@ -46,7 +46,7 @@ app.prepare().then(() => {
     morgan('dev', {
       skip: (req: Request, res: Response) => {
         return (
-          req.url === '/.well-known/apollo/server-health' ||
+          req.url === '/health-check' ||
           req.url === '/favicon.ico' ||
           req.originalUrl === '/.well-known/apollo/server-health' ||
           req.originalUrl === '/favicon.ico' ||
@@ -61,7 +61,7 @@ app.prepare().then(() => {
     morgan('dev', {
       skip: (req: Request, res: Response) => {
         return (
-          req.url === '/.well-known/apollo/server-health' ||
+          req.url === '/health-check' ||
           req.url === '/favicon.ico' ||
           req.originalUrl === '/.well-known/apollo/server-health' ||
           req.originalUrl === '/favicon.ico' ||
