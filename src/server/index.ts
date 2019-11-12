@@ -3,7 +3,7 @@ import next from 'next';
 import passport from 'passport';
 import Auth0Strategy from 'passport-auth0';
 import uid from 'uid-safe';
-import session from 'express-session';
+import session from 'cookie-session';
 import proxy, { Config } from 'http-proxy-middleware';
 import authRoutes from './auth';
 import auth0Verify, { ISessionUser } from '../auth/auth0Verify';
@@ -72,15 +72,14 @@ app.prepare().then(() => {
     })
   );
 
-
   const sessionConfig = {
+    name: 'eve-app',
     secret: uid.sync(18),
     cookie: {
       maxAge: 86400 * 1000, // 24 hours in milliseconds
       secure: !dev,
+      httpOnly: !dev,
     },
-    resave: false,
-    saveUninitialized: true,
   };
 
   server.use(session(sessionConfig));

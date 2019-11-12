@@ -1,7 +1,7 @@
 import express, { NextFunction, Request } from 'express';
 import passport from 'passport';
 import getCurrentUser from '../auth/getCurrentUser';
-import logger from '../logger'
+import logger from '../logger';
 
 const router = express.Router();
 
@@ -31,7 +31,7 @@ router.get('/callback', (req: Request, res, next: NextFunction) => {
   };
 
   passport.authenticate('auth0', (err?: any, user?: any) => {
-    logger.debug(`passport.authenticate, user: ${ user ? JSON.stringify(user) : null }`);
+    logger.debug(`passport.authenticate, user: ${user ? JSON.stringify(user) : null}`);
     if (err) {
       logger.error(err);
       return next(err);
@@ -57,9 +57,7 @@ router.get('/logout', (req: Request, res) => {
   request.logOut();
 
   const { AUTH0_DOMAIN, AUTH0_CLIENT_ID, BASE_URL } = process.env;
-  res.redirect(
-    `https://${AUTH0_DOMAIN}/v2/logout?client_id=${AUTH0_CLIENT_ID}&returnTo=${BASE_URL}`
-  );
+  res.redirect(`https://${AUTH0_DOMAIN}/v2/logout?client_id=${AUTH0_CLIENT_ID}&returnTo=${BASE_URL}`);
 });
 
 export default router;
