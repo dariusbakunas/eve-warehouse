@@ -66,7 +66,7 @@ spec:
                   name: {{ include "eve-app.name" . }}-secret
                   key: auth0-client-secret
             - name: NODE_ENV
-              value: {{ .Values.nodeEnv }}'
+              value: {{ .Values.nodeEnv }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

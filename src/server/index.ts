@@ -9,6 +9,7 @@ import authRoutes from './auth';
 import auth0Verify, { ISessionUser } from '../auth/auth0Verify';
 import * as Sentry from '@sentry/node';
 import pJson from '../../package.json';
+import morgan from 'morgan';
 
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -40,6 +41,37 @@ const apiProxyConfig: Config = {
 app.prepare().then(() => {
   const server = express();
   server.use(Sentry.Handlers.requestHandler());
+
+  server.use(
+    morgan('dev', {
+      skip: (req: Request, res: Response) => {
+        return (
+          req.url === '/.well-known/apollo/server-health' ||
+          req.url === '/favicon.ico' ||
+          req.originalUrl === '/.well-known/apollo/server-health' ||
+          req.originalUrl === '/favicon.ico' ||
+          res.statusCode < 400
+        );
+      },
+      stream: process.stderr,
+    })
+  );
+
+  server.use(
+    morgan('dev', {
+      skip: (req: Request, res: Response) => {
+        return (
+          req.url === '/.well-known/apollo/server-health' ||
+          req.url === '/favicon.ico' ||
+          req.originalUrl === '/.well-known/apollo/server-health' ||
+          req.originalUrl === '/favicon.ico' ||
+          res.statusCode >= 400
+        );
+      },
+      stream: process.stdout,
+    })
+  );
+
 
   const sessionConfig = {
     secret: uid.sync(18),
