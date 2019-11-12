@@ -45,7 +45,7 @@ app.prepare().then(() => {
   server.use(Sentry.Handlers.requestHandler());
 
   server.use(
-    morgan('dev', {
+    morgan('short', {
       skip: (req: Request, res: Response) => {
         return (
           req.url === '/health-check' ||
@@ -60,7 +60,7 @@ app.prepare().then(() => {
   );
 
   server.use(
-    morgan('dev', {
+    morgan('short', {
       skip: (req: Request, res: Response) => {
         return (
           req.url === '/health-check' ||
