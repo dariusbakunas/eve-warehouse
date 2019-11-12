@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import createApolloClient from '../lib/createApolloClient';
 import { GetUserByEmail, GetUserByEmailVariables } from '../__generated__/GetUserByEmail';
 import Maybe from 'graphql/tsutils/Maybe';
+import logger from '../logger';
 
 export interface IUser {
   email: string;
@@ -46,6 +47,7 @@ const auth0Verify = async (
   const apolloClient = createApolloClient(accessToken);
 
   try {
+    logger.debug(`auth0Verify: getUser(${profile.emails[0].value})`);
     const response = await getUser(apolloClient, profile.emails[0].value);
     const {
       data: { userByEmail },
@@ -53,6 +55,7 @@ const auth0Verify = async (
     } = response;
 
     if (errors) {
+      logger.error(errors);
       console.log(errors);
     }
 
@@ -63,6 +66,7 @@ const auth0Verify = async (
       status: userByEmail ? userByEmail.status : 'GUEST',
     });
   } catch (e) {
+    logger.error(e);
     return done(e);
   }
 };
