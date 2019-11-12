@@ -2,7 +2,6 @@ import React from 'react';
 import { Request } from 'express';
 import App from 'next/app';
 import Head from 'next/head';
-import fetch from 'isomorphic-fetch';
 import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
 import { withStyles } from '@material-ui/styles';

@@ -10,6 +10,7 @@ import auth0Verify, { ISessionUser } from '../auth/auth0Verify';
 import * as Sentry from '@sentry/node';
 import pJson from '../../package.json';
 import morgan from 'morgan';
+import helmet from 'helmet';
 
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -40,6 +41,7 @@ const apiProxyConfig: Config = {
 
 app.prepare().then(() => {
   const server = express();
+  server.use(helmet());
   server.use(Sentry.Handlers.requestHandler());
 
   server.use(
