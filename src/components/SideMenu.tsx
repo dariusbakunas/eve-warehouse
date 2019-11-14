@@ -16,10 +16,6 @@ import List from '@material-ui/core/List';
 
 const useStyles = makeStyles<Theme, { drawerWidth: number }>(theme => ({
   appBarSpacer: theme.mixins.toolbar,
-  content: {
-    flexGrow: 1,
-    overflow: 'auto',
-  },
   drawer: {
     flexShrink: 0,
     whiteSpace: 'nowrap',
@@ -66,7 +62,6 @@ export const SideMenu: React.FC<SideMenuProps> = ({ children, header }) => {
 
   return (
     <Drawer
-      anchor="left"
       variant="permanent"
       className={clsx(classes.drawer, {
         [classes.drawerOpen]: opened,

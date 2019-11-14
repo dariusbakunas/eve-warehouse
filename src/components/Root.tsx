@@ -10,7 +10,6 @@ import { makeStyles, Theme } from '@material-ui/core';
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
     display: 'flex',
-    flexDirection: 'column',
     minHeight: '100vh',
   },
 }));
