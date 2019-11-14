@@ -11,6 +11,7 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import ListItemText from '@material-ui/core/ListItemText';
 import CharactersIcon from '../icons/CharactersIcon';
 import SkillsIcon from '../icons/SkillsIcon';
+import WalletIcon from '../icons/WalletIcon';
 import List from '@material-ui/core/List';
 
 const useStyles = makeStyles<Theme, { drawerWidth: number }>(theme => ({
@@ -83,44 +84,29 @@ export const SideMenu: React.FC<SideMenuProps> = ({ children, header }) => {
       <div className={classes.appBarSpacer} />
       <Divider />
       <List>
-        <ListItem
-          selected={pathname === '/'}
-          button
-          onClick={() => handleNavigate('/')}
-        >
+        <ListItem selected={pathname === '/'} button onClick={() => handleNavigate('/')}>
           <ListItemIcon>
             <DashboardIcon />
           </ListItemIcon>
-          <ListItemText
-            primary="Dashboard"
-            primaryTypographyProps={{ noWrap: true }}
-          />
+          <ListItemText primary="Dashboard" primaryTypographyProps={{ noWrap: true }} />
         </ListItem>
-        <ListItem
-          selected={pathname === '/characters'}
-          button
-          onClick={() => handleNavigate('/characters')}
-        >
+        <ListItem selected={pathname === '/characters'} button onClick={() => handleNavigate('/characters')}>
           <ListItemIcon>
             <CharactersIcon />
           </ListItemIcon>
-          <ListItemText
-            primary="Characters"
-            primaryTypographyProps={{ noWrap: true }}
-          />
+          <ListItemText primary="Characters" primaryTypographyProps={{ noWrap: true }} />
         </ListItem>
-        <ListItem
-          selected={pathname === '/skills'}
-          button
-          onClick={() => handleNavigate('/skills')}
-        >
+        <ListItem selected={pathname === '/skills'} button onClick={() => handleNavigate('/skills')}>
           <ListItemIcon>
             <SkillsIcon />
           </ListItemIcon>
-          <ListItemText
-            primary="Skills"
-            primaryTypographyProps={{ noWrap: true }}
-          />
+          <ListItemText primary="Skills" primaryTypographyProps={{ noWrap: true }} />
+        </ListItem>
+        <ListItem selected={pathname === '/wallet'} button onClick={() => handleNavigate('/wallet')}>
+          <ListItemIcon>
+            <WalletIcon />
+          </ListItemIcon>
+          <ListItemText primary="Wallet" primaryTypographyProps={{ noWrap: true }} />
         </ListItem>
       </List>
     </Drawer>
