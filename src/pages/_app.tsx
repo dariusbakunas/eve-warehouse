@@ -34,6 +34,7 @@ const styles = (theme: Theme) => ({
   appBarSpacer: theme.mixins.toolbar,
   content: {
     marginTop: theme.spacing(2),
+    marginLeft: '100px',
   },
 });
 
@@ -98,7 +99,7 @@ class EveApp extends App<IProps, IState> {
           )}
           <main className={classes.content}>
             {pageProps.user && pageProps.user.status === 'ACTIVE' && <div className={classes.appBarSpacer} />}
-            <Container maxWidth="lg">
+            <Container>
               <Component {...pageProps} />
             </Container>
           </main>

@@ -18,6 +18,7 @@ import { AddCharacterVariables, AddCharacter as NewCharacterResponse } from '../
 import { RemoveCharacter, RemoveCharacterVariables } from '../__generated__/RemoveCharacter';
 import { GetCharacters as CharactersResponse } from '../__generated__/GetCharacters';
 import { makeStyles, Theme } from '@material-ui/core';
+import withWidth, { isWidthUp, WithWidthProps } from '@material-ui/core/withWidth';
 
 const useStyles = makeStyles<Theme>(theme => ({
   media: {
@@ -30,7 +31,7 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-export const Characters: React.FC = () => {
+export const Characters: React.FC<WithWidthProps> = ({ width }) => {
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const { confirmDialogProps, showAlert } = useConfirmDialog();
@@ -109,9 +110,25 @@ export const Characters: React.FC = () => {
 
   const cellHeight = charactersLoading ? 120 : 'auto';
 
+  const getGridListCols = () => {
+    if (isWidthUp('xl', width!)) {
+      return 4;
+    }
+
+    if (isWidthUp('lg', width!)) {
+      return 3;
+    }
+
+    if (isWidthUp('md', width!)) {
+      return 2;
+    }
+
+    return 1;
+  };
+
   return (
     <React.Fragment>
-      <GridList cellHeight={cellHeight} cols={3} spacing={10}>
+      <GridList cellHeight={cellHeight} cols={getGridListCols()} spacing={10}>
         {charactersLoading &&
           [0, 1, 2].map(i => (
             <GridListTile key={i}>
@@ -140,4 +157,4 @@ export const Characters: React.FC = () => {
   );
 };
 
-export default withApollo(Characters);
+export default withWidth()(withApollo(Characters));
