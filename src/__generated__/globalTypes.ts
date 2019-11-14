@@ -15,6 +15,11 @@ export interface CharacterInput {
   code: string;
 }
 
+export interface PageInput {
+  index?: number | null;
+  size?: number | null;
+}
+
 export interface RegistrationInput {
   firstName?: string | null;
   lastName?: string | null;

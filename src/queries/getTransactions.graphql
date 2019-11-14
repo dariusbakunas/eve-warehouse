@@ -1,0 +1,21 @@
+query GetTransactions($page: PageInput) {
+  walletTransactions(page: $page) {
+    total
+    transactions {
+      id
+      date
+      isBuy
+      client {
+        name
+      }
+      item {
+        name
+      }
+      location {
+        name
+      }
+      unitPrice
+      quantity
+    }
+  }
+}
