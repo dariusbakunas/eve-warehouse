@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Mon Oct 28 2019 07:58:29 GMT-0400 (Eastern Daylight Time)
+# timestamp: Wed Nov 13 2019 21:49:16 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -20,6 +20,12 @@ type Character {
 
 input CharacterInput {
   code: String!
+}
+
+type Client {
+  id: ID!
+  name: String!
+  category: String!
 }
 
 type Corporation {
@@ -46,16 +52,33 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the
 """
 scalar DateTime
 
+type InventoryItem {
+  id: ID!
+  name: String
+  description: String
+}
+
+type Location {
+  id: ID!
+  name: String!
+}
+
 type Mutation {
   addCharacter(input: CharacterInput!): Character!
   removeCharacter(id: ID!): ID!
-  register(input: RegistrationInput!): User
+  register(input: RegistrationInput!): User!
+}
+
+input PageInput {
+  index: Int = 0
+  size: Int = 10
 }
 
 type Query {
-  scopes: [Scope!]!
   characters: [Character!]!
+  scopes: [Scope!]!
   userByEmail(email: String!): User
+  walletTransactions(page: PageInput): WalletTransactions
 }
 
 input RegistrationInput {
@@ -90,4 +113,21 @@ type User {
 enum UserStatus {
   ACTIVE
   INACTIVE
+}
+
+type WalletTransaction {
+  id: ID!
+  client: Client!
+  character: Character
+  date: DateTime!
+  isBuy: Boolean!
+  item: InventoryItem
+  location: Location!
+  quantity: Int!
+  unitPrice: Float!
+}
+
+type WalletTransactions {
+  total: Int!
+  transactions: [WalletTransaction!]!
 }

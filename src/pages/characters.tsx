@@ -21,10 +21,6 @@ import { makeStyles, Theme } from '@material-ui/core';
 import withWidth, { isWidthUp, WithWidthProps } from '@material-ui/core/withWidth';
 
 const useStyles = makeStyles<Theme>(theme => ({
-  media: {
-    height: 0,
-    paddingTop: '56.25%', // 16:9
-  },
   scopes: {
     height: '200px',
     overflow: 'auto',

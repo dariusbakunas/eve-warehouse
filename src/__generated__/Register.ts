@@ -15,7 +15,7 @@ export interface Register_register {
 }
 
 export interface Register {
-  register: Register_register | null;
+  register: Register_register;
 }
 
 export interface RegisterVariables {
