@@ -6,9 +6,24 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum Order {
+  asc = "asc",
+  desc = "desc",
+}
+
 export enum UserStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
+}
+
+export enum WalletTransactionOrderBy {
+  character = "character",
+  client = "client",
+  credit = "credit",
+  date = "date",
+  item = "item",
+  quantity = "quantity",
+  unitPrice = "unitPrice",
 }
 
 export interface CharacterInput {
@@ -26,6 +41,11 @@ export interface RegistrationInput {
   username: string;
   email: string;
   code: string;
+}
+
+export interface WalletTransactionOrderByInput {
+  column: WalletTransactionOrderBy;
+  order: Order;
 }
 
 //==============================================================

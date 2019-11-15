@@ -1,10 +1,14 @@
-query GetTransactions($page: PageInput) {
-  walletTransactions(page: $page) {
+query GetTransactions($page: PageInput, $orderBy: WalletTransactionOrderByInput) {
+  walletTransactions(page: $page, orderBy: $orderBy) {
     total
     transactions {
       id
       date
       isBuy
+      character {
+        name
+      }
+      credit
       client {
         name
       }

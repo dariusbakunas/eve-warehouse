@@ -2,11 +2,16 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { PageInput } from "./globalTypes";
+import { PageInput, WalletTransactionOrderByInput } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetTransactions
 // ====================================================
+
+export interface GetTransactions_walletTransactions_transactions_character {
+  __typename: "Character";
+  name: string;
+}
 
 export interface GetTransactions_walletTransactions_transactions_client {
   __typename: "Client";
@@ -28,6 +33,8 @@ export interface GetTransactions_walletTransactions_transactions {
   id: string;
   date: any;
   isBuy: boolean;
+  character: GetTransactions_walletTransactions_transactions_character | null;
+  credit: number;
   client: GetTransactions_walletTransactions_transactions_client;
   item: GetTransactions_walletTransactions_transactions_item | null;
   location: GetTransactions_walletTransactions_transactions_location;
@@ -47,4 +54,5 @@ export interface GetTransactions {
 
 export interface GetTransactionsVariables {
   page?: PageInput | null;
+  orderBy?: WalletTransactionOrderByInput | null;
 }
