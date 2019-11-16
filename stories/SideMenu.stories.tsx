@@ -15,11 +15,7 @@ import SideMenuHeader from '../src/components/SideMenuHeader';
 const MenuExample: React.FC = () => {
   return (
     <React.Fragment>
-      <Header
-        isAuthenticated={true}
-        onLogoutClick={action('logout click')}
-        title="Header"
-      />
+      <Header isAuthenticated={true} onLogoutClick={action('logout click')} title="Header" />
       <SideMenu
         header={() => (
           <SideMenuHeader
@@ -36,19 +32,13 @@ const MenuExample: React.FC = () => {
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
-            <ListItemText
-              primary="Dashboard"
-              primaryTypographyProps={{ noWrap: true }}
-            />
+            <ListItemText primary="Dashboard" primaryTypographyProps={{ noWrap: true }} />
           </ListItem>
           <ListItem selected={false} button>
             <ListItemIcon>
               <CharactersIcon />
             </ListItemIcon>
-            <ListItemText
-              primary="Characters"
-              primaryTypographyProps={{ noWrap: true }}
-            />
+            <ListItemText primary="Characters" primaryTypographyProps={{ noWrap: true }} />
           </ListItem>
         </List>
       </SideMenu>

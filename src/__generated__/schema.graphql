@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Thu Nov 14 2019 21:24:14 GMT-0500 (Eastern Standard Time)
+# timestamp: Sat Nov 16 2019 14:44:16 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -16,10 +16,6 @@ type Character {
   birthday: DateTime!
   securityStatus: Float!
   totalSp: Int
-}
-
-input CharacterInput {
-  code: String!
 }
 
 type Client {
@@ -64,7 +60,8 @@ type Location {
 }
 
 type Mutation {
-  addCharacter(input: CharacterInput!): Character!
+  addCharacter(code: String!): Character!
+  updateCharacter(id: ID!, code: String!): Character!
   removeCharacter(id: ID!): ID!
   register(input: RegistrationInput!): User!
 }

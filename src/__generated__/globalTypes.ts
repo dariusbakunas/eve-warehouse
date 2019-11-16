@@ -26,10 +26,6 @@ export enum WalletTransactionOrderBy {
   unitPrice = "unitPrice",
 }
 
-export interface CharacterInput {
-  code: string;
-}
-
 export interface PageInput {
   index?: number | null;
   size?: number | null;

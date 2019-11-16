@@ -1,5 +1,5 @@
-mutation AddCharacter($code: String!) {
-  addCharacter(code: $code) {
+mutation UpdateCharacter($id: ID!, $code: String!) {
+  updateCharacter(id: $id, code: $code) {
     id
     birthday
     corporation {

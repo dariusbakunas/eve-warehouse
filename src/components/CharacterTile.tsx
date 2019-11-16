@@ -23,23 +23,14 @@ const useStyles = makeStyles<Theme>(theme => ({
 interface CharacterTileProps {
   character: Character;
   onRemove: (id: string, name: string) => void;
+  onUpdate: (character: Character) => void;
 }
 
-const CharacterTile: React.FC<CharacterTileProps> = ({
-  character,
-  onRemove,
-}) => {
+const CharacterTile: React.FC<CharacterTileProps> = ({ character, onRemove, onUpdate }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const menuOpen = Boolean(anchorEl);
   const classes = useStyles();
-  const {
-    id,
-    name,
-    birthday,
-    corporation,
-    securityStatus,
-    totalSp,
-  } = character;
+  const { id, name, birthday, corporation, securityStatus, totalSp } = character;
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -54,16 +45,17 @@ const CharacterTile: React.FC<CharacterTileProps> = ({
     onRemove(id, name);
   };
 
+  const handleUpdate = () => {
+    setAnchorEl(null);
+    onUpdate(character);
+  };
+
   return (
     <React.Fragment>
       <Card className={classes.card}>
         <CardHeader
           avatar={
-            <Avatar
-              aria-label="recipe"
-              className={classes.avatar}
-              src={`https://image.eveonline.com/Character/${id}_128.jpg`}
-            >
+            <Avatar aria-label="recipe" className={classes.avatar} src={`https://image.eveonline.com/Character/${id}_128.jpg`}>
               {name[0]}
             </Avatar>
           }
@@ -78,13 +70,11 @@ const CharacterTile: React.FC<CharacterTileProps> = ({
         <CardContent>
           {corporation.alliance && (
             <div>
-              <strong>Alliance:</strong> {corporation.alliance.name} [
-              {corporation.alliance.ticker}]
+              <strong>Alliance:</strong> {corporation.alliance.name} [{corporation.alliance.ticker}]
             </div>
           )}
           <div>
-            <strong>Corporation:</strong> {corporation.name} [
-            {corporation.ticker}]
+            <strong>Corporation:</strong> {corporation.name} [{corporation.ticker}]
           </div>
           <div>
             <strong>Security status:</strong> {securityStatus.toFixed(2)}
@@ -107,7 +97,7 @@ const CharacterTile: React.FC<CharacterTileProps> = ({
         open={menuOpen}
         onClose={handleClose}
       >
-        <MenuItem>
+        <MenuItem onClick={handleUpdate}>
           <Typography>Update Scopes</Typography>
         </MenuItem>
         <MenuItem onClick={handleRemove}>

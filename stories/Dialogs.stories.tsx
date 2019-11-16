@@ -1,24 +1,26 @@
-import React, { useState } from "react";
-import Button from "@material-ui/core/Button";
-import { storiesOf } from "@storybook/react";
-import { action } from "@storybook/addon-actions";
-import CharacterScopeDialog from "../src/dialogs/CharacterScopeDialog";
+import React, { useState } from 'react';
+import Button from '@material-ui/core/Button';
+import { storiesOf } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
+import CharacterScopeDialog from '../src/dialogs/CharacterScopeDialog';
 
 const CharacterScopesDemo: React.FC = () => {
   const [open, setOpen] = useState(false);
 
-  const handleClose = (values: number[]) => {
+  const handleClose = (values?: string[]) => {
     setOpen(false);
-    console.log(values.join(","))
-    action(values.join(","));
+
+    const result = values ? values.join(', ') : '';
+    console.log(values);
+    action(result);
   };
 
   return (
-    <React.Fragment>
+    <div>
       <Button onClick={() => setOpen(true)}>Open</Button>
       <CharacterScopeDialog open={open} onClose={handleClose} />
-    </React.Fragment>
+    </div>
   );
 };
 
-storiesOf("Dialogs|CharacterScopes", module).add("Default", () => <CharacterScopesDemo />);
+storiesOf('Dialogs|CharacterScopes', module).add('Default', () => <CharacterScopesDemo />);

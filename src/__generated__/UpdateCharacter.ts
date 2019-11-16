@@ -3,39 +3,40 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: AddCharacter
+// GraphQL mutation operation: UpdateCharacter
 // ====================================================
 
-export interface AddCharacter_addCharacter_corporation_alliance {
+export interface UpdateCharacter_updateCharacter_corporation_alliance {
   __typename: "Alliance";
   id: string;
   name: string;
   ticker: string;
 }
 
-export interface AddCharacter_addCharacter_corporation {
+export interface UpdateCharacter_updateCharacter_corporation {
   __typename: "Corporation";
   id: string;
   name: string;
   ticker: string;
-  alliance: AddCharacter_addCharacter_corporation_alliance | null;
+  alliance: UpdateCharacter_updateCharacter_corporation_alliance | null;
 }
 
-export interface AddCharacter_addCharacter {
+export interface UpdateCharacter_updateCharacter {
   __typename: "Character";
   id: string;
   birthday: any;
-  corporation: AddCharacter_addCharacter_corporation;
+  corporation: UpdateCharacter_updateCharacter_corporation;
   name: string;
   scopes: string[] | null;
   securityStatus: number;
   totalSp: number | null;
 }
 
-export interface AddCharacter {
-  addCharacter: AddCharacter_addCharacter;
+export interface UpdateCharacter {
+  updateCharacter: UpdateCharacter_updateCharacter;
 }
 
-export interface AddCharacterVariables {
+export interface UpdateCharacterVariables {
+  id: string;
   code: string;
 }
