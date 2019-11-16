@@ -11,8 +11,11 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import TablePagination from '@material-ui/core/TablePagination';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Typography from '@material-ui/core/Typography';
 import moment from 'moment';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import Toolbar from '@material-ui/core/Toolbar';
 import { Order, WalletTransactionOrderBy } from '../__generated__/globalTypes';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -34,6 +37,13 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     positive: {
       color: '#187119',
+    },
+    title: {
+      flex: '1 1 100%',
+    },
+    toolbar: {
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(1),
     },
     visuallyHidden: {
       border: 0,
@@ -69,6 +79,7 @@ const getTableData = (data?: GetTransactions) => {
     price: transaction.unitPrice,
     quantity: transaction.quantity,
     credit: transaction.credit,
+    station: transaction.location.name,
   }));
 
   return {
@@ -125,6 +136,12 @@ const Wallet = () => {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
+        <Toolbar className={classes.toolbar}>
+          <Typography className={classes.title} variant="h6" id="tableTitle">
+            Wallet
+          </Typography>
+        </Toolbar>
+        {loading && <LinearProgress />}
         <div className={classes.tableWrapper}>
           <Table size="small" aria-label="wallet transactions">
             <TableHead>
@@ -136,6 +153,7 @@ const Wallet = () => {
                 <TableCell align="right">{sortableHeader(WalletTransactionOrderBy.quantity, 'Quantity')}</TableCell>
                 <TableCell align="right">Credit</TableCell>
                 <TableCell>{sortableHeader(WalletTransactionOrderBy.client, 'Client')}</TableCell>
+                <TableCell>Station</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -150,6 +168,7 @@ const Wallet = () => {
                     {row.credit.toLocaleString()}
                   </TableCell>
                   <TableCell>{row.client}</TableCell>
+                  <TableCell>{row.station}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

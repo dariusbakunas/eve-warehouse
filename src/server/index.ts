@@ -135,6 +135,7 @@ app.prepare().then(() => {
 
   server.use('/$', restrictAccess);
   server.use('/characters', restrictAccess);
+  server.use('/wallet', restrictAccess);
 
   server.all('*', (req, res) => {
     return handle(req, res);
