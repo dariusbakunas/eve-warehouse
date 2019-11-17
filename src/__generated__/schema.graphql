@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Sat Nov 16 2019 14:44:16 GMT-0500 (Eastern Standard Time)
+# timestamp: Sat Nov 16 2019 22:30:19 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -137,6 +137,7 @@ enum WalletTransactionOrderBy {
   credit
   item
   quantity
+  station
   unitPrice
 }
 

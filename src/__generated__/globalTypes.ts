@@ -23,6 +23,7 @@ export enum WalletTransactionOrderBy {
   date = "date",
   item = "item",
   quantity = "quantity",
+  station = "station",
   unitPrice = "unitPrice",
 }
 

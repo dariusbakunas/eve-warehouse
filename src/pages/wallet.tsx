@@ -153,7 +153,7 @@ const Wallet = () => {
                 <TableCell align="right">{sortableHeader(WalletTransactionOrderBy.quantity, 'Quantity')}</TableCell>
                 <TableCell align="right">Credit</TableCell>
                 <TableCell>{sortableHeader(WalletTransactionOrderBy.client, 'Client')}</TableCell>
-                <TableCell>Station</TableCell>
+                <TableCell>{sortableHeader(WalletTransactionOrderBy.station, 'Station')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
