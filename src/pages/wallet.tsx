@@ -25,18 +25,20 @@ import Maybe from 'graphql/tsutils/Maybe';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {},
+    root: {
+      padding: theme.spacing(3),
+    },
     formControl: {
       margin: theme.spacing(1),
       minWidth: 120,
     },
     paper: {
+      width: 'calc(100vw - 120px)',
       marginTop: theme.spacing(3),
       marginBottom: theme.spacing(2),
     },
     tableWrapper: {
       overflowX: 'scroll',
-      whiteSpace: 'nowrap',
     },
     negative: {
       color: '#8b251f',
@@ -45,7 +47,7 @@ const useStyles = makeStyles((theme: Theme) =>
       color: '#187119',
     },
     table: {
-      minWidth: '1500px',
+      minWidth: '1600px',
     },
     title: {},
     spacer: {

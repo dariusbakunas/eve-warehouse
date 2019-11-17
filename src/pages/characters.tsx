@@ -25,6 +25,9 @@ import { UpdateCharacter, UpdateCharacterVariables } from '../__generated__/Upda
 import Maybe from 'graphql/tsutils/Maybe';
 
 const useStyles = makeStyles<Theme>(theme => ({
+  content: {
+    padding: theme.spacing(3),
+  },
   scopes: {
     height: '200px',
     overflow: 'auto',
@@ -179,7 +182,7 @@ export const Characters: React.FC<WithWidthProps> = ({ width }) => {
   const cellHeight = charactersLoading ? 120 : 'auto';
 
   return (
-    <React.Fragment>
+    <div className={classes.content}>
       <GridList cellHeight={cellHeight} cols={getGridListCols(width)} spacing={10}>
         {charactersLoading &&
           [0, 1, 2].map(i => (
@@ -210,7 +213,7 @@ export const Characters: React.FC<WithWidthProps> = ({ width }) => {
         onSubmit={handleScopeDialogSubmit}
         scopes={currentCharacter ? currentCharacter.scopes : null}
       />
-    </React.Fragment>
+    </div>
   );
 };
 

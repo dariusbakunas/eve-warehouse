@@ -4,7 +4,7 @@ import App, { AppContext } from 'next/app';
 import Head from 'next/head';
 import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
-import { withStyles } from '@material-ui/styles';
+import {CSSProperties, withStyles} from '@material-ui/styles';
 import theme from '../config/theme';
 import Router from 'next/router';
 import { WithApolloProps } from 'next-with-apollo';
@@ -22,20 +22,18 @@ interface IPageProps {
 const styles = (theme: Theme) => ({
   '@global': {
     html: {
-      height: '100%',
+      height: '100vh',
     },
     body: {
-      minHeight: '100%',
+      minHeight: '100vh',
     },
     '#__next': {
-      minHeight: '100%',
+      minHeight: '100vh',
     },
   },
   appBarSpacer: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
-    maxWidth: `calc(100% - 75px)`,
-    padding: theme.spacing(3),
   },
 });
 
