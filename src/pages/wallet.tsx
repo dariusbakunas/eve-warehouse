@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery } from '@apollo/react-hooks';
 import withApollo from '../lib/withApollo';
-import { GetTransactions, GetTransactionsVariables } from '../__generated__/GetTransactions';
+import { GetTransactions, GetTransactionsVariables} from '../__generated__/GetTransactions';
 import getTransactionsQuery from '../queries/getTransactions.graphql';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -13,15 +13,24 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import TablePagination from '@material-ui/core/TablePagination';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Typography from '@material-ui/core/Typography';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 import moment from 'moment';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
-import { Order, WalletTransactionOrderBy } from '../__generated__/globalTypes';
+import {Order, OrderType, WalletTransactionOrderBy} from '../__generated__/globalTypes';
+import Maybe from 'graphql/tsutils/Maybe';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       width: '100%',
+    },
+    formControl: {
+      margin: theme.spacing(1),
+      minWidth: 120,
     },
     paper: {
       marginTop: theme.spacing(3),
@@ -38,7 +47,8 @@ const useStyles = makeStyles((theme: Theme) =>
     positive: {
       color: '#187119',
     },
-    title: {
+    title: {},
+    spacer: {
       flex: '1 1 100%',
     },
     toolbar: {
@@ -90,10 +100,11 @@ const getTableData = (data?: GetTransactions) => {
 
 const Wallet = () => {
   const classes = useStyles();
-  const [page, setPage] = React.useState(0);
-  const [order, setOrder] = React.useState<Order>(Order.desc);
-  const [orderBy, setOrderBy] = React.useState<WalletTransactionOrderBy>(WalletTransactionOrderBy.date);
-  const [rowsPerPage, setRowsPerPage] = React.useState(15);
+  const [page, setPage] = useState(0);
+  const [orderType, setOrderType] = useState<Maybe<OrderType>>(null);
+  const [order, setOrder] = useState<Order>(Order.desc);
+  const [orderBy, setOrderBy] = useState<WalletTransactionOrderBy>(WalletTransactionOrderBy.date);
+  const [rowsPerPage, setRowsPerPage] = useState(15);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -109,6 +120,9 @@ const Wallet = () => {
       page: {
         index: page,
         size: rowsPerPage,
+      },
+      filter: {
+        orderType,
       },
       orderBy: {
         column: orderBy,
@@ -133,6 +147,16 @@ const Wallet = () => {
     </TableSortLabel>
   );
 
+  const handleBuySellChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const value = event.target.value as string;
+    setPage(0);
+    if (value === 'all') {
+      setOrderType(null);
+    } else {
+      setOrderType(value === 'buy' ? OrderType.buy : OrderType.sell);
+    }
+  };
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
@@ -140,6 +164,15 @@ const Wallet = () => {
           <Typography className={classes.title} variant="h6" id="tableTitle">
             Wallet
           </Typography>
+          <div className={classes.spacer} />
+          <FormControl className={classes.formControl}>
+            <InputLabel id="order-type-label">Buy/Sell</InputLabel>
+            <Select labelId="order-type-label" id="order-type-select" onChange={handleBuySellChange} value={orderType || 'all'}>
+              <MenuItem value={'all'}>Both</MenuItem>
+              <MenuItem value={'buy'}>Buy</MenuItem>
+              <MenuItem value={'sell'}>Sell</MenuItem>
+            </Select>
+          </FormControl>
         </Toolbar>
         {loading && <LinearProgress />}
         <div className={classes.tableWrapper}>

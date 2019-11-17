@@ -11,6 +11,11 @@ export enum Order {
   desc = "desc",
 }
 
+export enum OrderType {
+  buy = "buy",
+  sell = "sell",
+}
+
 export enum UserStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
@@ -38,6 +43,10 @@ export interface RegistrationInput {
   username: string;
   email: string;
   code: string;
+}
+
+export interface WalletTransactionFilter {
+  orderType?: OrderType | null;
 }
 
 export interface WalletTransactionOrderByInput {

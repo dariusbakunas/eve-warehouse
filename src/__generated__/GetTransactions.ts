@@ -2,7 +2,7 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { PageInput, WalletTransactionOrderByInput } from "./globalTypes";
+import { PageInput, WalletTransactionFilter, WalletTransactionOrderByInput } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetTransactions
@@ -54,5 +54,6 @@ export interface GetTransactions {
 
 export interface GetTransactionsVariables {
   page?: PageInput | null;
+  filter?: WalletTransactionFilter | null;
   orderBy?: WalletTransactionOrderByInput | null;
 }

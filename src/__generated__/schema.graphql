@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Sat Nov 16 2019 22:30:19 GMT-0500 (Eastern Standard Time)
+# timestamp: Sun Nov 17 2019 11:24:52 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -71,6 +71,11 @@ enum Order {
   desc
 }
 
+enum OrderType {
+  buy
+  sell
+}
+
 input PageInput {
   index: Int = 0
   size: Int = 10
@@ -80,7 +85,7 @@ type Query {
   characters: [Character!]!
   scopes: [Scope!]!
   userByEmail(email: String!): User
-  walletTransactions(page: PageInput, orderBy: WalletTransactionOrderByInput): WalletTransactions
+  walletTransactions(page: PageInput, filter: WalletTransactionFilter, orderBy: WalletTransactionOrderByInput): WalletTransactions
 }
 
 input RegistrationInput {
@@ -128,6 +133,10 @@ type WalletTransaction {
   location: Location!
   quantity: Int!
   unitPrice: Float!
+}
+
+input WalletTransactionFilter {
+  orderType: OrderType
 }
 
 enum WalletTransactionOrderBy {

@@ -1,5 +1,5 @@
-query GetTransactions($page: PageInput, $orderBy: WalletTransactionOrderByInput) {
-  walletTransactions(page: $page, orderBy: $orderBy) {
+query GetTransactions($page: PageInput, $filter: WalletTransactionFilter, $orderBy: WalletTransactionOrderByInput) {
+  walletTransactions(page: $page, filter: $filter, orderBy: $orderBy) {
     total
     transactions {
       id
