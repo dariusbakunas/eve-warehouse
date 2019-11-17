@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme: Theme) =>
       color: '#187119',
     },
     table: {
-      minWidth: '1600px',
+      whiteSpace: 'nowrap',
     },
     title: {},
     spacer: {
