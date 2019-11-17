@@ -1,6 +1,6 @@
 import React from 'react';
 import { Request } from 'express';
-import App from 'next/app';
+import App, { AppContext } from 'next/app';
 import Head from 'next/head';
 import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
@@ -49,7 +49,7 @@ interface IProps extends WithApolloProps<any> {
 class EveApp extends App<IProps, IState> {
   readonly state = { sideMenuOpen: false };
 
-  static async getInitialProps({ Component, ctx }: AppContextType) {
+  static async getInitialProps({ Component, ctx }: AppContext) {
     let pageProps: IPageProps = {};
     if (Component.getInitialProps) {
       pageProps = await Component.getInitialProps(ctx);
