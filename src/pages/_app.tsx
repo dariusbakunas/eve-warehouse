@@ -34,6 +34,7 @@ const styles = (theme: Theme) => ({
   appBarSpacer: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
+    maxWidth: `calc(100% - 75px)`,
     padding: theme.spacing(3),
   },
 });

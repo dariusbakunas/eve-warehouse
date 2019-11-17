@@ -20,32 +20,32 @@ import InputLabel from '@material-ui/core/InputLabel';
 import moment from 'moment';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
-import {Order, OrderType, WalletTransactionOrderBy} from '../__generated__/globalTypes';
+import { Order, OrderType, WalletTransactionOrderBy } from '../__generated__/globalTypes';
 import Maybe from 'graphql/tsutils/Maybe';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      width: '100%',
-    },
+    root: {},
     formControl: {
       margin: theme.spacing(1),
       minWidth: 120,
     },
     paper: {
       marginTop: theme.spacing(3),
-      width: '100%',
-      overflowX: 'auto',
       marginBottom: theme.spacing(2),
     },
     tableWrapper: {
-      overflowX: 'auto',
+      overflowX: 'scroll',
+      whiteSpace: 'nowrap',
     },
     negative: {
       color: '#8b251f',
     },
     positive: {
       color: '#187119',
+    },
+    table: {
+      minWidth: '1500px',
     },
     title: {},
     spacer: {
@@ -176,7 +176,7 @@ const Wallet = () => {
         </Toolbar>
         {loading && <LinearProgress />}
         <div className={classes.tableWrapper}>
-          <Table size="small" aria-label="wallet transactions">
+          <Table size="small" aria-label="wallet transactions" className={classes.table}>
             <TableHead>
               <TableRow>
                 <TableCell>{sortableHeader(WalletTransactionOrderBy.date, 'Date')}</TableCell>
