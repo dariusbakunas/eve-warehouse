@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { useQuery } from '@apollo/react-hooks';
 import withApollo from '../lib/withApollo';
-import { GetTransactions, GetTransactionsVariables} from '../__generated__/GetTransactions';
+import { GetTransactions, GetTransactionsVariables } from '../__generated__/GetTransactions';
 import getTransactionsQuery from '../queries/getTransactions.graphql';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -17,6 +17,11 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Input from '@material-ui/core/Input';
+import SearchIcon from '@material-ui/icons/Search';
+import debounce from 'lodash.debounce';
+
 import moment from 'moment';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -49,12 +54,18 @@ const useStyles = makeStyles((theme: Theme) =>
     table: {
       whiteSpace: 'nowrap',
     },
-    title: {},
+    title: {
+      marginRight: '20px',
+    },
     spacer: {
       flex: '1 1 100%',
     },
-    toolbar: {
+    labelToolbar: {
       paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
+    },
+    filterToolbar: {
+      paddingLeft: theme.spacing(1),
       paddingRight: theme.spacing(1),
     },
     visuallyHidden: {
@@ -104,6 +115,7 @@ const Wallet = () => {
   const classes = useStyles();
   const [page, setPage] = useState(0);
   const [orderType, setOrderType] = useState<Maybe<OrderType>>(null);
+  const [itemFilter, setItemFilter] = useState<Maybe<string>>(null);
   const [order, setOrder] = useState<Order>(Order.desc);
   const [orderBy, setOrderBy] = useState<WalletTransactionOrderBy>(WalletTransactionOrderBy.date);
   const [rowsPerPage, setRowsPerPage] = useState(15);
@@ -125,6 +137,7 @@ const Wallet = () => {
       },
       filter: {
         orderType,
+        item: itemFilter,
       },
       orderBy: {
         column: orderBy,
@@ -149,7 +162,7 @@ const Wallet = () => {
     </TableSortLabel>
   );
 
-  const handleBuySellChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleBuySellChange = (event: ChangeEvent<{ value: unknown }>) => {
     const value = event.target.value as string;
     setPage(0);
     if (value === 'all') {
@@ -159,14 +172,30 @@ const Wallet = () => {
     }
   };
 
+  const setItemFilterDebounced = debounce(filter => {
+    setPage(0);
+    setItemFilter(filter);
+  }, 500);
+
+  const handleItemFilterChange = useCallback((event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const value = event.target.value as string;
+
+    if (value.length) {
+      setItemFilterDebounced(value);
+    } else {
+      setItemFilterDebounced(null);
+    }
+  }, []);
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <Toolbar className={classes.toolbar}>
+        <Toolbar className={classes.labelToolbar}>
           <Typography className={classes.title} variant="h6" id="tableTitle">
             Wallet
           </Typography>
-          <div className={classes.spacer} />
+        </Toolbar>
+        <Toolbar className={classes.filterToolbar}>
           <FormControl className={classes.formControl}>
             <InputLabel id="order-type-label">Buy/Sell</InputLabel>
             <Select labelId="order-type-label" id="order-type-select" onChange={handleBuySellChange} value={orderType || 'all'}>
@@ -174,6 +203,18 @@ const Wallet = () => {
               <MenuItem value={'buy'}>Buy</MenuItem>
               <MenuItem value={'sell'}>Sell</MenuItem>
             </Select>
+          </FormControl>
+          <FormControl className={classes.spacer}>
+            <InputLabel htmlFor="item-search-label">Item</InputLabel>
+            <Input
+              id="item-search-input"
+              onChange={handleItemFilterChange}
+              startAdornment={
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              }
+            />
           </FormControl>
         </Toolbar>
         {loading && <LinearProgress />}

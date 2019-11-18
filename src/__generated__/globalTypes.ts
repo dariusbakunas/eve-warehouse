@@ -46,6 +46,7 @@ export interface RegistrationInput {
 }
 
 export interface WalletTransactionFilter {
+  item?: string | null;
   orderType?: OrderType | null;
 }
 
