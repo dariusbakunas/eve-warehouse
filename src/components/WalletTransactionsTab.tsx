@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useCallback } from 'react';
+import React, { ChangeEvent, useCallback, useMemo } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -63,7 +63,19 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const getTableData = (data?: GetTransactions) => {
+interface ITableRow {
+  id: string;
+  character: Maybe<string>;
+  client: string;
+  date: string;
+  item: Maybe<string>;
+  price: number;
+  quantity: number;
+  credit: number;
+  station: string;
+}
+
+const getTableData: (data?: GetTransactions) => { rows: ITableRow[]; total: number } = data => {
   if (!data || !data.walletTransactions) {
     return {
       total: 0,
@@ -76,10 +88,10 @@ const getTableData = (data?: GetTransactions) => {
   } = data;
   const rows = transactions.map(transaction => ({
     id: transaction.id,
-    character: transaction.character ? transaction.character.name : 'N/A',
+    character: transaction.character ? transaction.character.name : null,
     client: transaction.client.name,
     date: moment(transaction.date).format('MM/DD/YYYY HH:mm'),
-    item: transaction.item ? transaction.item.name : 'N/A',
+    item: transaction.item ? transaction.item.name : null,
     price: transaction.unitPrice,
     quantity: transaction.quantity,
     credit: transaction.credit,
@@ -140,7 +152,7 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
     },
   });
 
-  const { rows, total } = getTableData(data);
+  const { rows, total } = useMemo<{ rows: ITableRow[]; total: number }>(() => getTableData(data), [data]);
 
   const handleSort = (event: React.MouseEvent<unknown>, column: WalletTransactionOrderBy) => {
     const isDesc = orderBy === column && order === Order.desc;
