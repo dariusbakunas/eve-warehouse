@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Sun Nov 17 2019 19:07:06 GMT-0500 (Eastern Standard Time)
+# timestamp: Mon Nov 18 2019 22:31:19 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -54,6 +54,20 @@ type InventoryItem {
   description: String
 }
 
+type JournalEntries {
+  total: Int!
+  entries: [JournalEntry!]!
+}
+
+type JournalEntry {
+  id: ID!
+  amount: Float!
+  balance: Float!
+  character: Character
+  date: DateTime!
+  description: String
+}
+
 type Location {
   id: ID!
   name: String!
@@ -85,6 +99,7 @@ type Query {
   characters: [Character!]!
   scopes: [Scope!]!
   userByEmail(email: String!): User
+  walletJournal(page: PageInput, orderBy: WalletJournalOrderByInput): JournalEntries
   walletTransactions(page: PageInput, filter: WalletTransactionFilter, orderBy: WalletTransactionOrderByInput): WalletTransactions
 }
 
@@ -120,6 +135,17 @@ type User {
 enum UserStatus {
   ACTIVE
   INACTIVE
+}
+
+enum WalletJournalOrderBy {
+  date
+  amount
+  balance
+}
+
+input WalletJournalOrderByInput {
+  column: WalletJournalOrderBy!
+  order: Order!
 }
 
 type WalletTransaction {

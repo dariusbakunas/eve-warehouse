@@ -21,6 +21,12 @@ export enum UserStatus {
   INACTIVE = "INACTIVE",
 }
 
+export enum WalletJournalOrderBy {
+  amount = "amount",
+  balance = "balance",
+  date = "date",
+}
+
 export enum WalletTransactionOrderBy {
   character = "character",
   client = "client",
@@ -43,6 +49,11 @@ export interface RegistrationInput {
   username: string;
   email: string;
   code: string;
+}
+
+export interface WalletJournalOrderByInput {
+  column: WalletJournalOrderBy;
+  order: Order;
 }
 
 export interface WalletTransactionFilter {

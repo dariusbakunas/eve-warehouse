@@ -1,0 +1,16 @@
+query GetJournal($page: PageInput, $orderBy: WalletJournalOrderByInput) {
+  walletJournal(page: $page, orderBy: $orderBy) {
+    total
+    entries {
+      id
+      amount
+      balance
+      character {
+        id
+        name
+      }
+      date
+      description
+    }
+  }
+}

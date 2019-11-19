@@ -8,7 +8,9 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
 import WalletTransactionsTab from '../components/WalletTransactionsTab';
 import Maybe from 'graphql/tsutils/Maybe';
-import {Order, OrderType, WalletTransactionOrderBy} from '../__generated__/globalTypes';
+import { Order, OrderType, WalletJournalOrderBy, WalletTransactionOrderBy } from '../__generated__/globalTypes';
+import WalletJournalTab from '../components/WalletJournalTab';
+import TableSortLabel from '@material-ui/core/TableSortLabel';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,11 +35,15 @@ const useStyles = makeStyles((theme: Theme) =>
 const Wallet = () => {
   const classes = useStyles();
   const [transactionsPage, setTransactionsPage] = useState<number>(0);
+  const [journalPage, setJournalPage] = useState<number>(0);
   const [transactionsItemFilter, setTransactionsItemFilter] = useState<Maybe<string>>(null);
   const [transactionsOrder, setTransactionsOrder] = useState<Order>(Order.desc);
   const [transactionsOrderBy, setTransactionsOrderBy] = useState<WalletTransactionOrderBy>(WalletTransactionOrderBy.date);
+  const [journalOrder, setJournalOrder] = useState<Order>(Order.desc);
+  const [journalOrderBy, setJournalOrderby] = useState<WalletJournalOrderBy>(WalletJournalOrderBy.date);
   const [transactionsOrderType, setTransactionsOrderType] = useState<Maybe<OrderType>>(null);
   const [transactionsRowsPerPage, setTransactionsRowsPerPage] = useState(15);
+  const [journalRowsPerPage, setJournalRowsPerPage] = useState(15);
   const [currentTab, setCurrentTab] = useState<number>(0);
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newTab: number) => {
@@ -73,6 +79,18 @@ const Wallet = () => {
             onPageChange={setTransactionsPage}
             onRowsPerPageChange={setTransactionsRowsPerPage}
             rowsPerPage={transactionsRowsPerPage}
+          />
+        )}
+        {currentTab === 2 && (
+          <WalletJournalTab
+            order={journalOrder}
+            orderBy={journalOrderBy}
+            page={journalPage}
+            onPageChange={setJournalPage}
+            onOrderChange={setJournalOrder}
+            onOrderByChange={setJournalOrderby}
+            rowsPerPage={journalRowsPerPage}
+            onRowsPerPageChange={setJournalRowsPerPage}
           />
         )}
       </Paper>

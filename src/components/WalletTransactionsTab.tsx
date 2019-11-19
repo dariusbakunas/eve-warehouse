@@ -23,6 +23,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TablePagination from '@material-ui/core/TablePagination';
 import { GetTransactions, GetTransactionsVariables } from '../__generated__/GetTransactions';
 import getTransactionsQuery from '../queries/getTransactions.graphql';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -68,10 +69,11 @@ interface ITableRow {
   character: Maybe<string>;
   client: string;
   date: string;
+  isBuy: boolean;
   item: Maybe<string>;
-  price: number;
-  quantity: number;
-  credit: number;
+  price: string;
+  quantity: string;
+  credit: string;
   station: string;
 }
 
@@ -92,9 +94,10 @@ const getTableData: (data?: GetTransactions) => { rows: ITableRow[]; total: numb
     client: transaction.client.name,
     date: moment(transaction.date).format('MM/DD/YYYY HH:mm'),
     item: transaction.item ? transaction.item.name : null,
-    price: transaction.unitPrice,
-    quantity: transaction.quantity,
-    credit: transaction.credit,
+    isBuy: transaction.isBuy,
+    price: transaction.unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2 }),
+    quantity: transaction.quantity.toLocaleString(),
+    credit: transaction.credit.toLocaleString(undefined, { minimumFractionDigits: 2 }),
     station: transaction.location.name,
   }));
 
@@ -134,8 +137,9 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
   rowsPerPage,
 }) => {
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const { loading, data, error } = useQuery<GetTransactions, GetTransactionsVariables>(getTransactionsQuery, {
+  const { loading, data } = useQuery<GetTransactions, GetTransactionsVariables>(getTransactionsQuery, {
     variables: {
       page: {
         index: page,
@@ -149,6 +153,9 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
         column: orderBy,
         order: order,
       },
+    },
+    onError: error => {
+      enqueueSnackbar(`Wallet transactions failed to load: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
     },
   });
 
@@ -248,10 +255,10 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
                 <TableCell>{row.date}</TableCell>
                 <TableCell>{row.character}</TableCell>
                 <TableCell>{row.item}</TableCell>
-                <TableCell align="right">{row.price.toLocaleString()}</TableCell>
-                <TableCell align="right">{row.quantity.toLocaleString()}</TableCell>
-                <TableCell align="right" className={row.credit < 0 ? classes.negative : classes.positive}>
-                  {row.credit.toLocaleString()}
+                <TableCell align="right">{row.price}</TableCell>
+                <TableCell align="right">{row.quantity}</TableCell>
+                <TableCell align="right" className={row.isBuy ? classes.negative : classes.positive}>
+                  {row.credit}
                 </TableCell>
                 <TableCell>{row.client}</TableCell>
                 <TableCell>{row.station}</TableCell>
