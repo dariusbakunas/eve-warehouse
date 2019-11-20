@@ -60,6 +60,7 @@ export interface WalletJournalOrderByInput {
 
 export interface WalletTransactionFilter {
   item?: string | null;
+  characterId?: string | null;
   orderType?: OrderType | null;
 }
 

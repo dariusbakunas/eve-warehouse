@@ -22,7 +22,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import TablePagination from '@material-ui/core/TablePagination';
 import { GetTransactions, GetTransactionsVariables } from '../__generated__/GetTransactions';
+import { GetCharacterNames } from '../__generated__/GetCharacterNames';
 import getTransactionsQuery from '../queries/getTransactions.graphql';
+import getCharacterNames from '../queries/getCharacterNames.graphql';
 import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -33,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     formControl: {
       margin: theme.spacing(1),
-      minWidth: 120,
+      minWidth: 150,
     },
     negative: {
       color: '#8b251f',
@@ -108,6 +110,8 @@ const getTableData: (data?: GetTransactions) => { rows: ITableRow[]; total: numb
 };
 
 interface IWalletTransactionsTab {
+  characterId: Maybe<string>;
+  onCharacterChange: (characterId: Maybe<string>) => void;
   itemFilter: Maybe<string>;
   onItemFilterChange: (filter: string) => void;
   order: Order;
@@ -123,6 +127,8 @@ interface IWalletTransactionsTab {
 }
 
 const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
+  characterId,
+  onCharacterChange,
   itemFilter,
   order,
   orderBy,
@@ -139,6 +145,7 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
 
+  const { loading: characterNamesLoading, data: characterNamesData } = useQuery<GetCharacterNames>(getCharacterNames);
   const { loading, data } = useQuery<GetTransactions, GetTransactionsVariables>(getTransactionsQuery, {
     variables: {
       page: {
@@ -146,6 +153,7 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
         size: rowsPerPage,
       },
       filter: {
+        characterId: characterId,
         orderType,
         item: itemFilter,
       },
@@ -194,6 +202,16 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
     }
   };
 
+  const handleCharacterChange = (event: ChangeEvent<{ value: unknown }>) => {
+    const value = event.target.value as string;
+    onPageChange(0);
+    if (value === 'all') {
+      onCharacterChange(null);
+    } else {
+      onCharacterChange(value);
+    }
+  };
+
   const setItemFilterDebounced = debounce(filter => {
     onPageChange(0);
     onItemFilterChange(filter);
@@ -218,6 +236,18 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
             <MenuItem value={'all'}>Both</MenuItem>
             <MenuItem value={'buy'}>Buy</MenuItem>
             <MenuItem value={'sell'}>Sell</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl className={classes.formControl}>
+          <InputLabel id="character-label">Character</InputLabel>
+          <Select labelId="character-label" id="character-select" onChange={handleCharacterChange} value={characterId || 'all'}>
+            <MenuItem value={'all'}>All</MenuItem>
+            {characterNamesData &&
+              characterNamesData.characters.map(character => (
+                <MenuItem key={character.id} value={character.id}>
+                  {character.name}
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
         <FormControl className={classes.spacer}>

@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Wallet = () => {
   const classes = useStyles();
+  const [characterId, setCharacterId] = useState<Maybe<string>>(null);
   const [transactionsPage, setTransactionsPage] = useState<number>(0);
   const [journalPage, setJournalPage] = useState<number>(0);
   const [transactionsItemFilter, setTransactionsItemFilter] = useState<Maybe<string>>(null);
@@ -67,6 +68,8 @@ const Wallet = () => {
         </Toolbar>
         {currentTab === 0 && (
           <WalletTransactionsTab
+            characterId={characterId}
+            onCharacterChange={setCharacterId}
             itemFilter={transactionsItemFilter}
             page={transactionsPage}
             onItemFilterChange={setTransactionsItemFilter}

@@ -17,6 +17,12 @@ import Maybe from 'graphql/tsutils/Maybe';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    negative: {
+      color: '#8b251f',
+    },
+    positive: {
+      color: '#187119',
+    },
     table: {
       whiteSpace: 'nowrap',
     },
@@ -42,6 +48,7 @@ interface ITableRow {
   character: Maybe<string>;
   date: string;
   description: Maybe<string>;
+  isPositive: boolean;
   amount: string;
   balance: string;
 }
@@ -63,6 +70,7 @@ const getTableData: (data?: GetJournal) => { rows: ITableRow[]; total: number } 
     character: entry.character ? entry.character.name : null,
     date: moment(entry.date).format('MM/DD/YYYY HH:mm'),
     description: entry.description,
+    isPositive: entry.amount > 0,
     amount: entry.amount.toLocaleString(undefined, { minimumFractionDigits: 2 }),
     balance: entry.balance.toLocaleString(undefined, { minimumFractionDigits: 2 }),
   }));
@@ -157,7 +165,7 @@ const WalletJournalTab: React.FC<IWalletJournalTab> = ({
                 <TableCell>{row.date}</TableCell>
                 <TableCell>{row.character}</TableCell>
                 <TableCell>{row.description}</TableCell>
-                <TableCell align="right">{row.amount}</TableCell>
+                <TableCell align="right" className={row.isPositive ? classes.positive : classes.negative}>{row.amount}</TableCell>
                 <TableCell align="right">{row.balance}</TableCell>
               </TableRow>
             ))}
