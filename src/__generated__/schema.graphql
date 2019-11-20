@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Mon Nov 18 2019 22:31:19 GMT-0500 (Eastern Standard Time)
+# timestamp: Tue Nov 19 2019 19:13:14 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -140,7 +140,9 @@ enum UserStatus {
 enum WalletJournalOrderBy {
   date
   amount
+  character
   balance
+  description
 }
 
 input WalletJournalOrderByInput {

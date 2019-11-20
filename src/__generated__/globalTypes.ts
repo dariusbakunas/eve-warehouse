@@ -24,7 +24,9 @@ export enum UserStatus {
 export enum WalletJournalOrderBy {
   amount = "amount",
   balance = "balance",
+  character = "character",
   date = "date",
+  description = "description",
 }
 
 export enum WalletTransactionOrderBy {

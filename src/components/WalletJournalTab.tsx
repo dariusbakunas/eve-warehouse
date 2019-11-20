@@ -39,13 +39,14 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface ITableRow {
   id: string;
+  character: Maybe<string>;
   date: string;
   description: Maybe<string>;
   amount: string;
   balance: string;
 }
 
-const getTableData: (data?: GetJournal) => { rows: ITableRow[]; total: number} = data => {
+const getTableData: (data?: GetJournal) => { rows: ITableRow[]; total: number } = data => {
   if (!data || !data.walletJournal) {
     return {
       total: 0,
@@ -59,6 +60,7 @@ const getTableData: (data?: GetJournal) => { rows: ITableRow[]; total: number} =
 
   const rows = entries.map(entry => ({
     id: entry.id,
+    character: entry.character ? entry.character.name : null,
     date: moment(entry.date).format('MM/DD/YYYY HH:mm'),
     description: entry.description,
     amount: entry.amount.toLocaleString(undefined, { minimumFractionDigits: 2 }),
@@ -82,7 +84,16 @@ interface IWalletJournalTab {
   rowsPerPage: number;
 }
 
-const WalletJournalTab: React.FC<IWalletJournalTab> = ({ page, order, orderBy, onPageChange, onOrderChange, onOrderByChange, onRowsPerPageChange, rowsPerPage }) => {
+const WalletJournalTab: React.FC<IWalletJournalTab> = ({
+  page,
+  order,
+  orderBy,
+  onPageChange,
+  onOrderChange,
+  onOrderByChange,
+  onRowsPerPageChange,
+  rowsPerPage,
+}) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const { data, loading } = useQuery<GetJournal, GetJournalVariables>(getJournalEntriesQuery, {
@@ -132,15 +143,19 @@ const WalletJournalTab: React.FC<IWalletJournalTab> = ({ page, order, orderBy, o
       <div className={classes.tableWrapper}>
         <Table size="small" aria-label="wallet transactions" className={classes.table}>
           <TableHead>
-            <TableCell>{sortableHeader(WalletJournalOrderBy.date, 'Date')}</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell align="right">Amount</TableCell>
-            <TableCell align="right">Balance</TableCell>
+            <TableRow>
+              <TableCell>{sortableHeader(WalletJournalOrderBy.date, 'Date')}</TableCell>
+              <TableCell>{sortableHeader(WalletJournalOrderBy.character, 'Character')}</TableCell>
+              <TableCell>{sortableHeader(WalletJournalOrderBy.description, 'Description')}</TableCell>
+              <TableCell align="right">{sortableHeader(WalletJournalOrderBy.amount, 'Amount')}</TableCell>
+              <TableCell align="right">{sortableHeader(WalletJournalOrderBy.balance, 'Balance')}</TableCell>
+            </TableRow>
           </TableHead>
           <TableBody>
             {rows.map(row => (
               <TableRow key={row.id}>
                 <TableCell>{row.date}</TableCell>
+                <TableCell>{row.character}</TableCell>
                 <TableCell>{row.description}</TableCell>
                 <TableCell align="right">{row.amount}</TableCell>
                 <TableCell align="right">{row.balance}</TableCell>
