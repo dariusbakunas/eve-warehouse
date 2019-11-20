@@ -79,24 +79,24 @@ export const SideMenu: React.FC<SideMenuProps> = ({ children, header }) => {
       <div className={classes.appBarSpacer} />
       <Divider />
       <List>
-        <ListItem selected={pathname === '/'} button onClick={() => handleNavigate('/')}>
-          <ListItemIcon>
-            <DashboardIcon />
-          </ListItemIcon>
-          <ListItemText primary="Dashboard" primaryTypographyProps={{ noWrap: true }} />
-        </ListItem>
+        {/*<ListItem selected={pathname === '/'} button onClick={() => handleNavigate('/')}>*/}
+        {/*  <ListItemIcon>*/}
+        {/*    <DashboardIcon />*/}
+        {/*  </ListItemIcon>*/}
+        {/*  <ListItemText primary="Dashboard" primaryTypographyProps={{ noWrap: true }} />*/}
+        {/*</ListItem>*/}
         <ListItem selected={pathname === '/characters'} button onClick={() => handleNavigate('/characters')}>
           <ListItemIcon>
             <CharactersIcon />
           </ListItemIcon>
           <ListItemText primary="Characters" primaryTypographyProps={{ noWrap: true }} />
         </ListItem>
-        <ListItem selected={pathname === '/skills'} button onClick={() => handleNavigate('/skills')}>
-          <ListItemIcon>
-            <SkillsIcon />
-          </ListItemIcon>
-          <ListItemText primary="Skills" primaryTypographyProps={{ noWrap: true }} />
-        </ListItem>
+        {/*<ListItem selected={pathname === '/skills'} button onClick={() => handleNavigate('/skills')}>*/}
+        {/*  <ListItemIcon>*/}
+        {/*    <SkillsIcon />*/}
+        {/*  </ListItemIcon>*/}
+        {/*  <ListItemText primary="Skills" primaryTypographyProps={{ noWrap: true }} />*/}
+        {/*</ListItem>*/}
         <ListItem selected={pathname === '/wallet'} button onClick={() => handleNavigate('/wallet')}>
           <ListItemIcon>
             <WalletIcon />
