@@ -1,14 +1,6 @@
-import React, { ChangeEvent, useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import Input from '@material-ui/core/Input';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import SearchIcon from '@material-ui/icons/Search';
 import Toolbar from '@material-ui/core/Toolbar';
-import debounce from 'lodash.debounce';
 import { Order, OrderType, WalletTransactionOrderBy } from '../__generated__/globalTypes';
 import Maybe from 'graphql/tsutils/Maybe';
 import moment from 'moment';
@@ -22,16 +14,21 @@ import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import TablePagination from '@material-ui/core/TablePagination';
 import { GetTransactions, GetTransactionsVariables } from '../__generated__/GetTransactions';
-import { GetCharacterNames } from '../__generated__/GetCharacterNames';
 import getTransactionsQuery from '../queries/getTransactions.graphql';
-import getCharacterNames from '../queries/getCharacterNames.graphql';
 import { useSnackbar } from 'notistack';
+import Chip from '@material-ui/core/Chip';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     filterToolbar: {
-      paddingLeft: theme.spacing(1),
-      paddingRight: theme.spacing(1),
+      display: 'flex',
+      justifyContent: 'left',
+      flexWrap: 'wrap',
+      '& > *': {
+        margin: theme.spacing(0.5),
+      },
+      paddingLeft: theme.spacing(1.5),
+      paddingRight: theme.spacing(1.5),
     },
     formControl: {
       margin: theme.spacing(1),
@@ -42,9 +39,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     positive: {
       color: '#187119',
-    },
-    spacer: {
-      flex: '1 1 100%',
     },
     table: {
       whiteSpace: 'nowrap',
@@ -110,10 +104,8 @@ const getTableData: (data?: GetTransactions) => { rows: ITableRow[]; total: numb
 };
 
 interface IWalletTransactionsTab {
-  characterId: Maybe<string>;
-  onCharacterChange: (characterId: Maybe<string>) => void;
+  characterFilter: Maybe<{ id: string; name: string }>;
   itemFilter: Maybe<string>;
-  onItemFilterChange: (filter: string) => void;
   order: Order;
   orderBy: WalletTransactionOrderBy;
   orderType: Maybe<OrderType>;
@@ -121,31 +113,31 @@ interface IWalletTransactionsTab {
   onPageChange: (page: number) => void;
   onOrderChange: (order: Order) => void;
   onOrderByChange: (orderBy: WalletTransactionOrderBy) => void;
-  onOrderTypeChange: (orderType: Maybe<OrderType>) => void;
+  onClearCharacterFilter: () => void;
+  onClearItemFilter: () => void;
+  onClearOrderTypeFilter: () => void;
   onRowsPerPageChange: (rows: number) => void;
   rowsPerPage: number;
 }
 
 const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
-  characterId,
-  onCharacterChange,
+  characterFilter,
+  onClearCharacterFilter,
   itemFilter,
   order,
   orderBy,
   page,
-  onItemFilterChange,
+  onClearItemFilter,
   orderType,
   onOrderChange,
   onOrderByChange,
-  onOrderTypeChange,
+  onClearOrderTypeFilter,
   onPageChange,
   onRowsPerPageChange,
   rowsPerPage,
 }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
-
-  const { loading: characterNamesLoading, data: characterNamesData } = useQuery<GetCharacterNames>(getCharacterNames);
   const { loading, data } = useQuery<GetTransactions, GetTransactionsVariables>(getTransactionsQuery, {
     variables: {
       page: {
@@ -153,7 +145,7 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
         size: rowsPerPage,
       },
       filter: {
-        characterId: characterId,
+        characterId: characterFilter ? characterFilter.id : null,
         orderType,
         item: itemFilter,
       },
@@ -192,78 +184,27 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
     </TableSortLabel>
   );
 
-  const handleBuySellChange = (event: ChangeEvent<{ value: unknown }>) => {
-    const value = event.target.value as string;
-    onPageChange(0);
-    if (value === 'all') {
-      onOrderTypeChange(null);
-    } else {
-      onOrderTypeChange(value === 'buy' ? OrderType.buy : OrderType.sell);
-    }
+  const handleRemoveCharacterFilter = () => {
+    onClearCharacterFilter();
   };
 
-  const handleCharacterChange = (event: ChangeEvent<{ value: unknown }>) => {
-    const value = event.target.value as string;
-    onPageChange(0);
-    if (value === 'all') {
-      onCharacterChange(null);
-    } else {
-      onCharacterChange(value);
-    }
+  const handleRemoveOrderTypeFilter = () => {
+    onClearOrderTypeFilter();
   };
 
-  const setItemFilterDebounced = debounce(filter => {
-    onPageChange(0);
-    onItemFilterChange(filter);
-  }, 500);
-
-  const handleItemFilterChange = useCallback((event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const value = event.target.value as string;
-
-    if (value.length) {
-      setItemFilterDebounced(value);
-    } else {
-      setItemFilterDebounced(null);
-    }
-  }, []);
+  const handleRemoveItemFilter = () => {
+    onClearItemFilter();
+  };
 
   return (
     <React.Fragment>
-      <Toolbar className={classes.filterToolbar}>
-        <FormControl className={classes.formControl}>
-          <InputLabel id="order-type-label">Buy/Sell</InputLabel>
-          <Select labelId="order-type-label" id="order-type-select" onChange={handleBuySellChange} value={orderType || 'all'}>
-            <MenuItem value={'all'}>Both</MenuItem>
-            <MenuItem value={'buy'}>Buy</MenuItem>
-            <MenuItem value={'sell'}>Sell</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl className={classes.formControl}>
-          <InputLabel id="character-label">Character</InputLabel>
-          <Select labelId="character-label" id="character-select" onChange={handleCharacterChange} value={characterId || 'all'}>
-            <MenuItem value={'all'}>All</MenuItem>
-            {characterNamesData &&
-              characterNamesData.characters.map(character => (
-                <MenuItem key={character.id} value={character.id}>
-                  {character.name}
-                </MenuItem>
-              ))}
-          </Select>
-        </FormControl>
-        <FormControl className={classes.spacer}>
-          <InputLabel htmlFor="item-search-label">Item</InputLabel>
-          <Input
-            id="item-search-input"
-            onChange={handleItemFilterChange}
-            defaultValue={itemFilter}
-            startAdornment={
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            }
-          />
-        </FormControl>
-      </Toolbar>
+      {(orderType || characterFilter || itemFilter) && (
+        <Toolbar className={classes.filterToolbar}>
+          {orderType && <Chip label={`Buy/Sell: ${orderType}`} onDelete={handleRemoveOrderTypeFilter} variant={'outlined'} />}
+          {characterFilter && <Chip label={`Character: ${characterFilter.name}`} onDelete={handleRemoveCharacterFilter} variant={'outlined'} />}
+          {itemFilter && <Chip label={`Item: ${itemFilter}`} onDelete={handleRemoveItemFilter} variant={'outlined'} />}
+        </Toolbar>
+      )}
       {loading && <LinearProgress />}
       <div className={classes.tableWrapper}>
         <Table size="small" aria-label="wallet transactions" className={classes.table}>

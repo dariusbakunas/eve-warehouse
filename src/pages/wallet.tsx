@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import React, { ChangeEvent, useCallback, useState } from 'react';
 import withApollo from '../lib/withApollo';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -10,12 +10,34 @@ import WalletTransactionsTab from '../components/WalletTransactionsTab';
 import Maybe from 'graphql/tsutils/Maybe';
 import { Order, OrderType, WalletJournalOrderBy, WalletTransactionOrderBy } from '../__generated__/globalTypes';
 import WalletJournalTab from '../components/WalletJournalTab';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import Popover from '@material-ui/core/Popover';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import { useQuery } from '@apollo/react-hooks';
+import Input from '@material-ui/core/Input';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import { GetCharacterNames } from '../__generated__/GetCharacterNames';
+import getCharacterNames from '../queries/getCharacterNames.graphql';
+import debounce from 'lodash.debounce';
+import SearchIcon from '@material-ui/icons/Search';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       padding: theme.spacing(3),
+    },
+    filterMenu: {
+      width: '250px',
+      padding: theme.spacing(2),
+    },
+    filterFormControl: {
+      width: '100%',
+      marginBottom: theme.spacing(2),
     },
     paper: {
       width: 'calc(100vw - 120px)',
@@ -24,6 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     title: {
       marginRight: '20px',
+      flex: 1,
     },
     labelToolbar: {
       paddingLeft: theme.spacing(2),
@@ -34,7 +57,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Wallet = () => {
   const classes = useStyles();
-  const [characterId, setCharacterId] = useState<Maybe<string>>(null);
+  const [filterMenuAnchor, setFilterMenuAnchor] = useState<HTMLButtonElement | null>(null);
+  const [characterFilter, setCharacterFilter] = useState<Maybe<{ id: string; name: string }>>(null);
   const [transactionsPage, setTransactionsPage] = useState<number>(0);
   const [journalPage, setJournalPage] = useState<number>(0);
   const [transactionsItemFilter, setTransactionsItemFilter] = useState<Maybe<string>>(null);
@@ -47,9 +71,59 @@ const Wallet = () => {
   const [journalRowsPerPage, setJournalRowsPerPage] = useState(15);
   const [currentTab, setCurrentTab] = useState<number>(0);
 
+  const { loading: characterNamesLoading, data: characterNamesData } = useQuery<GetCharacterNames>(getCharacterNames);
+
+  const handleOpenFilerMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setFilterMenuAnchor(event.currentTarget);
+  };
+
+  const handleCloseFilterMenu = () => {
+    setFilterMenuAnchor(null);
+  };
+
   const handleTabChange = (event: React.ChangeEvent<{}>, newTab: number) => {
     setCurrentTab(newTab);
   };
+
+  const filterMenuOpen = Boolean(filterMenuAnchor);
+
+  const handleBuySellChange = (event: ChangeEvent<{ value: unknown }>) => {
+    const value = event.target.value as string;
+    setTransactionsPage(0);
+    if (value === 'all') {
+      setTransactionsOrderType(null);
+    } else {
+      setTransactionsOrderType(value === 'buy' ? OrderType.buy : OrderType.sell);
+    }
+  };
+
+  const handleCharacterChange = (event: ChangeEvent<{ value: unknown }>) => {
+    const value = event.target.value as string;
+    setTransactionsPage(0);
+    if (value === 'all' || !characterNamesData) {
+      setCharacterFilter(null);
+    } else {
+      const character = characterNamesData.characters.find(character => character.id === value);
+      if (character) {
+        setCharacterFilter({ id: character.id, name: character.name });
+      }
+    }
+  };
+
+  const setItemFilterDebounced = debounce(filter => {
+    setTransactionsPage(0);
+    setTransactionsItemFilter(filter);
+  }, 500);
+
+  const handleItemFilterChange = useCallback((event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const value = event.target.value as string;
+
+    if (value.length) {
+      setItemFilterDebounced(value);
+    } else {
+      setItemFilterDebounced(null);
+    }
+  }, []);
 
   return (
     <div className={classes.root}>
@@ -58,6 +132,11 @@ const Wallet = () => {
           <Typography className={classes.title} variant="h6" id="tableTitle">
             Wallet
           </Typography>
+          <Tooltip title="Filter list">
+            <IconButton aria-label="filter list" aria-labelledby="filterMenu" onClick={handleOpenFilerMenu}>
+              <FilterListIcon />
+            </IconButton>
+          </Tooltip>
         </Toolbar>
         <Toolbar className={classes.labelToolbar}>
           <Tabs value={currentTab} onChange={handleTabChange} indicatorColor="primary" textColor="primary" variant="scrollable" scrollButtons="auto">
@@ -68,17 +147,17 @@ const Wallet = () => {
         </Toolbar>
         {currentTab === 0 && (
           <WalletTransactionsTab
-            characterId={characterId}
-            onCharacterChange={setCharacterId}
+            characterFilter={characterFilter}
+            onClearCharacterFilter={() => setCharacterFilter(null)}
             itemFilter={transactionsItemFilter}
             page={transactionsPage}
-            onItemFilterChange={setTransactionsItemFilter}
+            onClearItemFilter={() => setTransactionsItemFilter(null)}
             order={transactionsOrder}
             orderBy={transactionsOrderBy}
             orderType={transactionsOrderType}
             onOrderChange={setTransactionsOrder}
             onOrderByChange={setTransactionsOrderBy}
-            onOrderTypeChange={setTransactionsOrderType}
+            onClearOrderTypeFilter={() => setTransactionsOrderType(null)}
             onPageChange={setTransactionsPage}
             onRowsPerPageChange={setTransactionsRowsPerPage}
             rowsPerPage={transactionsRowsPerPage}
@@ -97,6 +176,61 @@ const Wallet = () => {
           />
         )}
       </Paper>
+      <Popover
+        id="filterMenu"
+        open={filterMenuOpen}
+        anchorEl={filterMenuAnchor}
+        onClose={handleCloseFilterMenu}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <Paper className={classes.filterMenu}>
+          <FormControl className={classes.filterFormControl}>
+            <InputLabel id="character-label">Character</InputLabel>
+            <Select
+              labelId="character-label"
+              id="character-select"
+              onChange={handleCharacterChange}
+              value={characterFilter ? characterFilter.id : 'all'}
+            >
+              <MenuItem value={'all'}>All</MenuItem>
+              {characterNamesData &&
+                characterNamesData.characters.map(character => (
+                  <MenuItem key={character.id} value={character.id}>
+                    {character.name}
+                  </MenuItem>
+                ))}
+            </Select>
+          </FormControl>
+          <FormControl className={classes.filterFormControl}>
+            <InputLabel id="order-type-label">Buy/Sell</InputLabel>
+            <Select labelId="order-type-label" id="order-type-select" onChange={handleBuySellChange} value={transactionsOrderType || 'all'}>
+              <MenuItem value={'all'}>Both</MenuItem>
+              <MenuItem value={'buy'}>Buy</MenuItem>
+              <MenuItem value={'sell'}>Sell</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl className={classes.filterFormControl}>
+            <InputLabel htmlFor="item-search-label">Item</InputLabel>
+            <Input
+              id="item-search-input"
+              onChange={handleItemFilterChange}
+              defaultValue={transactionsItemFilter}
+              startAdornment={
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              }
+            />
+          </FormControl>
+        </Paper>
+      </Popover>
     </div>
   );
 };
