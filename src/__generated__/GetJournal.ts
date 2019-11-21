@@ -2,7 +2,7 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { PageInput, WalletJournalOrderByInput } from "./globalTypes";
+import { PageInput, WalletJournalFilter, WalletJournalOrderByInput } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJournal
@@ -36,5 +36,6 @@ export interface GetJournal {
 
 export interface GetJournalVariables {
   page?: PageInput | null;
+  filter?: WalletJournalFilter | null;
   orderBy?: WalletJournalOrderByInput | null;
 }

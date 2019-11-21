@@ -53,6 +53,10 @@ export interface RegistrationInput {
   code: string;
 }
 
+export interface WalletJournalFilter {
+  characterId?: string | null;
+}
+
 export interface WalletJournalOrderByInput {
   column: WalletJournalOrderBy;
   order: Order;

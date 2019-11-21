@@ -184,10 +184,6 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
     </TableSortLabel>
   );
 
-  const handleRemoveCharacterFilter = () => {
-    onClearCharacterFilter();
-  };
-
   const handleRemoveOrderTypeFilter = () => {
     onClearOrderTypeFilter();
   };
@@ -201,7 +197,7 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
       {(orderType || characterFilter || itemFilter) && (
         <Toolbar className={classes.filterToolbar}>
           {orderType && <Chip label={`Buy/Sell: ${orderType}`} onDelete={handleRemoveOrderTypeFilter} variant={'outlined'} />}
-          {characterFilter && <Chip label={`Character: ${characterFilter.name}`} onDelete={handleRemoveCharacterFilter} variant={'outlined'} />}
+          {characterFilter && <Chip label={`Character: ${characterFilter.name}`} onDelete={onClearCharacterFilter} variant={'outlined'} />}
           {itemFilter && <Chip label={`Item: ${itemFilter}`} onDelete={handleRemoveItemFilter} variant={'outlined'} />}
         </Toolbar>
       )}

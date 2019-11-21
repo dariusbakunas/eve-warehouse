@@ -165,9 +165,11 @@ const Wallet = () => {
         )}
         {currentTab === 2 && (
           <WalletJournalTab
+            characterFilter={characterFilter}
             order={journalOrder}
             orderBy={journalOrderBy}
             page={journalPage}
+            onClearCharacterFilter={() => setCharacterFilter(null)}
             onPageChange={setJournalPage}
             onOrderChange={setJournalOrder}
             onOrderByChange={setJournalOrderby}
@@ -208,27 +210,31 @@ const Wallet = () => {
                 ))}
             </Select>
           </FormControl>
-          <FormControl className={classes.filterFormControl}>
-            <InputLabel id="order-type-label">Buy/Sell</InputLabel>
-            <Select labelId="order-type-label" id="order-type-select" onChange={handleBuySellChange} value={transactionsOrderType || 'all'}>
-              <MenuItem value={'all'}>Both</MenuItem>
-              <MenuItem value={'buy'}>Buy</MenuItem>
-              <MenuItem value={'sell'}>Sell</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl className={classes.filterFormControl}>
-            <InputLabel htmlFor="item-search-label">Item</InputLabel>
-            <Input
-              id="item-search-input"
-              onChange={handleItemFilterChange}
-              defaultValue={transactionsItemFilter}
-              startAdornment={
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              }
-            />
-          </FormControl>
+          {currentTab === 0 && (
+            <React.Fragment>
+              <FormControl className={classes.filterFormControl}>
+                <InputLabel id="order-type-label">Buy/Sell</InputLabel>
+                <Select labelId="order-type-label" id="order-type-select" onChange={handleBuySellChange} value={transactionsOrderType || 'all'}>
+                  <MenuItem value={'all'}>Both</MenuItem>
+                  <MenuItem value={'buy'}>Buy</MenuItem>
+                  <MenuItem value={'sell'}>Sell</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl className={classes.filterFormControl}>
+                <InputLabel htmlFor="item-search-label">Item</InputLabel>
+                <Input
+                  id="item-search-input"
+                  onChange={handleItemFilterChange}
+                  defaultValue={transactionsItemFilter}
+                  startAdornment={
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  }
+                />
+              </FormControl>
+            </React.Fragment>
+          )}
         </Paper>
       </Popover>
     </div>

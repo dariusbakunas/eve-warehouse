@@ -14,9 +14,21 @@ import moment from 'moment';
 import { Order, WalletJournalOrderBy } from '../__generated__/globalTypes';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Maybe from 'graphql/tsutils/Maybe';
+import Toolbar from '@material-ui/core/Toolbar';
+import Chip from '@material-ui/core/Chip';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    filterToolbar: {
+      display: 'flex',
+      justifyContent: 'left',
+      flexWrap: 'wrap',
+      '& > *': {
+        margin: theme.spacing(0.5),
+      },
+      paddingLeft: theme.spacing(1.5),
+      paddingRight: theme.spacing(1.5),
+    },
     negative: {
       color: '#8b251f',
     },
@@ -82,9 +94,11 @@ const getTableData: (data?: GetJournal) => { rows: ITableRow[]; total: number } 
 };
 
 interface IWalletJournalTab {
+  characterFilter: Maybe<{ id: string; name: string }>;
   onPageChange: (page: number) => void;
   order: Order;
   orderBy: WalletJournalOrderBy;
+  onClearCharacterFilter: () => void;
   onRowsPerPageChange: (rows: number) => void;
   onOrderChange: (order: Order) => void;
   onOrderByChange: (orderBy: WalletJournalOrderBy) => void;
@@ -93,9 +107,11 @@ interface IWalletJournalTab {
 }
 
 const WalletJournalTab: React.FC<IWalletJournalTab> = ({
+  characterFilter,
   page,
   order,
   orderBy,
+  onClearCharacterFilter,
   onPageChange,
   onOrderChange,
   onOrderByChange,
@@ -109,6 +125,9 @@ const WalletJournalTab: React.FC<IWalletJournalTab> = ({
       page: {
         index: page,
         size: rowsPerPage,
+      },
+      filter: {
+        characterId: characterFilter ? characterFilter.id : null,
       },
       orderBy: {
         column: orderBy,
@@ -147,6 +166,11 @@ const WalletJournalTab: React.FC<IWalletJournalTab> = ({
 
   return (
     <React.Fragment>
+      {characterFilter && (
+        <Toolbar className={classes.filterToolbar}>
+          {characterFilter && <Chip label={`Character: ${characterFilter.name}`} onDelete={onClearCharacterFilter} variant={'outlined'} />}
+        </Toolbar>
+      )}
       {loading && <LinearProgress />}
       <div className={classes.tableWrapper}>
         <Table size="small" aria-label="wallet transactions" className={classes.table}>
