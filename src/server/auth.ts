@@ -57,7 +57,7 @@ router.get('/logout', (req: Request, res) => {
   request.logOut();
 
   const { AUTH0_DOMAIN, AUTH0_CLIENT_ID, BASE_URL } = process.env;
-  res.redirect(`https://${AUTH0_DOMAIN}/v2/logout?client_id=${AUTH0_CLIENT_ID}&returnTo=${BASE_URL}`);
+  res.redirect(`https://${AUTH0_DOMAIN}/v2/logout?client_id=${AUTH0_CLIENT_ID}&returnTo=${BASE_URL || '/'}`);
 });
 
 export default router;
