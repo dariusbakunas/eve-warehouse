@@ -80,7 +80,7 @@ app.prepare().then(() => {
     name: 'eve-app',
     secret: uid.sync(18),
     cookie: {
-      maxAge: 86400 * 1000, // 24 hours in milliseconds
+      maxAge: 900 * 1000, // 15 minutes in milliseconds
       secure: !dev,
       httpOnly: !dev,
     },
