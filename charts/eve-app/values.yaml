@@ -63,4 +63,4 @@ eveLoginURL: https://login.eveonline.com
 eveCharacterRedirectURL: https://eve-app.geekspace.us/characters
 eveApiHost: http://eve-api:4000/graphql
 nodeEnv: production
-baseUrl: https://eve-app.geekspace.us
+baseURL: https://eve-app.geekspace.us
