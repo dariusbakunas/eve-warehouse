@@ -39,6 +39,8 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
+            - name: BASE_URL
+              value: {{ .Values.baseURL }}
             - name: AUTH0_CLIENT_ID
               value: {{ .Values.auth0ClientID }}
             - name: AUTH0_DOMAIN
