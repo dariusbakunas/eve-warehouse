@@ -11,6 +11,7 @@ import * as Sentry from '@sentry/node';
 import pJson from '../../package.json';
 import morgan from 'morgan';
 import helmet from 'helmet';
+import { getAccessToken } from '../auth/getAccessToken';
 
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -31,9 +32,10 @@ const apiProxyConfig: Config = {
 
     res.end(JSON.stringify({ message: err.message }));
   },
-  onProxyReq: (proxyReq, req: Request & { user: ISessionUser }) => {
-    if (req.user) {
-      proxyReq.setHeader('authorization', `Bearer ${req.user.accessToken}`);
+  onProxyReq: async (proxyReq, req: Request & { user: ISessionUser }) => {
+    if (req.session && req.user) {
+      const { accessToken } = req.user;
+      proxyReq.setHeader('authorization', `Bearer ${accessToken}`);
     }
   },
   target: process.env.EVE_API_HOST,
@@ -98,7 +100,27 @@ app.prepare().then(() => {
 
   passport.use(auth0Strategy);
   passport.serializeUser((user: any, done: (err: any, user: any) => void) => done(null, user));
-  passport.deserializeUser((user: any, done: (err: any, user: any) => void) => done(null, user));
+  passport.deserializeUser(async (user: any, done: (err: any, user: any) => void) => {
+    const { refreshToken, expiresAt } = user;
+
+    // subtract 5 minutes for safety
+    if (new Date().getTime() > expiresAt - 5 * 1000 * 60) {
+      // get new token
+      const response = await getAccessToken(refreshToken);
+      const { access_token: newAccessToken, expires_in: expiresIn } = response;
+      const newExpiresAt = expiresIn * 1000 + new Date().getTime();
+
+      const updatedUser = {
+        ...user,
+        accessToken: newAccessToken,
+        expiresAt: newExpiresAt,
+      };
+
+      return done(null, updatedUser);
+    }
+
+    return done(null, user);
+  });
 
   server.get('/health-check', (req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });

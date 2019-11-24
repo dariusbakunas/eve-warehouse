@@ -8,7 +8,7 @@ const router = express.Router();
 router.get(
   '/login',
   passport.authenticate('auth0', {
-    scope: 'openid email profile',
+    scope: 'openid email profile offline_access',
     audience: process.env.AUTH0_AUDIENCE,
   }),
   (req, res) => res.redirect('/')
@@ -37,8 +37,6 @@ router.get('/callback', (req: Request, res, next: NextFunction) => {
       return next(err);
     }
     if (!user) return res.redirect('/login');
-
-    // accessToken, refreshToken(undefined), profile, status = GUEST
 
     return request.logIn(user, loginErr => {
       if (err) return next(err);

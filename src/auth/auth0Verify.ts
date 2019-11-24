@@ -14,6 +14,7 @@ export interface IUser {
 export interface ISessionUser extends IUser {
   accessToken: string;
   refreshToken: string;
+  expiresAt: number;
 }
 
 const getUser = (apolloClient: ApolloClient<NormalizedCacheObject>, email: string) =>
@@ -38,7 +39,7 @@ const getUser = (apolloClient: ApolloClient<NormalizedCacheObject>, email: strin
 const auth0Verify = async (
   accessToken: string,
   refreshToken: string,
-  extraParams: object,
+  extraParams: { access_token: string; id_token: string; scope: string; expires_in: number; token_type: string },
   profile: {
     emails: Array<{ value: string }>;
   },
@@ -59,9 +60,13 @@ const auth0Verify = async (
       console.log(errors);
     }
 
+    const { expires_in: expiresIn } = extraParams;
+    const expiresAt = expiresIn * 1000 + new Date().getTime();
+
     return done(null, {
       accessToken,
       refreshToken,
+      expiresAt,
       email: profile.emails[0].value,
       status: userByEmail ? userByEmail.status : 'GUEST',
     });
