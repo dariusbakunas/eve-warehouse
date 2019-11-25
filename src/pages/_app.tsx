@@ -4,16 +4,14 @@ import App, { AppContext } from 'next/app';
 import Head from 'next/head';
 import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
-import {CSSProperties, withStyles} from '@material-ui/styles';
+import { withStyles } from '@material-ui/styles';
 import theme from '../config/theme';
 import Router from 'next/router';
 import { WithApolloProps } from 'next-with-apollo';
 import { Theme } from '@material-ui/core';
-import { AppContextType } from 'next-server/dist/lib/utils';
 import Root from '../components/Root';
 import getCurrentUser from '../auth/getCurrentUser';
 import { IUser } from '../auth/auth0Verify';
-import Container from '@material-ui/core/Container';
 
 interface IPageProps {
   user?: IUser;
@@ -46,8 +44,6 @@ interface IProps extends WithApolloProps<any> {
 }
 
 class EveApp extends App<IProps, IState> {
-  readonly state = { sideMenuOpen: false };
-
   static async getInitialProps({ Component, ctx }: AppContext) {
     let pageProps: IPageProps = {};
     if (Component.getInitialProps) {
@@ -75,12 +71,6 @@ class EveApp extends App<IProps, IState> {
     });
   };
 
-  setSideMenuOpen = (open: boolean) => {
-    this.setState({
-      sideMenuOpen: open,
-    });
-  };
-
   render() {
     const { classes, Component, pageProps } = this.props;
 
@@ -89,7 +79,7 @@ class EveApp extends App<IProps, IState> {
         <Head>
           <title>Eve APP</title>
         </Head>
-        <Root>
+        <Root user={pageProps.user}>
           {!!pageProps.user && pageProps.user.status === 'ACTIVE' && (
             <React.Fragment>
               <Header isAuthenticated={true} title="EVE APP" onLogoutClick={() => this.handleNavigate('/auth/logout')} user={pageProps.user} />
