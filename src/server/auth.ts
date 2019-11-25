@@ -36,6 +36,7 @@ router.get('/callback', (req: Request, res, next: NextFunction) => {
       logger.error(err);
       return next(err);
     }
+
     if (!user) return res.redirect('/login');
 
     return request.logIn(user, loginErr => {
@@ -45,7 +46,7 @@ router.get('/callback', (req: Request, res, next: NextFunction) => {
         return res.redirect('/register');
       }
 
-      return res.redirect('/');
+      return res.redirect('/characters');
     });
   })(req, res, next);
 });
