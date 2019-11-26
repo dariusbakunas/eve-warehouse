@@ -1,0 +1,23 @@
+query GetMarketOrders($page: PageInput, $filter: MarketOrderFilter, $orderBy: MarketOrderOrderByInput) {
+  marketOrders(page: $page, filter: $filter, orderBy: $orderBy) {
+    total
+    orders {
+      id
+      duration
+      item {
+        name
+      }
+      issued
+      character {
+        name
+      }
+      escrow
+      isBuy
+      price
+      state
+      minVolume
+      volumeRemain
+      volumeTotal
+    }
+  }
+}

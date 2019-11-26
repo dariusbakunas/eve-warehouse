@@ -33,10 +33,10 @@ export interface GetTransactions_walletTransactions_transactions {
   id: string;
   date: any;
   isBuy: boolean;
-  character: GetTransactions_walletTransactions_transactions_character | null;
+  character: GetTransactions_walletTransactions_transactions_character;
   credit: number;
   client: GetTransactions_walletTransactions_transactions_client;
-  item: GetTransactions_walletTransactions_transactions_item | null;
+  item: GetTransactions_walletTransactions_transactions_item;
   location: GetTransactions_walletTransactions_transactions_location;
   unitPrice: number;
   quantity: number;
@@ -49,7 +49,7 @@ export interface GetTransactions_walletTransactions {
 }
 
 export interface GetTransactions {
-  walletTransactions: GetTransactions_walletTransactions | null;
+  walletTransactions: GetTransactions_walletTransactions;
 }
 
 export interface GetTransactionsVariables {

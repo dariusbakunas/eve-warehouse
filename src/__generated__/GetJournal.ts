@@ -19,7 +19,7 @@ export interface GetJournal_walletJournal_entries {
   id: string;
   amount: number;
   balance: number;
-  character: GetJournal_walletJournal_entries_character | null;
+  character: GetJournal_walletJournal_entries_character;
   date: any;
   description: string | null;
 }
@@ -31,7 +31,7 @@ export interface GetJournal_walletJournal {
 }
 
 export interface GetJournal {
-  walletJournal: GetJournal_walletJournal | null;
+  walletJournal: GetJournal_walletJournal;
 }
 
 export interface GetJournalVariables {

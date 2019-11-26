@@ -8,7 +8,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
 import WalletTransactionsTab from '../components/WalletTransactionsTab';
 import Maybe from 'graphql/tsutils/Maybe';
-import { Order, OrderType, WalletJournalOrderBy, WalletTransactionOrderBy } from '../__generated__/globalTypes';
+import { MarketOrderOrderBy, Order, OrderStateFilter, OrderType, WalletJournalOrderBy, WalletTransactionOrderBy } from '../__generated__/globalTypes';
 import WalletJournalTab from '../components/WalletJournalTab';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -18,6 +18,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
 import { useQuery } from '@apollo/react-hooks';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -25,6 +28,8 @@ import { GetCharacterNames } from '../__generated__/GetCharacterNames';
 import getCharacterNames from '../queries/getCharacterNames.graphql';
 import debounce from 'lodash.debounce';
 import SearchIcon from '@material-ui/icons/Search';
+import Checkbox from '@material-ui/core/Checkbox';
+import WalletOrdersTab from '../components/WalletOrdersTab';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -60,16 +65,25 @@ const Wallet = () => {
   const [filterMenuAnchor, setFilterMenuAnchor] = useState<HTMLButtonElement | null>(null);
   const [characterFilter, setCharacterFilter] = useState<Maybe<{ id: string; name: string }>>(null);
   const [transactionsPage, setTransactionsPage] = useState<number>(0);
+  const [ordersPage, setOrdersPage] = useState<number>(0);
   const [journalPage, setJournalPage] = useState<number>(0);
   const [transactionsItemFilter, setTransactionsItemFilter] = useState<Maybe<string>>(null);
   const [transactionsOrder, setTransactionsOrder] = useState<Order>(Order.desc);
   const [transactionsOrderBy, setTransactionsOrderBy] = useState<WalletTransactionOrderBy>(WalletTransactionOrderBy.date);
   const [journalOrder, setJournalOrder] = useState<Order>(Order.desc);
+  const [marketOrder, setMarketOrder] = useState<Order>(Order.desc);
   const [journalOrderBy, setJournalOrderby] = useState<WalletJournalOrderBy>(WalletJournalOrderBy.date);
+  const [marketOrderBy, setMarketOrderBy] = useState<MarketOrderOrderBy>(MarketOrderOrderBy.issued);
   const [transactionsOrderType, setTransactionsOrderType] = useState<Maybe<OrderType>>(null);
   const [transactionsRowsPerPage, setTransactionsRowsPerPage] = useState(15);
   const [journalRowsPerPage, setJournalRowsPerPage] = useState(15);
+  const [orderRowsPerPage, setOrderRowsPerPage] = useState(15);
   const [currentTab, setCurrentTab] = useState<number>(0);
+  const [orderStateFilter, setOrderStateFilter] = React.useState<OrderStateFilter>({
+    active: true,
+    expired: false,
+    cancelled: false,
+  });
 
   const { loading: characterNamesLoading, data: characterNamesData } = useQuery<GetCharacterNames>(getCharacterNames);
 
@@ -125,6 +139,10 @@ const Wallet = () => {
     }
   }, []);
 
+  const handleOrderStateFilterChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setOrderStateFilter({ ...orderStateFilter, [name]: event.target.checked });
+  };
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
@@ -161,6 +179,22 @@ const Wallet = () => {
             onPageChange={setTransactionsPage}
             onRowsPerPageChange={setTransactionsRowsPerPage}
             rowsPerPage={transactionsRowsPerPage}
+          />
+        )}
+        {currentTab === 1 && (
+          <WalletOrdersTab
+            orderStateFilter={orderStateFilter}
+            characterFilter={characterFilter}
+            onPageChange={setOrdersPage}
+            order={marketOrder}
+            orderBy={marketOrderBy}
+            onClearCharacterFilter={() => setCharacterFilter(null)}
+            onOrderStateFilterChange={setOrderStateFilter}
+            onRowsPerPageChange={setOrderRowsPerPage}
+            onOrderChange={setMarketOrder}
+            onOrderByChange={setMarketOrderBy}
+            page={ordersPage}
+            rowsPerPage={orderRowsPerPage}
           />
         )}
         {currentTab === 2 && (
@@ -232,6 +266,29 @@ const Wallet = () => {
                     </InputAdornment>
                   }
                 />
+              </FormControl>
+            </React.Fragment>
+          )}
+          {currentTab === 1 && (
+            <React.Fragment>
+              <FormControl component="fieldset" className={classes.filterFormControl}>
+                <FormLabel component="legend">Order State</FormLabel>
+                <FormGroup>
+                  <FormControlLabel
+                    control={<Checkbox checked={!!orderStateFilter.active} onChange={handleOrderStateFilterChange('active')} value="active" />}
+                    label="Active"
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={!!orderStateFilter.expired} onChange={handleOrderStateFilterChange('expired')} value="expired" />}
+                    label="Expired"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox checked={!!orderStateFilter.cancelled} onChange={handleOrderStateFilterChange('cancelled')} value="cancelled" />
+                    }
+                    label="Cancelled"
+                  />
+                </FormGroup>
               </FormControl>
             </React.Fragment>
           )}

@@ -1,8 +1,7 @@
 import React from 'react';
 import { createStyles, makeStyles, TableRow, Theme } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
-import getJournalEntriesQuery from '../queries/getJournal.graphql';
-import { GetJournal, GetJournalVariables } from '../__generated__/GetJournal';
+import getMarketOrdersQuery from '../queries/getMarketOrders.graphql';
 import { useQuery } from '@apollo/react-hooks';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Table from '@material-ui/core/Table';
@@ -11,11 +10,12 @@ import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import TablePagination from '@material-ui/core/TablePagination';
 import moment from 'moment';
-import { Order, WalletJournalOrderBy } from '../__generated__/globalTypes';
+import {Order, MarketOrderOrderBy, OrderStateFilter} from '../__generated__/globalTypes';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Maybe from 'graphql/tsutils/Maybe';
 import Toolbar from '@material-ui/core/Toolbar';
 import Chip from '@material-ui/core/Chip';
+import { GetMarketOrders, GetMarketOrdersVariables } from '../__generated__/getMarketOrders';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -58,15 +58,16 @@ const useStyles = makeStyles((theme: Theme) =>
 interface ITableRow {
   id: string;
   character: Maybe<string>;
-  date: string;
-  description: Maybe<string>;
-  isPositive: boolean;
-  amount: string;
-  balance: string;
+  issued: string;
+  item: Maybe<string>;
+  quantity: string;
+  state: string;
+  price: string;
+  buySell: string;
 }
 
-const getTableData: (data?: GetJournal) => { rows: ITableRow[]; total: number } = data => {
-  if (!data || !data.walletJournal) {
+const getTableData: (data?: GetMarketOrders) => { rows: ITableRow[]; total: number } = data => {
+  if (!data || !data.marketOrders) {
     return {
       total: 0,
       rows: [],
@@ -74,17 +75,18 @@ const getTableData: (data?: GetJournal) => { rows: ITableRow[]; total: number } 
   }
 
   const {
-    walletJournal: { entries, total },
+    marketOrders: { orders, total },
   } = data;
 
-  const rows = entries.map(entry => ({
-    id: entry.id,
-    character: entry.character ? entry.character.name : null,
-    date: moment(entry.date).format('MM/DD/YYYY HH:mm'),
-    description: entry.description,
-    isPositive: entry.amount > 0,
-    amount: entry.amount.toLocaleString(undefined, { minimumFractionDigits: 2 }),
-    balance: entry.balance.toLocaleString(undefined, { minimumFractionDigits: 2 }),
+  const rows = orders.map(order => ({
+    id: order.id,
+    character: order.character ? order.character.name : null,
+    issued: moment(order.issued).format('MM/DD/YYYY HH:mm'),
+    item: order.item ? order.item.name : null,
+    quantity: `${order.volumeRemain.toLocaleString()}/${order.volumeTotal.toLocaleString()}`,
+    price: order.price.toLocaleString(undefined, { minimumFractionDigits: 2 }),
+    state: order.state,
+    buySell: order.isBuy ? 'buy' : 'sell',
   }));
 
   return {
@@ -93,25 +95,29 @@ const getTableData: (data?: GetJournal) => { rows: ITableRow[]; total: number } 
   };
 };
 
-interface IWalletJournalTab {
+interface IWalletOrdersTab {
+  orderStateFilter: OrderStateFilter;
   characterFilter: Maybe<{ id: string; name: string }>;
   onPageChange: (page: number) => void;
   order: Order;
-  orderBy: WalletJournalOrderBy;
+  orderBy: MarketOrderOrderBy;
   onClearCharacterFilter: () => void;
   onRowsPerPageChange: (rows: number) => void;
   onOrderChange: (order: Order) => void;
-  onOrderByChange: (orderBy: WalletJournalOrderBy) => void;
+  onOrderByChange: (orderBy: MarketOrderOrderBy) => void;
+  onOrderStateFilterChange: (state: OrderStateFilter) => void;
   page: number;
   rowsPerPage: number;
 }
 
-const WalletJournalTab: React.FC<IWalletJournalTab> = ({
+const WalletOrdersTab: React.FC<IWalletOrdersTab> = ({
   characterFilter,
   page,
   order,
   orderBy,
   onClearCharacterFilter,
+  orderStateFilter,
+  onOrderStateFilterChange,
   onPageChange,
   onOrderChange,
   onOrderByChange,
@@ -120,7 +126,7 @@ const WalletJournalTab: React.FC<IWalletJournalTab> = ({
 }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
-  const { data, loading } = useQuery<GetJournal, GetJournalVariables>(getJournalEntriesQuery, {
+  const { data, loading } = useQuery<GetMarketOrders, GetMarketOrdersVariables>(getMarketOrdersQuery, {
     variables: {
       page: {
         index: page,
@@ -128,6 +134,7 @@ const WalletJournalTab: React.FC<IWalletJournalTab> = ({
       },
       filter: {
         characterId: characterFilter ? characterFilter.id : null,
+        state: orderStateFilter,
       },
       orderBy: {
         column: orderBy,
@@ -135,7 +142,7 @@ const WalletJournalTab: React.FC<IWalletJournalTab> = ({
       },
     },
     onError: error => {
-      enqueueSnackbar(`Journal entries failed to load: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
+      enqueueSnackbar(`Market orders failed to load: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
     },
   });
 
@@ -150,25 +157,37 @@ const WalletJournalTab: React.FC<IWalletJournalTab> = ({
     onPageChange(0);
   };
 
-  const handleSort = (event: React.MouseEvent<unknown>, column: WalletJournalOrderBy) => {
+  const handleSort = (event: React.MouseEvent<unknown>, column: MarketOrderOrderBy) => {
     const isDesc = orderBy === column && order === Order.desc;
     onPageChange(0);
     onOrderChange(isDesc ? Order.asc : Order.desc);
     onOrderByChange(column);
   };
 
-  const sortableHeader = (column: WalletJournalOrderBy, label: string) => (
+  const sortableHeader = (column: MarketOrderOrderBy, label: string) => (
     <TableSortLabel active={orderBy === column} direction={order} onClick={e => handleSort(e, column)}>
       {label}
       {orderBy === column ? <span className={classes.visuallyHidden}>{order === Order.desc ? 'sorted descending' : 'sorted ascending'}</span> : null}
     </TableSortLabel>
   );
 
+  const clearOrderStateFilter = (name: string) => () => {
+    const newState = {
+      ...orderStateFilter,
+      [name]: false,
+    };
+
+    onOrderStateFilterChange(newState);
+  };
+
   return (
     <React.Fragment>
-      {characterFilter && (
+      {(characterFilter || orderStateFilter.active || orderStateFilter.cancelled || orderStateFilter.expired) && (
         <Toolbar className={classes.filterToolbar}>
           {characterFilter && <Chip label={`Character: ${characterFilter.name}`} onDelete={onClearCharacterFilter} variant={'outlined'} />}
+          {orderStateFilter.active && <Chip label={'State: active'} onDelete={clearOrderStateFilter('active')} variant={'outlined'} />}
+          {orderStateFilter.expired && <Chip label={'State: expired'} onDelete={clearOrderStateFilter('expired')} variant={'outlined'} />}
+          {orderStateFilter.cancelled && <Chip label={'State: cancelled'} onDelete={clearOrderStateFilter('cancelled')} variant={'outlined'} />}
         </Toolbar>
       )}
       {loading && <LinearProgress />}
@@ -176,21 +195,25 @@ const WalletJournalTab: React.FC<IWalletJournalTab> = ({
         <Table size="small" aria-label="wallet transactions" className={classes.table}>
           <TableHead>
             <TableRow>
-              <TableCell>{sortableHeader(WalletJournalOrderBy.date, 'Date')}</TableCell>
-              <TableCell>{sortableHeader(WalletJournalOrderBy.character, 'Character')}</TableCell>
-              <TableCell>{sortableHeader(WalletJournalOrderBy.description, 'Description')}</TableCell>
-              <TableCell align="right">{sortableHeader(WalletJournalOrderBy.amount, 'Amount')}</TableCell>
-              <TableCell align="right">{sortableHeader(WalletJournalOrderBy.balance, 'Balance')}</TableCell>
+              <TableCell>{sortableHeader(MarketOrderOrderBy.issued, 'Issued')}</TableCell>
+              <TableCell>Character</TableCell>
+              <TableCell>Buy/Sell</TableCell>
+              <TableCell>Item</TableCell>
+              <TableCell align="right">Quantity</TableCell>
+              <TableCell align="right">Price</TableCell>
+              <TableCell>State</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map(row => (
               <TableRow key={row.id}>
-                <TableCell>{row.date}</TableCell>
+                <TableCell>{row.issued}</TableCell>
                 <TableCell>{row.character}</TableCell>
-                <TableCell>{row.description}</TableCell>
-                <TableCell align="right" className={row.isPositive ? classes.positive : classes.negative}>{row.amount}</TableCell>
-                <TableCell align="right">{row.balance}</TableCell>
+                <TableCell>{row.buySell}</TableCell>
+                <TableCell>{row.item}</TableCell>
+                <TableCell align="right">{row.quantity}</TableCell>
+                <TableCell align="right">{row.price}</TableCell>
+                <TableCell>{row.state}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -215,4 +238,4 @@ const WalletJournalTab: React.FC<IWalletJournalTab> = ({
   );
 };
 
-export default WalletJournalTab;
+export default WalletOrdersTab;

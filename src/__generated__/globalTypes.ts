@@ -6,9 +6,19 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum MarketOrderOrderBy {
+  issued = "issued",
+}
+
 export enum Order {
   asc = "asc",
   desc = "desc",
+}
+
+export enum OrderState {
+  active = "active",
+  cancelled = "cancelled",
+  expired = "expired",
 }
 
 export enum OrderType {
@@ -38,6 +48,22 @@ export enum WalletTransactionOrderBy {
   quantity = "quantity",
   station = "station",
   unitPrice = "unitPrice",
+}
+
+export interface MarketOrderFilter {
+  characterId?: string | null;
+  state?: OrderStateFilter | null;
+}
+
+export interface MarketOrderOrderByInput {
+  column: MarketOrderOrderBy;
+  order: Order;
+}
+
+export interface OrderStateFilter {
+  active?: boolean | null;
+  expired?: boolean | null;
+  cancelled?: boolean | null;
 }
 
 export interface PageInput {

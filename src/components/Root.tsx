@@ -7,7 +7,7 @@ import { SnackbarProvider } from 'notistack';
 import layoutConfig from '../config/layoutConfig';
 import IdleTimer from 'react-idle-timer';
 import { makeStyles, Theme } from '@material-ui/core';
-import {IUser} from '../auth/auth0Verify';
+import { IUser } from '../auth/auth0Verify';
 import { useRouter } from 'next/router';
 
 const useStyles = makeStyles<Theme>(theme => ({
