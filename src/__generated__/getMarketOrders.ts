@@ -18,6 +18,11 @@ export interface GetMarketOrders_marketOrders_orders_character {
   name: string;
 }
 
+export interface GetMarketOrders_marketOrders_orders_location {
+  __typename: "Location";
+  name: string;
+}
+
 export interface GetMarketOrders_marketOrders_orders {
   __typename: "MarketOrder";
   id: string;
@@ -37,6 +42,10 @@ export interface GetMarketOrders_marketOrders_orders {
    * Character who issued the order
    */
   character: GetMarketOrders_marketOrders_orders_character;
+  /**
+   * Location where order was placed
+   */
+  location: GetMarketOrders_marketOrders_orders_location;
   /**
    * For buy orders, the amount of ISK in escrow
    */

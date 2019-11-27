@@ -11,6 +11,9 @@ query GetMarketOrders($page: PageInput, $filter: MarketOrderFilter, $orderBy: Ma
       character {
         name
       }
+      location {
+        name
+      }
       escrow
       isBuy
       price

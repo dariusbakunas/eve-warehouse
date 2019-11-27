@@ -10,7 +10,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import TablePagination from '@material-ui/core/TablePagination';
 import moment from 'moment';
-import {Order, MarketOrderOrderBy, OrderStateFilter} from '../__generated__/globalTypes';
+import { Order, MarketOrderOrderBy, OrderStateFilter } from '../__generated__/globalTypes';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Maybe from 'graphql/tsutils/Maybe';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -64,6 +64,8 @@ interface ITableRow {
   state: string;
   price: string;
   buySell: string;
+  expiresAt: string;
+  station: string;
 }
 
 const getTableData: (data?: GetMarketOrders) => { rows: ITableRow[]; total: number } = data => {
@@ -87,6 +89,10 @@ const getTableData: (data?: GetMarketOrders) => { rows: ITableRow[]; total: numb
     price: order.price.toLocaleString(undefined, { minimumFractionDigits: 2 }),
     state: order.state,
     buySell: order.isBuy ? 'buy' : 'sell',
+    expiresAt: moment(order.issued)
+      .add(order.duration, 'days')
+      .format('MM/DD/YYYY HH:mm'),
+    station: order.location.name,
   }));
 
   return {
@@ -196,24 +202,28 @@ const WalletOrdersTab: React.FC<IWalletOrdersTab> = ({
           <TableHead>
             <TableRow>
               <TableCell>{sortableHeader(MarketOrderOrderBy.issued, 'Issued')}</TableCell>
+              <TableCell>Expires</TableCell>
               <TableCell>Character</TableCell>
               <TableCell>Buy/Sell</TableCell>
               <TableCell>Item</TableCell>
               <TableCell align="right">Quantity</TableCell>
               <TableCell align="right">Price</TableCell>
               <TableCell>State</TableCell>
+              <TableCell>Station</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map(row => (
               <TableRow key={row.id}>
                 <TableCell>{row.issued}</TableCell>
+                <TableCell>{row.expiresAt}</TableCell>
                 <TableCell>{row.character}</TableCell>
                 <TableCell>{row.buySell}</TableCell>
                 <TableCell>{row.item}</TableCell>
                 <TableCell align="right">{row.quantity}</TableCell>
                 <TableCell align="right">{row.price}</TableCell>
                 <TableCell>{row.state}</TableCell>
+                <TableCell>{row.station}</TableCell>
               </TableRow>
             ))}
           </TableBody>
