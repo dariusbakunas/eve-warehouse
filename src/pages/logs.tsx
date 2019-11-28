@@ -119,8 +119,8 @@ const Logs = () => {
                   <TableCell>{row.date}</TableCell>
                   <TableCell>{row.character}</TableCell>
                   <TableCell>{row.category}</TableCell>
-                  <TableCell>{row.success ? <CheckIcon/> : <ClearIcon/>}</TableCell>
-                  <TableCell>{row.message}</TableCell>
+                  <TableCell>{row.success ? <CheckIcon /> : <ClearIcon />}</TableCell>
+                  <TableCell>{row.success ? row.message : row.error}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
