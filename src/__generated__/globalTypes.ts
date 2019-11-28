@@ -92,7 +92,7 @@ export interface PageInput {
 }
 
 export interface ProcessingLogFilter {
-  characterId?: number | null;
+  characterId?: string | null;
 }
 
 export interface RegistrationInput {

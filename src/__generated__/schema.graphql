@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Wed Nov 27 2019 18:07:28 GMT-0500 (Eastern Standard Time)
+# timestamp: Wed Nov 27 2019 22:10:29 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -204,7 +204,7 @@ type ProcessingLogEntry {
 }
 
 input ProcessingLogFilter {
-  characterId: Int
+  characterId: ID
 }
 
 enum ProcessingStatus {
