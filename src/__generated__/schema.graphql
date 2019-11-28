@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Mon Nov 25 2019 22:40:56 GMT-0500 (Eastern Standard Time)
+# timestamp: Wed Nov 27 2019 18:07:28 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -178,8 +178,43 @@ input PageInput {
   size: Int = 10
 }
 
+enum ProcessingCategory {
+  WALLET_TRANSACTIONS
+  WALLET_JOURNAL
+  BOOKMARKS
+  MARKET_ORDERS
+  ASSETS
+  CALENDAR
+  BLUEPRINTS
+  CLONES
+  IMPLANTS
+  CONTACTS
+  INDUSTRY_JOBS
+  STATS
+}
+
+type ProcessingLogEntry {
+  id: ID!
+  createdAt: DateTime!
+  character: Character
+  category: ProcessingCategory!
+  status: ProcessingStatus!
+  message: String!
+  error: String
+}
+
+input ProcessingLogFilter {
+  characterId: Int
+}
+
+enum ProcessingStatus {
+  SUCCESS
+  FAILURE
+}
+
 type Query {
   characters: [Character!]!
+  processingLogs(filter: ProcessingLogFilter): [ProcessingLogEntry!]!
   scopes: [Scope!]!
   userByEmail(email: String!): User
   marketOrders(page: PageInput, filter: MarketOrderFilter, orderBy: MarketOrderOrderByInput): MarketOrders!

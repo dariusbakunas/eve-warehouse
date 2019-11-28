@@ -13,6 +13,7 @@ import CharactersIcon from '../icons/CharactersIcon';
 import SkillsIcon from '../icons/SkillsIcon';
 import WalletIcon from '../icons/WalletIcon';
 import List from '@material-ui/core/List';
+import LogsIcon from '../icons/LogsIcon';
 
 const useStyles = makeStyles<Theme, { drawerWidth: number }>(theme => ({
   appBarSpacer: theme.mixins.toolbar,
@@ -102,6 +103,12 @@ export const SideMenu: React.FC<SideMenuProps> = ({ children, header }) => {
             <WalletIcon />
           </ListItemIcon>
           <ListItemText primary="Wallet" primaryTypographyProps={{ noWrap: true }} />
+        </ListItem>
+        <ListItem selected={pathname === '/logs'} button onClick={() => handleNavigate('/logs')}>
+          <ListItemIcon>
+            <LogsIcon />
+          </ListItemIcon>
+          <ListItemText primary="Logs" primaryTypographyProps={{ noWrap: true }} />
         </ListItem>
       </List>
     </Drawer>

@@ -26,6 +26,26 @@ export enum OrderType {
   sell = "sell",
 }
 
+export enum ProcessingCategory {
+  ASSETS = "ASSETS",
+  BLUEPRINTS = "BLUEPRINTS",
+  BOOKMARKS = "BOOKMARKS",
+  CALENDAR = "CALENDAR",
+  CLONES = "CLONES",
+  CONTACTS = "CONTACTS",
+  IMPLANTS = "IMPLANTS",
+  INDUSTRY_JOBS = "INDUSTRY_JOBS",
+  MARKET_ORDERS = "MARKET_ORDERS",
+  STATS = "STATS",
+  WALLET_JOURNAL = "WALLET_JOURNAL",
+  WALLET_TRANSACTIONS = "WALLET_TRANSACTIONS",
+}
+
+export enum ProcessingStatus {
+  FAILURE = "FAILURE",
+  SUCCESS = "SUCCESS",
+}
+
 export enum UserStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
@@ -69,6 +89,10 @@ export interface OrderStateFilter {
 export interface PageInput {
   index?: number | null;
   size?: number | null;
+}
+
+export interface ProcessingLogFilter {
+  characterId?: number | null;
 }
 
 export interface RegistrationInput {
