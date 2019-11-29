@@ -9,6 +9,7 @@ const getCurrentUser: (req: Request & { user?: ISessionUser }) => Promise<IUser>
 
       return {
         email: user.email,
+        picture: user.picture,
         status: user.status,
       };
     }

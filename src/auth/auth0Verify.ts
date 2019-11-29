@@ -8,6 +8,7 @@ import logger from '../logger';
 
 export interface IUser {
   email: string;
+  picture?: string;
   status: 'ACTIVE' | 'GUEST' | 'INACTIVE';
 }
 
@@ -41,7 +42,15 @@ const auth0Verify = async (
   refreshToken: string,
   extraParams: { access_token: string; id_token: string; scope: string; expires_in: number; token_type: string },
   profile: {
+    displayName: string;
+    id: string;
+    name: {
+      familyName: string;
+      givenName: string;
+    };
     emails: Array<{ value: string }>;
+    picture?: string;
+    nickname: string;
   },
   done: (error: Maybe<Error>, user?: ISessionUser) => void
 ) => {
@@ -68,6 +77,7 @@ const auth0Verify = async (
       refreshToken,
       expiresAt,
       email: profile.emails[0].value,
+      picture: profile.picture,
       status: userByEmail ? userByEmail.status : 'GUEST',
     });
   } catch (e) {

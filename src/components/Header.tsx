@@ -53,13 +53,7 @@ interface IHeaderProps {
   };
 }
 
-export const Header: React.FC<IHeaderProps> = ({
-  isAuthenticated,
-  onLoginClick,
-  onLogoutClick,
-  title,
-  user,
-}) => {
+export const Header: React.FC<IHeaderProps> = ({ isAuthenticated, onLoginClick, onLogoutClick, title, user }) => {
   const { drawerWidth, opened, setOpened } = useContext(LayoutContext)!;
 
   const classes = useStyles({
@@ -92,27 +86,12 @@ export const Header: React.FC<IHeaderProps> = ({
   }
 
   return (
-    <AppBar
-      position="fixed"
-      className={clsx(classes.appBar, opened && classes.appBarShift)}
-    >
+    <AppBar position="fixed" className={clsx(classes.appBar, opened && classes.appBarShift)}>
       <Toolbar className={classes.toolbar}>
-        <IconButton
-          edge="start"
-          color="inherit"
-          aria-label="open drawer"
-          onClick={() => setOpened(!opened)}
-          className={classes.menuButton}
-        >
+        <IconButton edge="start" color="inherit" aria-label="open drawer" onClick={() => setOpened(!opened)} className={classes.menuButton}>
           {opened ? <ChevronLeft /> : <MenuRounded />}
         </IconButton>
-        <Typography
-          component="h1"
-          variant="h6"
-          color="inherit"
-          noWrap
-          className={classes.title}
-        >
+        <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
           {title}
         </Typography>
         {!isAuthenticated && (
@@ -130,14 +109,7 @@ export const Header: React.FC<IHeaderProps> = ({
               onClick={handleAccountMenuOpen}
               color="inherit"
             >
-              {user && user.picture ? (
-                <Avatar
-                  alt={user.displayName || user.nickname || 'Account'}
-                  src={user.picture}
-                />
-              ) : (
-                <AccountCircle />
-              )}
+              {user && user.picture ? <Avatar alt={user.displayName || user.nickname || 'Account'} src={user.picture} /> : <AccountCircle />}
             </IconButton>
             {accountMenu}
           </React.Fragment>
