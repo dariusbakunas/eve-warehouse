@@ -54,8 +54,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flexWrap: 'wrap',
       overflowY: 'scroll',
       justifyContent: 'space-around',
-      //backgroundColor: theme.palette.grey.A100,
-      maxHeight: '300px',
+      maxHeight: '400px',
       padding: theme.spacing(2),
     },
     title: {
