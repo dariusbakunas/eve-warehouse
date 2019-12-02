@@ -24,9 +24,10 @@ interface CharacterTileProps {
   character: Character;
   onRemove: (id: string, name: string) => void;
   onUpdate: (character: Character) => void;
+  onOpenSkills: (character: Character) => void;
 }
 
-const CharacterTile: React.FC<CharacterTileProps> = ({ character, onRemove, onUpdate }) => {
+const CharacterTile: React.FC<CharacterTileProps> = ({ character, onRemove, onUpdate, onOpenSkills }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const menuOpen = Boolean(anchorEl);
   const classes = useStyles();
@@ -48,6 +49,11 @@ const CharacterTile: React.FC<CharacterTileProps> = ({ character, onRemove, onUp
   const handleUpdate = () => {
     setAnchorEl(null);
     onUpdate(character);
+  };
+
+  const handleOpenSkills = () => {
+    setAnchorEl(null);
+    onOpenSkills(character);
   };
 
   return (
@@ -97,6 +103,9 @@ const CharacterTile: React.FC<CharacterTileProps> = ({ character, onRemove, onUp
         open={menuOpen}
         onClose={handleClose}
       >
+        <MenuItem onClick={handleOpenSkills}>
+          <Typography>Skills</Typography>
+        </MenuItem>
         <MenuItem onClick={handleUpdate}>
           <Typography>Update Scopes</Typography>
         </MenuItem>

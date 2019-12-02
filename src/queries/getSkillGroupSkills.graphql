@@ -1,0 +1,14 @@
+query GetSkillGroupSkills($characterId: ID!, $skillGroupId: ID!) {
+  character(id: $characterId) {
+    skillGroup(id: $skillGroupId) {
+      skills {
+        id
+        name
+        multiplier
+        activeSkillLevel
+        trainedSkillLevel
+        skillPointsInSkill
+      }
+    }
+  }
+}

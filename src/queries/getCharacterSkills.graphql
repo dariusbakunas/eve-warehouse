@@ -1,0 +1,10 @@
+query GetCharacterSkills($id: ID!) {
+  character(id: $id) {
+    id
+    skillGroups {
+      id
+      name
+      totalSp
+    }
+  }
+}

@@ -23,6 +23,7 @@ import withWidth, { isWidthUp, WithWidthProps } from '@material-ui/core/withWidt
 import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 import { UpdateCharacter, UpdateCharacterVariables } from '../__generated__/UpdateCharacter';
 import Maybe from 'graphql/tsutils/Maybe';
+import CharacterSkillsDialog from '../dialogs/CharacterSkillsDialog';
 
 const useStyles = makeStyles<Theme>(theme => ({
   content: {
@@ -57,6 +58,7 @@ export const Characters: React.FC<WithWidthProps> = ({ width }) => {
   const classes = useStyles();
   const { confirmDialogProps, showAlert } = useConfirmDialog();
   const [scopeDialogOpen, setScopeDialogOpen] = React.useState(false);
+  const [skillsDialogOpen, setSkillsDialogOpen] = React.useState(false);
   const [currentCharacter, setCurrentCharacter] = React.useState<Maybe<Character>>(null);
   const router = useRouter();
 
@@ -142,6 +144,10 @@ export const Characters: React.FC<WithWidthProps> = ({ width }) => {
     setScopeDialogOpen(false);
   };
 
+  const handleSkillsDialogClose = () => {
+    setSkillsDialogOpen(false);
+  };
+
   const handleRemoveCharacter = (characterId: string, characterName: string) => {
     showAlert(`Remove '${characterName}'?`, `Character '${characterName}' will be removed and future updates disabled`, async confirm => {
       if (confirm) {
@@ -157,6 +163,11 @@ export const Characters: React.FC<WithWidthProps> = ({ width }) => {
   const handleUpdateCharacter = (character: Character) => {
     setCurrentCharacter(character);
     setScopeDialogOpen(true);
+  };
+
+  const handleOpenSkills = (character: Character) => {
+    setCurrentCharacter(character);
+    setSkillsDialogOpen(true);
   };
 
   const handleUpdateCharacterSubmit = (scopes?: string[]) => {
@@ -194,7 +205,12 @@ export const Characters: React.FC<WithWidthProps> = ({ width }) => {
           data.characters &&
           data.characters.map(character => (
             <GridListTile key={character.id}>
-              <CharacterTile character={character} onRemove={handleRemoveCharacter} onUpdate={handleUpdateCharacter} />
+              <CharacterTile
+                character={character}
+                onRemove={handleRemoveCharacter}
+                onUpdate={handleUpdateCharacter}
+                onOpenSkills={handleOpenSkills}
+              />
             </GridListTile>
           ))}
         {characterAddLoading && (
@@ -213,6 +229,7 @@ export const Characters: React.FC<WithWidthProps> = ({ width }) => {
         onSubmit={handleScopeDialogSubmit}
         scopes={currentCharacter ? currentCharacter.scopes : null}
       />
+      {currentCharacter && <CharacterSkillsDialog character={currentCharacter} open={skillsDialogOpen} onClose={handleSkillsDialogClose} />}
     </div>
   );
 };
