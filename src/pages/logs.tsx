@@ -32,7 +32,7 @@ import getProcessingLogsQuery from '../queries/getProcessingLogs.graphql';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      padding: theme.spacing(3),
+      padding: theme.spacing(2),
     },
     filterMenu: {
       width: '250px',

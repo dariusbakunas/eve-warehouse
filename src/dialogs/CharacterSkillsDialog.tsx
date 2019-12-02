@@ -16,6 +16,7 @@ import { GetSkillGroupSkills, GetSkillGroupSkillsVariables } from '../__generate
 import getSkillGroupSkillsQuery from '../queries/getSkillGroupSkills.graphql';
 import { useSnackbar } from 'notistack';
 import SkillProgress from '../components/SkillProgress';
+import Divider from '@material-ui/core/Divider';
 
 export interface ICharacterSkillsDialogProps {
   character: Character;
@@ -39,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'space-around',
       //backgroundColor: theme.palette.grey.A100,
       maxHeight: '300px',
-      padding: theme.spacing(2),
+      padding: theme.spacing(1),
     },
     gridList: {
       width: '100%',
@@ -99,12 +100,13 @@ const CharacterSkillsDialog: React.FC<ICharacterSkillsDialogProps> = ({ characte
             </GridList>
           </div>
         )}
+        <Divider variant="middle" />
         {skillGroupData && skillGroupData.character && skillGroupData.character.skillGroup && (
           <div className={classes.skillsWrapper}>
             <GridList cellHeight={'auto'} className={classes.gridList} cols={2}>
               {skillGroupData.character.skillGroup.skills.map(skill => (
                 <li className="MuiGridListTile-root" key={skill.id}>
-                  <SkillProgress trainedLevel={skill.trainedSkillLevel} injected={true} /> {skill.name}
+                  <SkillProgress trainedLevel={skill.trainedSkillLevel} injected={skill.trainedSkillLevel != null} /> {skill.name}
                 </li>
               ))}
             </GridList>

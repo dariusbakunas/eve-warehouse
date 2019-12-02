@@ -92,12 +92,12 @@ export const SideMenu: React.FC<SideMenuProps> = ({ children, header }) => {
           </ListItemIcon>
           <ListItemText primary="Characters" primaryTypographyProps={{ noWrap: true }} />
         </ListItem>
-        {/*<ListItem selected={pathname === '/skills'} button onClick={() => handleNavigate('/skills')}>*/}
-        {/*  <ListItemIcon>*/}
-        {/*    <SkillsIcon />*/}
-        {/*  </ListItemIcon>*/}
-        {/*  <ListItemText primary="Skills" primaryTypographyProps={{ noWrap: true }} />*/}
-        {/*</ListItem>*/}
+        <ListItem selected={pathname === '/skills'} button onClick={() => handleNavigate('/skills')}>
+          <ListItemIcon>
+            <SkillsIcon />
+          </ListItemIcon>
+          <ListItemText primary="Skills" primaryTypographyProps={{ noWrap: true }} />
+        </ListItem>
         <ListItem selected={pathname === '/wallet'} button onClick={() => handleNavigate('/wallet')}>
           <ListItemIcon>
             <WalletIcon />
