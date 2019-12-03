@@ -4,13 +4,16 @@ import React, { useState } from 'react';
 import DialogContent from '../components/DialogContent';
 import { GetCharacters_characters as Character } from '../__generated__/GetCharacters';
 import { useQuery } from '@apollo/react-hooks';
-import { GetCharacterSkills, GetCharacterSkillsVariables } from '../__generated__/GetCharacterSkills';
-import getCharacterSkillsQuery from '../queries/getCharacterSkills.graphql';
+import getCharacterSkillGroupsQuery from '../queries/getCharacterSkills.graphql';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import GridList from '@material-ui/core/GridList';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import SkillGroupButton from '../components/SkillGroupButton';
-import { GetCharacterSkills_character_skillGroups as SkillGroup } from '../__generated__/GetCharacterSkills';
+import {
+  GetCharacterSkillGroups,
+  GetCharacterSkillGroups_character_skillGroups as SkillGroup,
+  GetCharacterSkillGroupsVariables,
+} from '../__generated__/GetCharacterSkillGroups';
 import Maybe from 'graphql/tsutils/Maybe';
 import { GetSkillGroupSkills, GetSkillGroupSkillsVariables } from '../__generated__/GetSkillGroupSkills';
 import getSkillGroupSkillsQuery from '../queries/getSkillGroupSkills.graphql';
@@ -53,7 +56,7 @@ const CharacterSkillsDialog: React.FC<ICharacterSkillsDialogProps> = ({ characte
   const classes = useStyles();
   const [currentSkillGroup, setCurrentSkillGroup] = useState<Maybe<SkillGroup>>(null);
 
-  const { loading, data } = useQuery<GetCharacterSkills, GetCharacterSkillsVariables>(getCharacterSkillsQuery, {
+  const { loading, data } = useQuery<GetCharacterSkillGroups, GetCharacterSkillGroupsVariables>(getCharacterSkillGroupsQuery, {
     variables: {
       id: character.id,
     },

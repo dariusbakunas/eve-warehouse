@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Sun Dec 01 2019 18:25:49 GMT-0500 (Eastern Standard Time)
+# timestamp: Mon Dec 02 2019 08:04:34 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -254,6 +254,7 @@ type SkillGroup {
   name: String!
   skills: [Skill!]!
   totalSp: Int
+  trainedSp: Int
 }
 
 """

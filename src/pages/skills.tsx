@@ -15,13 +15,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Maybe from 'graphql/tsutils/Maybe';
 import withApollo from '../lib/withApollo';
-import getCharacterSkillsQuery from '../queries/getCharacterSkills.graphql';
+import getCharacterSkillGroupsQuery from '../queries/getCharacterSkillGroups.graphql';
 import getSkillGroupSkillsQuery from '../queries/getSkillGroupSkills.graphql';
 import {
-  GetCharacterSkills,
-  GetCharacterSkills_character_skillGroups as SkillGroup,
-  GetCharacterSkillsVariables,
-} from '../__generated__/GetCharacterSkills';
+  GetCharacterSkillGroups,
+  GetCharacterSkillGroups_character_skillGroups as SkillGroup,
+  GetCharacterSkillGroupsVariables,
+} from '../__generated__/GetCharacterSkillGroups';
 import { GetSkillGroupSkills, GetSkillGroupSkillsVariables } from '../__generated__/GetSkillGroupSkills';
 import { useSnackbar } from 'notistack';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -76,21 +76,27 @@ const Skills = () => {
 
   const { loading: characterNamesLoading, data: characterNamesData } = useQuery<GetCharacterNames>(getCharacterNames, {
     onCompleted: data => {
-      setCurrentCharacter(data.characters[0]);
-    },
-  });
-
-  const { loading: skillGroupsLoading, data: skillGroupData } = useQuery<GetCharacterSkills, GetCharacterSkillsVariables>(getCharacterSkillsQuery, {
-    skip: !currentCharacter,
-    variables: {
-      id: currentCharacter ? currentCharacter.id : '-1',
-    },
-    onCompleted: data => {
-      if (data.character && !currentSkillGroup) {
-        setCurrentSkillGroup(data.character.skillGroups[0]);
+      if (!currentCharacter) {
+        setCurrentCharacter(data.characters[0]);
       }
     },
   });
+
+  const { loading: skillGroupsLoading, data: skillGroupData } = useQuery<GetCharacterSkillGroups, GetCharacterSkillGroupsVariables>(
+    getCharacterSkillGroupsQuery,
+    {
+      skip: !currentCharacter,
+      fetchPolicy: 'no-cache',
+      variables: {
+        id: currentCharacter ? currentCharacter.id : '-1',
+      },
+      onCompleted: data => {
+        if (data.character && !currentSkillGroup) {
+          setCurrentSkillGroup(data.character.skillGroups[0]);
+        }
+      },
+    }
+  );
 
   const { loading: skillGroupSkillsLoading, data: skillGroupSkillsData } = useQuery<GetSkillGroupSkills, GetSkillGroupSkillsVariables>(
     getSkillGroupSkillsQuery,
@@ -149,7 +155,11 @@ const Skills = () => {
             <GridList cellHeight={'auto'} className={classes.gridList} cols={4}>
               {skillGroupData.character.skillGroups.map(group => (
                 <li className="MuiGridListTile-root" key={group.id}>
-                  <SkillGroupButton group={group} onClick={handleSkillGroupClick} selected={currentSkillGroup ? currentSkillGroup.id === group.id : false} />
+                  <SkillGroupButton
+                    group={group}
+                    onClick={handleSkillGroupClick}
+                    selected={currentSkillGroup ? currentSkillGroup.id === group.id : false}
+                  />
                 </li>
               ))}
             </GridList>
