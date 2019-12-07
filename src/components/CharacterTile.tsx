@@ -1,15 +1,15 @@
-import React from 'react';
 import { CardContent, makeStyles, Theme } from '@material-ui/core';
-import CardHeader from '@material-ui/core/CardHeader';
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import moment from 'moment';
-import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
 import { GetCharacters_characters as Character } from '../__generated__/GetCharacters';
+import Avatar from '@material-ui/core/Avatar';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import IconButton from '@material-ui/core/IconButton';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import moment from 'moment';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import React from 'react';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles<Theme>(theme => ({
   card: {

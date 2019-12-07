@@ -1,28 +1,28 @@
-import React, { useEffect } from 'react';
+import { AddCharacterVariables, AddCharacter as NewCharacterResponse } from '../__generated__/AddCharacter';
+import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
+import { GetCharacters_characters as Character, GetCharacters as CharactersResponse } from '../__generated__/GetCharacters';
+import { makeStyles, Theme } from '@material-ui/core';
+import { RemoveCharacter, RemoveCharacterVariables } from '../__generated__/RemoveCharacter';
+import { UpdateCharacter, UpdateCharacterVariables } from '../__generated__/UpdateCharacter';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
+import addCharacterMutation from '../queries/addCharacter.graphql';
 import Button from '@material-ui/core/Button';
+import CharacterScopeDialog from '../dialogs/CharacterScopeDialog';
+import CharacterTile from '../components/CharacterTile';
+import ConfirmDialog from '../dialogs/ConfirmDialog';
+import getCharactersQuery from '../queries/getCharacters.graphql';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
-import Skeleton from '@material-ui/lab/Skeleton';
-import { useSnackbar } from 'notistack';
-import { useMutation, useQuery } from '@apollo/react-hooks';
-import withApollo from '../lib/withApollo';
-import { useRouter } from 'next/router';
-import CharacterScopeDialog from '../dialogs/CharacterScopeDialog';
-import ConfirmDialog from '../dialogs/ConfirmDialog';
-import addCharacterMutation from '../queries/addCharacter.graphql';
+import Maybe from 'graphql/tsutils/Maybe';
+import React, { useEffect } from 'react';
 import removeCharacterMutation from '../queries/removeCharacter.graphql';
-import getCharactersQuery from '../queries/getCharacters.graphql';
+import Skeleton from '@material-ui/lab/Skeleton';
 import updateCharacterMutation from '../queries/updateCharacter.graphql';
 import useConfirmDialog from '../hooks/useConfirmDialog';
-import CharacterTile from '../components/CharacterTile';
-import { AddCharacterVariables, AddCharacter as NewCharacterResponse } from '../__generated__/AddCharacter';
-import { RemoveCharacter, RemoveCharacterVariables } from '../__generated__/RemoveCharacter';
-import { GetCharacters as CharactersResponse, GetCharacters_characters as Character } from '../__generated__/GetCharacters';
-import { makeStyles, Theme } from '@material-ui/core';
+import withApollo from '../lib/withApollo';
 import withWidth, { isWidthUp, WithWidthProps } from '@material-ui/core/withWidth';
-import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
-import { UpdateCharacter, UpdateCharacterVariables } from '../__generated__/UpdateCharacter';
-import Maybe from 'graphql/tsutils/Maybe';
 
 const useStyles = makeStyles<Theme>(theme => ({
   content: {
@@ -194,11 +194,7 @@ export const Characters: React.FC<WithWidthProps> = ({ width }) => {
           data.characters &&
           data.characters.map(character => (
             <GridListTile key={character.id}>
-              <CharacterTile
-                character={character}
-                onRemove={handleRemoveCharacter}
-                onUpdate={handleUpdateCharacter}
-              />
+              <CharacterTile character={character} onRemove={handleRemoveCharacter} onUpdate={handleUpdateCharacter} />
             </GridListTile>
           ))}
         {characterAddLoading && (

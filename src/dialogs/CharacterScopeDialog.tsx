@@ -1,19 +1,19 @@
-import React, { useEffect } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '../components/DialogContent';
+import { CharacterScopes } from '../__generated__/CharacterScopes';
 import { useQuery } from '@apollo/react-hooks';
 import Button from '@material-ui/core/Button';
+import characterScopesQuery from '../queries/characterScopes.graphql';
+import Checkbox from '@material-ui/core/Checkbox';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '../components/DialogActions';
+import DialogContent from '../components/DialogContent';
+import DialogTitle from '../components/DialogTitle';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
-import DialogTitle from '../components/DialogTitle';
-import DialogActions from '../components/DialogActions';
-import characterScopesQuery from '../queries/characterScopes.graphql';
-import { CharacterScopes } from '../__generated__/CharacterScopes';
 import Maybe from 'graphql/tsutils/Maybe';
+import React, { useEffect } from 'react';
 
 export interface CharacterScopeDialogProps {
   open: boolean;

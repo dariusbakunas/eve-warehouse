@@ -1,19 +1,19 @@
-import React from "react";
-import { makeStyles, Theme } from "@material-ui/core/styles";
-import Avatar from "@material-ui/core/Avatar";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
+import React from 'react';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import Avatar from '@material-ui/core/Avatar';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
     padding: 16,
-    transition: "0.3s"
+    transition: '0.3s',
   },
   avatar: {
     width: 60,
     height: 60,
-    transition: "0.3s"
-  }
+    transition: '0.3s',
+  },
 }));
 
 interface ISideMenuHeaderProps {
@@ -34,10 +34,10 @@ const SideMenuHeader: React.FC<ISideMenuHeaderProps> = ({ user }) => {
         <div style={{ paddingBottom: 16 }} />
         {user && (
           <React.Fragment>
-            <Typography variant={"h6"} noWrap>
+            <Typography variant={'h6'} noWrap>
               {user.name}
             </Typography>
-            <Typography color={"textSecondary"} noWrap gutterBottom>
+            <Typography color={'textSecondary'} noWrap gutterBottom>
               {user.email}
             </Typography>
           </React.Fragment>

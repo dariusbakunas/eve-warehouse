@@ -1,10 +1,10 @@
-import React from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '../components/DialogContent';
 import Button from '@material-ui/core/Button';
-import DialogTitle from '../components/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '../components/DialogActions';
+import DialogContent from '../components/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '../components/DialogTitle';
+import React from 'react';
 
 export interface ConfirmDialogProps {
   open: boolean;
@@ -13,12 +13,7 @@ export interface ConfirmDialogProps {
   text?: string;
 }
 
-const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
-  open,
-  onClose,
-  title,
-  text,
-}) => {
+const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, onClose, title, text }) => {
   const handleSubmit = () => {
     onClose(true);
   };
@@ -28,17 +23,10 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   };
 
   return (
-    <Dialog
-      onClose={handleCancel}
-      aria-labelledby="simple-dialog-title"
-      aria-describedby="alert-dialog-description"
-      open={open}
-    >
+    <Dialog fullWidth={true} onClose={handleCancel} aria-labelledby="simple-dialog-title" aria-describedby="alert-dialog-description" open={open}>
       <DialogTitle onClose={handleCancel}>{title}</DialogTitle>
       <DialogContent dividers>
-        <DialogContentText id="alert-dialog-description">
-          {text}
-        </DialogContentText>
+        <DialogContentText id="alert-dialog-description">{text}</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCancel} color="primary">
