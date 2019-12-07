@@ -1,0 +1,6 @@
+query GetWarehouses {
+  warehouses {
+    id
+    name
+  }
+}

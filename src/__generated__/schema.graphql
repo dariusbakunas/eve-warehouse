@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Mon Dec 02 2019 08:04:34 GMT-0500 (Eastern Standard Time)
+# timestamp: Sat Dec 07 2019 10:47:55 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -151,6 +151,9 @@ type Mutation {
   updateCharacter(id: ID!, code: String!): Character!
   removeCharacter(id: ID!): ID!
   register(input: RegistrationInput!): User!
+  addWarehouse(name: String!): Warehouse!
+  removeWarehouse(id: ID!): ID!
+  updateWarehouse(id: ID!, name: String!): Warehouse!
 }
 
 enum Order {
@@ -225,6 +228,7 @@ type Query {
   marketOrders(page: PageInput, filter: MarketOrderFilter, orderBy: MarketOrderOrderByInput): MarketOrders!
   walletJournal(page: PageInput, filter: WalletJournalFilter, orderBy: WalletJournalOrderByInput): JournalEntries!
   walletTransactions(page: PageInput, filter: WalletTransactionFilter, orderBy: WalletTransactionOrderByInput): WalletTransactions!
+  warehouses: [Warehouse!]!
 }
 
 input RegistrationInput {
@@ -254,6 +258,7 @@ type SkillGroup {
   name: String!
   skills: [Skill!]!
   totalSp: Int
+  totalLevels: Int
   trainedSp: Int
 }
 
@@ -333,4 +338,9 @@ input WalletTransactionOrderByInput {
 type WalletTransactions {
   total: Int!
   transactions: [WalletTransaction!]!
+}
+
+type Warehouse {
+  id: ID!
+  name: String!
 }

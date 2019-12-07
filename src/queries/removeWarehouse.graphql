@@ -1,0 +1,3 @@
+mutation RemoveWarehouse($id: ID!) {
+  removeWarehouse(id: $id)
+}
