@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Sat Dec 07 2019 10:47:55 GMT-0500 (Eastern Standard Time)
+# timestamp: Sun Dec 08 2019 09:02:19 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -151,9 +151,17 @@ type Mutation {
   updateCharacter(id: ID!, code: String!): Character!
   removeCharacter(id: ID!): ID!
   register(input: RegistrationInput!): User!
+  addItemsToWarehouse(id: ID!, input: NewWarehouseItemInput!): WarehouseItem!
+  removeItemsFromWarehouse(id: ID!, itemId: ID!, quantity: Int!): WarehouseItem
   addWarehouse(name: String!): Warehouse!
   removeWarehouse(id: ID!): ID!
   updateWarehouse(id: ID!, name: String!): Warehouse!
+}
+
+input NewWarehouseItemInput {
+  id: ID!
+  quantity: Int!
+  unitCost: Float!
 }
 
 enum Order {
@@ -228,6 +236,7 @@ type Query {
   marketOrders(page: PageInput, filter: MarketOrderFilter, orderBy: MarketOrderOrderByInput): MarketOrders!
   walletJournal(page: PageInput, filter: WalletJournalFilter, orderBy: WalletJournalOrderByInput): JournalEntries!
   walletTransactions(page: PageInput, filter: WalletTransactionFilter, orderBy: WalletTransactionOrderByInput): WalletTransactions!
+  warehouse(id: ID!): Warehouse
   warehouses: [Warehouse!]!
 }
 
@@ -343,4 +352,12 @@ type WalletTransactions {
 type Warehouse {
   id: ID!
   name: String!
+  items: [WarehouseItem!]!
+}
+
+type WarehouseItem {
+  id: ID!
+  name: String!
+  quantity: Int!
+  unitCost: Float!
 }

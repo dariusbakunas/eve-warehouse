@@ -1,0 +1,11 @@
+query GetWarehouseItems($id: ID!) {
+  warehouse(id: $id) {
+    id
+    items {
+      id
+      name
+      quantity
+      unitCost
+    }
+  }
+}
