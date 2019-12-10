@@ -1,0 +1,3 @@
+query GetTransactionIds($filter: WalletTransactionFilter) {
+  walletTransactionIds(filter: $filter)
+}

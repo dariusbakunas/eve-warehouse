@@ -1,22 +1,29 @@
-import React, { useMemo } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import Toolbar from '@material-ui/core/Toolbar';
+import { GetTransactionIds, GetTransactionIdsVariables } from '../__generated__/GetTransactionIds';
+import { GetTransactions, GetTransactionsVariables } from '../__generated__/GetTransactions';
 import { Order, OrderType, WalletTransactionOrderBy } from '../__generated__/globalTypes';
+import { useLazyQuery, useQuery } from '@apollo/react-hooks';
+import { useSnackbar } from 'notistack';
+import Checkbox from '@material-ui/core/Checkbox';
+import Chip from '@material-ui/core/Chip';
+import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
+import getTransactionIdsQuery from '../queries/getTransactionIds.graphql';
+import getTransactionsQuery from '../queries/getTransactions.graphql';
+import IconButton from '@material-ui/core/IconButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Maybe from 'graphql/tsutils/Maybe';
 import moment from 'moment';
-import { useQuery } from '@apollo/react-hooks';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import React, { useMemo } from 'react';
 import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
-import { GetTransactions, GetTransactionsVariables } from '../__generated__/GetTransactions';
-import getTransactionsQuery from '../queries/getTransactions.graphql';
-import { useSnackbar } from 'notistack';
-import Chip from '@material-ui/core/Chip';
+import TableRow from '@material-ui/core/TableRow';
+import TableSortLabel from '@material-ui/core/TableSortLabel';
+import Toolbar from '@material-ui/core/Toolbar';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -24,6 +31,16 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       justifyContent: 'left',
       flexWrap: 'wrap',
+      '& > *': {
+        margin: theme.spacing(0.5),
+      },
+      paddingLeft: theme.spacing(1.5),
+      paddingRight: theme.spacing(1.5),
+    },
+    selectToolbar: {
+      display: 'flex',
+      background: theme.palette.primary.light,
+      justifyContent: 'left',
       '& > *': {
         margin: theme.spacing(0.5),
       },
@@ -45,6 +62,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     tableWrapper: {
       overflowX: 'scroll',
+    },
+    title: {
+      flex: '1 1 100%',
     },
     visuallyHidden: {
       border: 0,
@@ -138,6 +158,18 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
 }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const [selected, setSelected] = React.useState<Set<string>>(new Set());
+
+  const [getTransactionIds, { loading: idsLoading, data: transactionIds }] = useLazyQuery<GetTransactionIds, GetTransactionIdsVariables>(
+    getTransactionIdsQuery,
+    {
+      fetchPolicy: 'no-cache',
+      onCompleted: data => {
+        setSelected(new Set(data.walletTransactionIds));
+      },
+    }
+  );
+
   const { loading, data } = useQuery<GetTransactions, GetTransactionsVariables>(getTransactionsQuery, {
     variables: {
       page: {
@@ -192,8 +224,57 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
     onClearItemFilter();
   };
 
+  const numSelected = selected.size;
+
+  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      if (data && data.walletTransactions) {
+        if (total > data.walletTransactions.transactions.length) {
+          // if this is paged we need to get all ids
+          getTransactionIds({
+            variables: {
+              filter: {
+                characterId: characterFilter ? characterFilter.id : null,
+                orderType,
+                item: itemFilter,
+              },
+            },
+          });
+        } else {
+          setSelected(new Set(data.walletTransactions.transactions.map(transaction => transaction.id)));
+        }
+      }
+    } else {
+      setSelected(new Set());
+    }
+  };
+
+  const handleRowSelect = (event: React.MouseEvent<unknown>, id: string) => {
+    const newSelected = new Set(selected);
+
+    if (selected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+
+    setSelected(newSelected);
+  };
+
   return (
     <React.Fragment>
+      {!!numSelected && (
+        <Toolbar className={classes.selectToolbar}>
+          <Typography className={classes.title} color="inherit" variant="subtitle1">
+            {numSelected} selected
+          </Typography>
+          <Tooltip title="Add to warehouse">
+            <IconButton aria-label="add to warehouse">
+              <CreateNewFolderIcon />
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
+      )}
       {(orderType || characterFilter || itemFilter) && (
         <Toolbar className={classes.filterToolbar}>
           {orderType && <Chip label={`Buy/Sell: ${orderType}`} onDelete={handleRemoveOrderTypeFilter} variant={'outlined'} />}
@@ -201,11 +282,19 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
           {itemFilter && <Chip label={`Item: ${itemFilter}`} onDelete={handleRemoveItemFilter} variant={'outlined'} />}
         </Toolbar>
       )}
-      {loading && <LinearProgress />}
+      {(loading || idsLoading) && <LinearProgress />}
       <div className={classes.tableWrapper}>
         <Table size="small" aria-label="wallet transactions" className={classes.table}>
           <TableHead>
             <TableRow>
+              <TableCell padding="checkbox">
+                <Checkbox
+                  indeterminate={numSelected > 0 && numSelected < total}
+                  checked={numSelected === total}
+                  onChange={handleSelectAllClick}
+                  inputProps={{ 'aria-label': 'select all desserts' }}
+                />
+              </TableCell>
               <TableCell>{sortableHeader(WalletTransactionOrderBy.date, 'Date')}</TableCell>
               <TableCell>{sortableHeader(WalletTransactionOrderBy.character, 'Character')}</TableCell>
               <TableCell>{sortableHeader(WalletTransactionOrderBy.item, 'Item')}</TableCell>
@@ -217,20 +306,36 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map(row => (
-              <TableRow key={row.id}>
-                <TableCell>{row.date}</TableCell>
-                <TableCell>{row.character}</TableCell>
-                <TableCell>{row.item}</TableCell>
-                <TableCell align="right">{row.price}</TableCell>
-                <TableCell align="right">{row.quantity}</TableCell>
-                <TableCell align="right" className={row.isBuy ? classes.negative : classes.positive}>
-                  {row.credit}
-                </TableCell>
-                <TableCell>{row.client}</TableCell>
-                <TableCell>{row.station}</TableCell>
-              </TableRow>
-            ))}
+            {rows.map(row => {
+              const isRowSelected = selected.has(row.id);
+              const labelId = `table-checkbox-${row.id}`;
+
+              return (
+                <TableRow
+                  key={row.id}
+                  hover
+                  role="checkbox"
+                  aria-checked={isRowSelected}
+                  tabIndex={-1}
+                  selected={isRowSelected}
+                  onClick={event => handleRowSelect(event, row.id)}
+                >
+                  <TableCell padding="checkbox">
+                    <Checkbox checked={isRowSelected} inputProps={{ 'aria-labelledby': labelId }} />
+                  </TableCell>
+                  <TableCell>{row.date}</TableCell>
+                  <TableCell>{row.character}</TableCell>
+                  <TableCell id={labelId}>{row.item}</TableCell>
+                  <TableCell align="right">{row.price}</TableCell>
+                  <TableCell align="right">{row.quantity}</TableCell>
+                  <TableCell align="right" className={row.isBuy ? classes.negative : classes.positive}>
+                    {row.credit}
+                  </TableCell>
+                  <TableCell>{row.client}</TableCell>
+                  <TableCell>{row.station}</TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>

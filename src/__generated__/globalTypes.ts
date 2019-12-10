@@ -115,6 +115,7 @@ export interface WalletJournalOrderByInput {
 }
 
 export interface WalletTransactionFilter {
+  ids?: string[] | null;
   item?: string | null;
   characterId?: string | null;
   orderType?: OrderType | null;
