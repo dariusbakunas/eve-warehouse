@@ -8,6 +8,11 @@ module.exports = {
     '!**/node_modules/**',
     '!**/vendor/**',
   ],
+  globals: {
+    'ts-jest': {
+      babelConfig: true,
+    },
+  },
   preset: 'ts-jest',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   testEnvironment: 'node',
