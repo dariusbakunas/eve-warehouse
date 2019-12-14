@@ -19,18 +19,18 @@ jobs:
   include:
   - stage: install
     script:
-    - npm install
+    - yarn install
   - stage: test
     script:
     - CI=true npm run coveralls
   - stage: build
     script:
-    - npm run build
-    - npm prune --production && npm install --production
+    - yarn build
+    - rm -rf node_modules
+    - yarn install --production --ignore-scripts
     - docker build -t travis-ci-build-stage -f Dockerfile.ci .
     - docker tag travis-ci-build-stage gcr.io/$GC_PROJECT_ID/eve-app:$TRAVIS_BUILD_NUMBER
     - openssl aes-256-cbc -K $encrypted_51d2d66657cc_key -iv $encrypted_51d2d66657cc_iv -in gce.json.enc -out gce.json -d
     - cat gce.json | docker login -u _json_key --password-stdin https://gcr.io
     - docker push gcr.io/$GC_PROJECT_ID/eve-app:$TRAVIS_BUILD_NUMBER
     if: "(branch = dev OR branch = master) AND type = push"
-before_install:
