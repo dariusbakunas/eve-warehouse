@@ -1,0 +1,10 @@
+query GetTransactionSummary($ids: [ID!]!) {
+  walletTransactionSummary(ids: $ids) {
+    items {
+      id
+      credit
+      quantity
+      name
+    }
+  }
+}

@@ -12,6 +12,7 @@ import ConfirmDialog from '../dialogs/ConfirmDialog';
 import getWarehousesQuery from '../queries/getWarehouses.graphql';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
+import Maybe from 'graphql/tsutils/Maybe';
 import Paper from '@material-ui/core/Paper';
 import React, { useState } from 'react';
 import removeWarehouseMutation from '../queries/removeWarehouse.graphql';
@@ -25,7 +26,6 @@ import WarehouseItemsDialog from '../dialogs/WarehouseItemsDialog';
 import WarehouseTile from '../components/WarehouseTile';
 import withApollo from '../lib/withApollo';
 import withWidth, { isWidthUp, WithWidthProps } from '@material-ui/core/withWidth';
-import Maybe from 'graphql/tsutils/Maybe';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {

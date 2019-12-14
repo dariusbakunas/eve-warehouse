@@ -1,21 +1,21 @@
-import React from 'react';
 import { createStyles, makeStyles, TableRow, Theme } from '@material-ui/core';
-import { useSnackbar } from 'notistack';
-import getJournalEntriesQuery from '../queries/getJournal.graphql';
 import { GetJournal, GetJournalVariables } from '../__generated__/GetJournal';
-import { useQuery } from '@apollo/react-hooks';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableCell from '@material-ui/core/TableCell';
-import TableBody from '@material-ui/core/TableBody';
-import TablePagination from '@material-ui/core/TablePagination';
-import moment from 'moment';
 import { Order, WalletJournalOrderBy } from '../__generated__/globalTypes';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Maybe from 'graphql/tsutils/Maybe';
-import Toolbar from '@material-ui/core/Toolbar';
+import { useQuery } from '@apollo/react-hooks';
+import { useSnackbar } from 'notistack';
 import Chip from '@material-ui/core/Chip';
+import getJournalEntriesQuery from '../queries/getJournal.graphql';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Maybe from 'graphql/tsutils/Maybe';
+import moment from 'moment';
+import React from 'react';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TablePagination from '@material-ui/core/TablePagination';
+import TableSortLabel from '@material-ui/core/TableSortLabel';
+import Toolbar from '@material-ui/core/Toolbar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -189,7 +189,9 @@ const WalletJournalTab: React.FC<IWalletJournalTab> = ({
                 <TableCell>{row.date}</TableCell>
                 <TableCell>{row.character}</TableCell>
                 <TableCell>{row.description}</TableCell>
-                <TableCell align="right" className={row.isPositive ? classes.positive : classes.negative}>{row.amount}</TableCell>
+                <TableCell align="right" className={row.isPositive ? classes.positive : classes.negative}>
+                  {row.amount}
+                </TableCell>
                 <TableCell align="right">{row.balance}</TableCell>
               </TableRow>
             ))}

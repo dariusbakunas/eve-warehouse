@@ -45,6 +45,7 @@ export interface GetTransactions_walletTransactions_transactions {
 export interface GetTransactions_walletTransactions {
   __typename: "WalletTransactions";
   total: number;
+  lastUpdate: any | null;
   transactions: GetTransactions_walletTransactions_transactions[];
 }
 

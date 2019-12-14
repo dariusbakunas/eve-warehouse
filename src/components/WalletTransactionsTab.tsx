@@ -1,9 +1,16 @@
+import {
+  AddItemsToWarehouse,
+  AddItemsToWarehouseVariables,
+  AddItemsToWarehouse_addItemsToWarehouse as NewWarehouseItem,
+} from '../__generated__/AddItemsToWarehouse';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { GetTransactionIds, GetTransactionIdsVariables } from '../__generated__/GetTransactionIds';
 import { GetTransactions, GetTransactionsVariables } from '../__generated__/GetTransactions';
-import { Order, OrderType, WalletTransactionOrderBy } from '../__generated__/globalTypes';
-import { useLazyQuery, useQuery } from '@apollo/react-hooks';
+import { NewWarehouseItemInput, Order, OrderType, WalletTransactionOrderBy } from '../__generated__/globalTypes';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
 import { useSnackbar } from 'notistack';
+import addItemsToWarehouseMutation from '../queries/addItemsToWarehouse.graphql';
+import AddTransactionsToWarehouseDialog from '../dialogs/AddTransactionsToWarehouseDialog';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
 import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
@@ -13,7 +20,7 @@ import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Maybe from 'graphql/tsutils/Maybe';
 import moment from 'moment';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -158,7 +165,8 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
 }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
-  const [selected, setSelected] = React.useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [addToWarehouseDialogOpen, setAddToWarehouseDialogOpen] = useState(false);
 
   const [getTransactionIds, { loading: idsLoading, data: transactionIds }] = useLazyQuery<GetTransactionIds, GetTransactionIdsVariables>(
     getTransactionIdsQuery,
@@ -170,7 +178,12 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
     }
   );
 
-  const { loading, data } = useQuery<GetTransactions, GetTransactionsVariables>(getTransactionsQuery, {
+  useEffect(() => {
+    // remove selection if filter changes
+    setSelected(new Set());
+  }, [characterFilter, orderType, itemFilter]);
+
+  const { loading: transactionsLoading, data } = useQuery<GetTransactions, GetTransactionsVariables>(getTransactionsQuery, {
     variables: {
       page: {
         index: page,
@@ -191,6 +204,19 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
     },
   });
 
+  const [addItemsToWarehouse, { loading: addingItemsToWarehouseLoading }] = useMutation<AddItemsToWarehouse, AddItemsToWarehouseVariables>(
+    addItemsToWarehouseMutation,
+    {
+      onError: error => {
+        enqueueSnackbar(`Failed to add items: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
+      },
+      onCompleted: () => {
+        enqueueSnackbar(`Items added successfully`, { variant: 'success', autoHideDuration: 5000 });
+      },
+    }
+  );
+
+  const loading = transactionsLoading || idsLoading || addingItemsToWarehouseLoading;
   const { rows, total } = useMemo<{ rows: ITableRow[]; total: number }>(() => getTableData(data), [data]);
 
   const handleSort = (event: React.MouseEvent<unknown>, column: WalletTransactionOrderBy) => {
@@ -261,15 +287,32 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
     setSelected(newSelected);
   };
 
+  const handleAddTransactionsToWarehouse = (warehouseId: string, items: NewWarehouseItemInput[]) => {
+    addItemsToWarehouse({
+      variables: {
+        id: warehouseId,
+        input: items,
+      },
+    });
+    setAddToWarehouseDialogOpen(false);
+  };
+
   return (
     <React.Fragment>
+      {!numSelected && (
+        <Toolbar className={classes.filterToolbar}>
+          <Typography className={classes.title} color="inherit" variant="subtitle1">
+            Last update: {data ? moment(data.walletTransactions.lastUpdate).format('MM/DD/YYYY HH:mm') : 'N/A'}
+          </Typography>
+        </Toolbar>
+      )}
       {!!numSelected && (
         <Toolbar className={classes.selectToolbar}>
           <Typography className={classes.title} color="inherit" variant="subtitle1">
             {numSelected} selected
           </Typography>
           <Tooltip title="Add to warehouse">
-            <IconButton aria-label="add to warehouse">
+            <IconButton aria-label="add to warehouse" onClick={() => setAddToWarehouseDialogOpen(true)}>
               <CreateNewFolderIcon />
             </IconButton>
           </Tooltip>
@@ -282,7 +325,7 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
           {itemFilter && <Chip label={`Item: ${itemFilter}`} onDelete={handleRemoveItemFilter} variant={'outlined'} />}
         </Toolbar>
       )}
-      {(loading || idsLoading) && <LinearProgress />}
+      {loading && <LinearProgress />}
       <div className={classes.tableWrapper}>
         <Table size="small" aria-label="wallet transactions" className={classes.table}>
           <TableHead>
@@ -353,6 +396,12 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
         }}
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
+      <AddTransactionsToWarehouseDialog
+        open={addToWarehouseDialogOpen}
+        transactionIds={selected}
+        onSubmit={handleAddTransactionsToWarehouse}
+        onCancel={() => setAddToWarehouseDialogOpen(false)}
       />
     </React.Fragment>
   );

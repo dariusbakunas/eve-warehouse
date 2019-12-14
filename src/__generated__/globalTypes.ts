@@ -82,6 +82,12 @@ export interface MarketOrderOrderByInput {
   order: Order;
 }
 
+export interface NewWarehouseItemInput {
+  id: string;
+  quantity: number;
+  unitCost: number;
+}
+
 export interface OrderStateFilter {
   active?: boolean | null;
   expired?: boolean | null;
