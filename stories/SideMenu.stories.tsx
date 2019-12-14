@@ -1,15 +1,14 @@
-import React from 'react';
-
-import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import Header from '../src/components/Header';
 import { SideMenu } from '../src/components/SideMenu';
+import { storiesOf } from '@storybook/react';
+import CharactersIcon from '../src/icons/CharactersIcon';
+import DashboardIcon from '@material-ui/icons/Dashboard';
+import Header from '../src/components/Header';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import CharactersIcon from '../src/icons/CharactersIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import React from 'react';
 import SideMenuHeader from '../src/components/SideMenuHeader';
 
 const MenuExample: React.FC = () => {

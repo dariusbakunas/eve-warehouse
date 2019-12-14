@@ -33,6 +33,8 @@ const useStyles = makeStyles((theme: Theme) =>
 const WarehouseItemsDialog: React.FC<IWarehouseDialogProps> = ({ open, warehouse, onClose }) => {
   const classes = useStyles();
   const { loading, data } = useQuery<GetWarehouseItems, GetWarehouseItemsVariables>(getWarehouseItemsQuery, {
+    skip: !open,
+    fetchPolicy: 'no-cache',
     variables: {
       id: warehouse.id,
     },

@@ -18,7 +18,7 @@ import React, { useEffect } from 'react';
 export interface CharacterScopeDialogProps {
   open: boolean;
   onSubmit: (scopes?: string[]) => void;
-  onCancel: () => void;
+  onCancel?: () => void;
   scopes?: Maybe<string[]>;
 }
 
