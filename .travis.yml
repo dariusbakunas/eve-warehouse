@@ -23,11 +23,11 @@ jobs:
     - yarn install
   - stage: test
     script:
-    - CI=true npm run coveralls
+    - CI=true yarn coveralls
   - stage: build
     script:
     - yarn build
-    - rm -rf node_modules
+    - find ./node_modules -mindepth 1 -name .bin -prune -o -type d -exec rm -rf '{}' \;
     - yarn install --production --ignore-scripts
     - docker build -t travis-ci-build-stage -f Dockerfile.ci .
     - docker tag travis-ci-build-stage gcr.io/$GC_PROJECT_ID/eve-app:$TRAVIS_BUILD_NUMBER
