@@ -15,7 +15,7 @@ env:
   - EVE_LOGIN_URL=https://login.eveonline.com
   - EVE_CLIENT_ID=6824e828c9f64b61abecdcb5c13496c5
   - EVE_CHARACTER_REDIRECT_URL=https://eve-app.geekspace.us/characters
-install: yarn
+install: yarn install --production=false
 script:
   - CI=true yarn coveralls
   - yarn build
