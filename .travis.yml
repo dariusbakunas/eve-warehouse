@@ -19,8 +19,6 @@ install: yarn install --production=false
 script:
   - CI=true yarn coveralls
   - yarn build
-  - find ./node_modules -mindepth 1 -name .bin -prune -o -type d -exec rm -rf '{}' \;
-  - yarn install --production --ignore-scripts
   - docker build -t travis-ci-build-stage -f Dockerfile.ci .
   - docker tag travis-ci-build-stage gcr.io/$GC_PROJECT_ID/eve-app:$TRAVIS_BUILD_NUMBER
   - openssl aes-256-cbc -K $encrypted_51d2d66657cc_key -iv $encrypted_51d2d66657cc_iv -in gce.json.enc -out gce.json -d
