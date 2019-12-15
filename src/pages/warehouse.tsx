@@ -16,7 +16,6 @@ import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import getWarehousesQuery from '../queries/getWarehouses.graphql';
-import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import React, { useState } from 'react';
 import removeWarehouseMutation from '../queries/removeWarehouse.graphql';
@@ -145,7 +144,7 @@ const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
   };
 
   const handleAddItem = (id: string, name: string) => {
-
+    console.log('ADD');
   };
 
   //const cellHeight = warehousesLoading ? 80 : 'auto';

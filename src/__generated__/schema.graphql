@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Sat Dec 14 2019 16:30:37 GMT-0500 (Eastern Standard Time)
+# timestamp: Sat Dec 14 2019 19:57:05 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -152,7 +152,7 @@ type Mutation {
   removeCharacter(id: ID!): ID!
   register(input: RegistrationInput!): User!
   addItemsToWarehouse(id: ID!, input: [NewWarehouseItemInput!]!): [WarehouseItem!]!
-  removeItemsFromWarehouse(id: ID!, itemId: ID!, quantity: Int!): WarehouseItem
+  removeItemsFromWarehouse(id: ID!, itemIds: [ID!]!): [ID!]!
   addWarehouse(name: String!): Warehouse!
   removeWarehouse(id: ID!): ID!
   updateWarehouse(id: ID!, name: String!): Warehouse!

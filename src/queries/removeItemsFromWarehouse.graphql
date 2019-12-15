@@ -1,0 +1,3 @@
+mutation RemoveItemsFromWarehouse($id: ID!, $itemIds: [ID!]!) {
+  removeItemsFromWarehouse(id: $id, itemIds: $itemIds)
+}

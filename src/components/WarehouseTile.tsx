@@ -1,20 +1,25 @@
 import { GetWarehouseItems, GetWarehouseItemsVariables } from '../__generated__/GetWarehouseItems';
 import { makeStyles, TableRow, Theme } from '@material-ui/core';
-import { useQuery } from '@apollo/react-hooks';
+import { RemoveItemsFromWarehouse, RemoveItemsFromWarehouseVariables } from '../__generated__/RemoveItemsFromWarehouse';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useSnackbar } from 'notistack';
 import { GetWarehouses_warehouses as Warehouse } from '../__generated__/GetWarehouses';
 import Checkbox from '@material-ui/core/Checkbox';
+import ConfirmDialog from '../dialogs/ConfirmDialog';
+import DeleteIcon from '@material-ui/icons/Delete';
 import getWarehouseItemsQuery from '../queries/getWarehouseItems.graphql';
+import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import React, { useMemo, useState } from 'react';
+import removeItemsFromWarehouseMutation from '../queries/removeItemsFromWarehouse.graphql';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
+import Typography from '@material-ui/core/Typography';
+import useConfirmDialog from '../hooks/useConfirmDialog';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -64,14 +69,32 @@ interface IWarehouseTileProps {
 
 const WarehouseTile: React.FC<IWarehouseTileProps> = ({ warehouse }) => {
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
+  const { confirmDialogProps, showAlert } = useConfirmDialog();
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  const { loading, data } = useQuery<GetWarehouseItems, GetWarehouseItemsVariables>(getWarehouseItemsQuery, {
+  const { loading, data, refetch: refetchItems } = useQuery<GetWarehouseItems, GetWarehouseItemsVariables>(getWarehouseItemsQuery, {
     fetchPolicy: 'no-cache',
     variables: {
       id: warehouse.id,
     },
   });
+
+  const [removeItems, { loading: removeItemsLoading }] = useMutation<RemoveItemsFromWarehouse, RemoveItemsFromWarehouseVariables>(
+    removeItemsFromWarehouseMutation,
+    {
+      onError: error => {
+        enqueueSnackbar(`Failed to remove items: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
+      },
+      onCompleted: data => {
+        enqueueSnackbar(`Items removed successfully`, { variant: 'success', autoHideDuration: 5000 });
+        refetchItems({
+          id: warehouse.id,
+        });
+        setSelected(new Set());
+      },
+    }
+  );
 
   const numSelected = selected.size;
 
@@ -93,6 +116,19 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ warehouse }) => {
     } else {
       setSelected(new Set());
     }
+  };
+
+  const handleRemoveItems = () => {
+    showAlert(`Remove selected items?`, `Selected items will be removed`, async confirm => {
+      if (confirm) {
+        removeItems({
+          variables: {
+            id: warehouse.id,
+            itemIds: [...selected],
+          },
+        });
+      }
+    });
   };
 
   const totalIsk = useMemo(() => {
@@ -120,7 +156,7 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ warehouse }) => {
             {numSelected} selected
           </Typography>
           <Tooltip title="Remove">
-            <IconButton aria-label="remove selected items from warehouse" onClick={() => {}}>
+            <IconButton aria-label="remove selected items from warehouse" onClick={handleRemoveItems}>
               <DeleteIcon />
             </IconButton>
           </Tooltip>
@@ -172,6 +208,7 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ warehouse }) => {
               })}
             </TableBody>
           </Table>
+          <ConfirmDialog {...confirmDialogProps} />
         </div>
       )}
     </div>
