@@ -73,7 +73,7 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ warehouse }) => {
   const { confirmDialogProps, showAlert } = useConfirmDialog();
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  const { loading, data, refetch: refetchItems } = useQuery<GetWarehouseItems, GetWarehouseItemsVariables>(getWarehouseItemsQuery, {
+  const { loading: itemsLoading, data, refetch: refetchItems } = useQuery<GetWarehouseItems, GetWarehouseItemsVariables>(getWarehouseItemsQuery, {
     fetchPolicy: 'no-cache',
     variables: {
       id: warehouse.id,
@@ -139,6 +139,8 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ warehouse }) => {
       }, 0);
     }
   }, [data]);
+
+  const loading = itemsLoading || removeItemsLoading;
 
   return (
     <div className={classes.root}>
