@@ -1,14 +1,14 @@
 import { configure } from "@storybook/react";
 import { addDecorator } from "@storybook/react";
 import { NextRouter } from 'next/router';
-import { RouterContext } from 'next-server/dist/lib/router-context';
+import { RouterContext } from 'next/dist/next-server/lib/router-context';
 import apolloStorybookDecorator from "apollo-storybook-react";
 import { withA11y } from "@storybook/addon-a11y";
 import { withConsole } from '@storybook/addon-console';
 import Root from "../src/components/Root";
 import React, { ReactNode } from 'react'
 import { mocks, typeDefs } from "./graphqlMocks"
-import { StoryFn } from '@storybook/addons/src/types'
+import { StoryFn } from '@storybook/addons';
 
 addDecorator((storyFn, context) => withConsole()(storyFn)(context));
 addDecorator(withA11y);

@@ -42,7 +42,9 @@ const CharacterScopeDialog: React.FC<CharacterScopeDialogProps> = ({ open, onCan
   };
 
   const handleCancel = () => {
-    onCancel();
+    if (onCancel) {
+      onCancel();
+    }
   };
 
   const handleToggle = (value: number) => () => {

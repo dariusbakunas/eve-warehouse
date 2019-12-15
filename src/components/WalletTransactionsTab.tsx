@@ -301,7 +301,7 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
     <React.Fragment>
       {!numSelected && (
         <Toolbar className={classes.filterToolbar}>
-          <Typography className={classes.title} color="inherit" variant="subtitle1">
+          <Typography className={classes.title} color="inherit" variant="overline">
             Last update: {data ? moment(data.walletTransactions.lastUpdate).format('MM/DD/YYYY HH:mm') : 'N/A'}
           </Typography>
         </Toolbar>

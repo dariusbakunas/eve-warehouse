@@ -9,7 +9,10 @@ const CharacterScopesDemo: React.FC = () => {
 
   const handleClose = (values?: string[]) => {
     setOpen(false);
+  };
 
+  const handleSubmit = (values?: string[]) => {
+    setOpen(false);
     const result = values ? values.join(', ') : '';
     console.log(values);
     action(result);
@@ -18,7 +21,7 @@ const CharacterScopesDemo: React.FC = () => {
   return (
     <div>
       <Button onClick={() => setOpen(true)}>Open</Button>
-      <CharacterScopeDialog open={open} onSubmit={handleClose} />
+      <CharacterScopeDialog open={open} onSubmit={handleSubmit} onCancel={handleClose} />
     </div>
   );
 };

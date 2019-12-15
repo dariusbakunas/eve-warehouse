@@ -5,24 +5,24 @@ import { makeStyles, Theme } from '@material-ui/core';
 import { RemoveWarehouse, RemoveWarehouseVariables } from '../__generated__/RemoveWarehouse';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useSnackbar } from 'notistack';
+import AddIcon from '@material-ui/icons/Add';
 import addWarehouseMutation from '../queries/addWarehouse.graphql';
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import ConfirmDialog from '../dialogs/ConfirmDialog';
+import DeleteIcon from '@material-ui/icons/Delete';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import getWarehousesQuery from '../queries/getWarehouses.graphql';
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
-import Maybe from 'graphql/tsutils/Maybe';
-import Paper from '@material-ui/core/Paper';
+import IconButton from '@material-ui/core/IconButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import React, { useState } from 'react';
 import removeWarehouseMutation from '../queries/removeWarehouse.graphql';
-import Skeleton from '@material-ui/lab/Skeleton';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
 import useConfirmDialog from '../hooks/useConfirmDialog';
 import WarehouseDialog from '../dialogs/WarehouseDialog';
-import WarehouseItemsDialog from '../dialogs/WarehouseItemsDialog';
 import WarehouseTile from '../components/WarehouseTile';
 import withApollo from '../lib/withApollo';
 import withWidth, { isWidthUp, WithWidthProps } from '@material-ui/core/withWidth';
@@ -30,6 +30,12 @@ import withWidth, { isWidthUp, WithWidthProps } from '@material-ui/core/withWidt
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
     padding: theme.spacing(2),
+    width: '100%',
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    flexBasis: '33.33%',
+    flexShrink: 0,
   },
   paper: {
     width: 'calc(100vw - 120px)',
@@ -69,31 +75,12 @@ interface TabPanelProps {
   value: any;
 }
 
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <Typography
-      component="div"
-      role="tabpanel"
-      hidden={value !== index}
-      id={`vertical-tabpanel-${index}`}
-      aria-labelledby={`vertical-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box p={3}>{children}</Box>}
-    </Typography>
-  );
-}
-
 const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const [expanded, setExpanded] = React.useState<string | false>(false);
   const { confirmDialogProps, showAlert } = useConfirmDialog();
-  const [currentWarehouse, setCurrentWarehouse] = useState<Maybe<Warehouse>>(null);
   const [isWarehouseDialogOpen, setWarehouseDialogOpen] = useState(false);
-  const [isWarehouseItemsDialogOpen, setWarehouseItemsDialogOpen] = useState(false);
-  const [value, setValue] = React.useState(0);
 
   const { loading: warehousesLoading, data: warehousesResponse, refetch: refetchWarehouses } = useQuery<GetWarehouses>(getWarehousesQuery);
 
@@ -136,17 +123,6 @@ const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
     setWarehouseDialogOpen(false);
   };
 
-  const handleWarehouseItemsDialogClose = () => {
-    setWarehouseItemsDialogOpen(false);
-  };
-
-  const handleWarehouseItemsDialogOpen = (id: string) => {
-    // we know warehouses are loaded once this is called
-    const warehouse = warehousesResponse!.warehouses.find(warehouse => warehouse.id === id);
-    setCurrentWarehouse(warehouse!);
-    setWarehouseItemsDialogOpen(true);
-  };
-
   const handleWarehouseDialogSubmit = (name: string) => {
     addWarehouse({
       variables: {
@@ -168,33 +144,52 @@ const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
     });
   };
 
-  const cellHeight = warehousesLoading ? 80 : 'auto';
+  const handleAddItem = (id: string, name: string) => {
+
+  };
+
+  //const cellHeight = warehousesLoading ? 80 : 'auto';
+  const handleChange = (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
+    setExpanded(isExpanded ? panel : false);
+  };
 
   return (
     <div className={classes.root}>
-      <GridList cellHeight={cellHeight} cols={getGridListCols(width)} spacing={10}>
-        {warehousesLoading &&
-          [0, 1, 2].map(i => (
-            <GridListTile key={i}>
-              <Skeleton variant="rect" height={cellHeight} />
-            </GridListTile>
-          ))}
-        {warehousesResponse &&
-          warehousesResponse.warehouses &&
-          warehousesResponse.warehouses.map(warehouse => (
-            <GridListTile key={warehouse.id}>
-              <WarehouseTile warehouse={warehouse} onOpen={handleWarehouseItemsDialogOpen} onRemove={handleRemoveWarehouse} />
-            </GridListTile>
-          ))}
-      </GridList>
+      {warehousesLoading && <LinearProgress />}
+      {warehousesResponse &&
+        warehousesResponse.warehouses &&
+        warehousesResponse.warehouses.map(warehouse => (
+          <ExpansionPanel
+            key={warehouse.id}
+            expanded={expanded === `panel-${warehouse.id}`}
+            onChange={handleChange(`panel-${warehouse.id}`)}
+            TransitionProps={{ unmountOnExit: true }}
+          >
+            <ExpansionPanelSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls={`panel-${warehouse.id}-content`}
+              id={`panel-${warehouse.id}-header`}
+            >
+              <Typography className={classes.heading}>{warehouse.name}</Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <WarehouseTile warehouse={warehouse} />
+            </ExpansionPanelDetails>
+            <ExpansionPanelActions>
+              <Button variant="contained" onClick={() => handleAddItem(warehouse.id, warehouse.name)} startIcon={<AddIcon />}>
+                Add Item
+              </Button>
+              <Button variant="contained" onClick={() => handleRemoveWarehouse(warehouse.id, warehouse.name)} startIcon={<DeleteIcon />}>
+                Remove Warehouse
+              </Button>
+            </ExpansionPanelActions>
+          </ExpansionPanel>
+        ))}
       <Button color="primary" onClick={() => setWarehouseDialogOpen(true)}>
         Add Warehouse
       </Button>
       <ConfirmDialog {...confirmDialogProps} />
       <WarehouseDialog open={isWarehouseDialogOpen} onCancel={handleWarehouseDialogCancel} onSubmit={handleWarehouseDialogSubmit} />
-      {currentWarehouse && (
-        <WarehouseItemsDialog open={isWarehouseItemsDialogOpen} warehouse={currentWarehouse} onClose={handleWarehouseItemsDialogClose} />
-      )}
     </div>
   );
 };

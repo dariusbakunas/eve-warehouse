@@ -12,4 +12,4 @@ export const mocks = {
       { id: 5, name: "scope 5" }
     ])
   })
-}
+};

@@ -1,5 +1,5 @@
-import { red, indigo } from '@material-ui/core/colors';
 import { createMuiTheme } from '@material-ui/core/styles';
+import { indigo, red } from '@material-ui/core/colors';
 
 // A custom theme for this app
 const theme = createMuiTheme({
