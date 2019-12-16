@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Sat Dec 14 2019 19:57:05 GMT-0500 (Eastern Standard Time)
+# timestamp: Sun Dec 15 2019 20:42:21 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -56,6 +56,11 @@ type InventoryItem {
   description: String
 }
 
+type InvGroup {
+  id: ID!
+  name: String!
+}
+
 type JournalEntries {
   total: Int!
   entries: [JournalEntry!]!
@@ -71,6 +76,11 @@ type JournalEntry {
 }
 
 type Location {
+  id: ID!
+  name: String!
+}
+
+type MarketGroup {
   id: ID!
   name: String!
 }
@@ -320,6 +330,8 @@ type WalletTransaction {
   isBuy: Boolean!
   item: InventoryItem!
   location: Location!
+  invGroup: InvGroup!
+  marketGroup: MarketGroup
   quantity: Int!
   unitPrice: Float!
 }
@@ -336,6 +348,7 @@ enum WalletTransactionOrderBy {
   client
   character
   credit
+  invGroup
   item
   quantity
   station

@@ -1,7 +1,6 @@
 import {
   AddItemsToWarehouse,
   AddItemsToWarehouseVariables,
-  AddItemsToWarehouse_addItemsToWarehouse as NewWarehouseItem,
 } from '../__generated__/AddItemsToWarehouse';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { GetTransactionIds, GetTransactionIdsVariables } from '../__generated__/GetTransactionIds';
@@ -92,6 +91,7 @@ interface ITableRow {
   character: Maybe<string>;
   client: string;
   date: string;
+  group: string;
   isBuy: boolean;
   item: Maybe<string>;
   price: string;
@@ -115,6 +115,7 @@ const getTableData: (data?: GetTransactions) => { rows: ITableRow[]; total: numb
     id: transaction.id,
     character: transaction.character ? transaction.character.name : null,
     client: transaction.client.name,
+    group: transaction.invGroup.name,
     date: moment(transaction.date).format('MM/DD/YYYY HH:mm'),
     item: transaction.item ? transaction.item.name : null,
     isBuy: transaction.isBuy,
@@ -341,6 +342,7 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
               <TableCell>{sortableHeader(WalletTransactionOrderBy.date, 'Date')}</TableCell>
               <TableCell>{sortableHeader(WalletTransactionOrderBy.character, 'Character')}</TableCell>
               <TableCell>{sortableHeader(WalletTransactionOrderBy.item, 'Item')}</TableCell>
+              <TableCell>{sortableHeader(WalletTransactionOrderBy.invGroup, 'Group')}</TableCell>
               <TableCell align="right">{sortableHeader(WalletTransactionOrderBy.unitPrice, 'Price')}</TableCell>
               <TableCell align="right">{sortableHeader(WalletTransactionOrderBy.quantity, 'Quantity')}</TableCell>
               <TableCell align="right">{sortableHeader(WalletTransactionOrderBy.credit, 'Credit')}</TableCell>
@@ -369,6 +371,7 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
                   <TableCell>{row.date}</TableCell>
                   <TableCell>{row.character}</TableCell>
                   <TableCell id={labelId}>{row.item}</TableCell>
+                  <TableCell>{row.group}</TableCell>
                   <TableCell align="right">{row.price}</TableCell>
                   <TableCell align="right">{row.quantity}</TableCell>
                   <TableCell align="right" className={row.isBuy ? classes.negative : classes.positive}>

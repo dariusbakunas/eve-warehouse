@@ -23,6 +23,11 @@ export interface GetTransactions_walletTransactions_transactions_item {
   name: string | null;
 }
 
+export interface GetTransactions_walletTransactions_transactions_invGroup {
+  __typename: "InvGroup";
+  name: string;
+}
+
 export interface GetTransactions_walletTransactions_transactions_location {
   __typename: "Location";
   name: string;
@@ -37,6 +42,7 @@ export interface GetTransactions_walletTransactions_transactions {
   credit: number;
   client: GetTransactions_walletTransactions_transactions_client;
   item: GetTransactions_walletTransactions_transactions_item;
+  invGroup: GetTransactions_walletTransactions_transactions_invGroup;
   location: GetTransactions_walletTransactions_transactions_location;
   unitPrice: number;
   quantity: number;

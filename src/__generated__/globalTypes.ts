@@ -66,6 +66,7 @@ export enum WalletTransactionOrderBy {
   client = "client",
   credit = "credit",
   date = "date",
+  invGroup = "invGroup",
   item = "item",
   quantity = "quantity",
   station = "station",

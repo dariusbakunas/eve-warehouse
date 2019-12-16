@@ -16,6 +16,9 @@ query GetTransactions($page: PageInput, $filter: WalletTransactionFilter, $order
       item {
         name
       }
+      invGroup {
+        name
+      }
       location {
         name
       }

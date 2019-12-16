@@ -5,6 +5,7 @@ import { RemoveWarehouse, RemoveWarehouseVariables } from '../__generated__/Remo
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useSnackbar } from 'notistack';
 import AddIcon from '@material-ui/icons/Add';
+import AddItemToWarehouseDialog from '../dialogs/AddItemToWarehouseDialog';
 import addWarehouseMutation from '../queries/addWarehouse.graphql';
 import Button from '@material-ui/core/Button';
 import ConfirmDialog from '../dialogs/ConfirmDialog';
@@ -24,7 +25,6 @@ import WarehouseDialog from '../dialogs/WarehouseDialog';
 import WarehouseTile from '../components/WarehouseTile';
 import withApollo from '../lib/withApollo';
 import withWidth, { isWidthUp, WithWidthProps } from '@material-ui/core/withWidth';
-import AddItemToWarehouseDialog from '../dialogs/AddItemToWarehouseDialog';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
