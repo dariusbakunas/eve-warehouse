@@ -1,11 +1,8 @@
-import {
-  AddItemsToWarehouse,
-  AddItemsToWarehouseVariables,
-} from '../__generated__/AddItemsToWarehouse';
+import { AddItemsToWarehouse, AddItemsToWarehouseVariables } from '../__generated__/AddItemsToWarehouse';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { GetTransactionIds, GetTransactionIdsVariables } from '../__generated__/GetTransactionIds';
 import { GetTransactions, GetTransactionsVariables } from '../__generated__/GetTransactions';
-import { NewWarehouseItemInput, Order, OrderType, WalletTransactionOrderBy } from '../__generated__/globalTypes';
+import { Order, OrderType, WalletTransactionOrderBy, WarehouseItemInput } from '../__generated__/globalTypes';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
 import { useSnackbar } from 'notistack';
 import addItemsToWarehouseMutation from '../queries/addItemsToWarehouse.graphql';
@@ -288,7 +285,7 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
     setSelected(newSelected);
   };
 
-  const handleAddTransactionsToWarehouse = (warehouseId: string, items: NewWarehouseItemInput[]) => {
+  const handleAddTransactionsToWarehouse = (warehouseId: string, items: WarehouseItemInput[]) => {
     addItemsToWarehouse({
       variables: {
         id: warehouseId,
