@@ -12,6 +12,7 @@ import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import ConfirmDialog from '../dialogs/ConfirmDialog';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import getWarehouseItemsQuery from '../queries/getWarehouseItems.graphql';
@@ -67,6 +68,10 @@ const useStyles = makeStyles<Theme>(theme => ({
     maxHeight: 300,
     overflowY: 'auto',
     overflowX: 'scroll',
+  },
+  rowButton: {
+    marginRight: theme.spacing(1),
+    marginLeft: theme.spacing(1),
   },
 }));
 
@@ -197,6 +202,21 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
     }
   };
 
+  const handleRemoveItem = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string, name: string) => {
+    event.stopPropagation();
+
+    showAlert(`Remove ${name}?`, `${name} will be removed`, async confirm => {
+      if (confirm) {
+        removeItems({
+          variables: {
+            id: warehouse.id,
+            itemIds: [id],
+          },
+        });
+      }
+    });
+  };
+
   const loading = itemsLoading || removeItemsLoading || addingItemsToWarehouseLoading;
 
   return (
@@ -240,6 +260,7 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
                     <TableCell align="right">Quantity</TableCell>
                     <TableCell align="right">Unit Cost</TableCell>
                     <TableCell align="right">Total</TableCell>
+                    <TableCell />
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -264,6 +285,24 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
                         <TableCell align="right">{item.quantity.toLocaleString()}</TableCell>
                         <TableCell align="right">{item.unitCost.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
                         <TableCell align="right">{(item.unitCost * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
+                        <TableCell align="right">
+                          <IconButton
+                            aria-label="edit"
+                            className={classes.rowButton}
+                            size="small"
+                            onClick={e => handleRemoveItem(e, item.id, item.name)}
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            aria-label="delete"
+                            className={classes.rowButton}
+                            size="small"
+                            onClick={e => handleRemoveItem(e, item.id, item.name)}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
                       </TableRow>
                     );
                   })}
