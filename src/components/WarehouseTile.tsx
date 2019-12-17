@@ -1,13 +1,18 @@
 import { AddItemsToWarehouse, AddItemsToWarehouseVariables } from '../__generated__/AddItemsToWarehouse';
-import { GetWarehouseItems, GetWarehouseItemsVariables } from '../__generated__/GetWarehouseItems';
+import {
+  GetWarehouseItems,
+  GetWarehouseItemsVariables,
+  GetWarehouseItems_warehouse_items as WarehouseItem,
+} from '../__generated__/GetWarehouseItems';
 import { makeStyles, TableRow, Theme } from '@material-ui/core';
 import { RemoveItemsFromWarehouse, RemoveItemsFromWarehouseVariables } from '../__generated__/RemoveItemsFromWarehouse';
+import { UpdateItemsInWarehouse, UpdateItemsInWarehouseVariables } from '../__generated__/UpdateItemsInWarehouse';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useSnackbar } from 'notistack';
 import { GetWarehouses_warehouses as Warehouse } from '../__generated__/GetWarehouses';
 import AddIcon from '@material-ui/icons/Add';
 import addItemsToWarehouseMutation from '../queries/addItemsToWarehouse.graphql';
-import AddItemToWarehouseDialog, { IFormData } from '../dialogs/AddItemToWarehouseDialog';
+import AddItemToWarehouseDialog, { IFormData as IAddItemFormData } from '../dialogs/AddItemToWarehouseDialog';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import ConfirmDialog from '../dialogs/ConfirmDialog';
@@ -18,6 +23,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import getWarehouseItemsQuery from '../queries/getWarehouseItems.graphql';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import Maybe from 'graphql/tsutils/Maybe';
 import React, { useMemo, useState } from 'react';
 import removeItemsFromWarehouseMutation from '../queries/removeItemsFromWarehouse.graphql';
 import Table from '@material-ui/core/Table';
@@ -27,6 +33,8 @@ import TableHead from '@material-ui/core/TableHead';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import updateItemsInWarehouseMutation from '../queries/updateItemsInWarehouse.graphql';
+import UpdateWarehouseItemDialog, { IFormData as IUpdateItemFormData } from '../dialogs/UpdateWarehouseItemDialog';
 import useConfirmDialog from '../hooks/useConfirmDialog';
 
 const useStyles = makeStyles<Theme>(theme => ({
@@ -84,6 +92,8 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [addItemToWarehouseDialogOpen, setAddItemToWarehouseDialogOpen] = useState(false);
+  const [updateItemDialogOpen, setUpdateItemDialogOpen] = useState(false);
+  const [currentItem, setCurrentItem] = useState<Maybe<WarehouseItem>>(null);
   const { confirmDialogProps, showAlert } = useConfirmDialog();
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
@@ -118,6 +128,21 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
       },
       onCompleted: () => {
         enqueueSnackbar(`Items added successfully`, { variant: 'success', autoHideDuration: 5000 });
+        refetchItems({
+          id: warehouse.id,
+        });
+      },
+    }
+  );
+
+  const [updateItemsInWarehouse, { loading: updatingItemsInWarehouseLoading }] = useMutation<UpdateItemsInWarehouse, UpdateItemsInWarehouseVariables>(
+    updateItemsInWarehouseMutation,
+    {
+      onError: error => {
+        enqueueSnackbar(`Failed to update items: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
+      },
+      onCompleted: () => {
+        enqueueSnackbar(`Items updated successfully`, { variant: 'success', autoHideDuration: 5000 });
         refetchItems({
           id: warehouse.id,
         });
@@ -164,10 +189,10 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
     setAddItemToWarehouseDialogOpen(false);
   };
 
-  const handleAddItemToWarehouseDialogSubmit = (data: IFormData) => {
+  const handleAddItemToWarehouseDialogSubmit = (data: IAddItemFormData) => {
     setAddItemToWarehouseDialogOpen(false);
 
-    if (data.item) {
+    if (data.item && data.qty && data.unitCost) {
       addItemsToWarehouse({
         variables: {
           id: warehouse.id,
@@ -183,8 +208,27 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
     }
   };
 
-  const handleAddItem = (id: string, name: string) => {
+  const handleAddItem = () => {
     setAddItemToWarehouseDialogOpen(true);
+  };
+
+  const handleUpdateItemSubmit = (data: IUpdateItemFormData) => {
+    setUpdateItemDialogOpen(false);
+
+    if (currentItem && data.qty && data.unitCost != null) {
+      updateItemsInWarehouse({
+        variables: {
+          id: warehouse.id,
+          input: [
+            {
+              id: currentItem.id,
+              quantity: data.qty,
+              unitCost: data.unitCost,
+            },
+          ],
+        },
+      });
+    }
   };
 
   const totalIsk = useMemo(() => {
@@ -217,7 +261,13 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
     });
   };
 
-  const loading = itemsLoading || removeItemsLoading || addingItemsToWarehouseLoading;
+  const handleEditItem = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, item: WarehouseItem) => {
+    event.stopPropagation();
+    setCurrentItem(item);
+    setUpdateItemDialogOpen(true);
+  };
+
+  const loading = itemsLoading || removeItemsLoading || addingItemsToWarehouseLoading || updatingItemsInWarehouseLoading;
 
   return (
     <React.Fragment>
@@ -286,12 +336,7 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
                         <TableCell align="right">{item.unitCost.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
                         <TableCell align="right">{(item.unitCost * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
                         <TableCell align="right">
-                          <IconButton
-                            aria-label="edit"
-                            className={classes.rowButton}
-                            size="small"
-                            onClick={e => handleRemoveItem(e, item.id, item.name)}
-                          >
+                          <IconButton aria-label="edit" className={classes.rowButton} size="small" onClick={e => handleEditItem(e, item)}>
                             <EditIcon fontSize="small" />
                           </IconButton>
                           <IconButton
@@ -316,7 +361,7 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
         <Button
           variant="contained"
           color="primary"
-          onClick={() => handleAddItem(warehouse.id, warehouse.name)}
+          onClick={handleAddItem}
           startIcon={<AddIcon />}
           disabled={loading}
         >
@@ -332,6 +377,14 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
         onCancel={handleAddItemToWarehouseDialogCancel}
         onSubmit={handleAddItemToWarehouseDialogSubmit}
       />
+      {currentItem && (
+        <UpdateWarehouseItemDialog
+          item={currentItem}
+          open={updateItemDialogOpen}
+          onCancel={() => setUpdateItemDialogOpen(false)}
+          onSubmit={handleUpdateItemSubmit}
+        />
+      )}
     </React.Fragment>
   );
 };

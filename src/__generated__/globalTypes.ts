@@ -87,12 +87,6 @@ export interface MarketOrderOrderByInput {
   order: Order;
 }
 
-export interface NewWarehouseItemInput {
-  id: string;
-  quantity: number;
-  unitCost: number;
-}
-
 export interface OrderStateFilter {
   active?: boolean | null;
   expired?: boolean | null;
@@ -135,6 +129,12 @@ export interface WalletTransactionFilter {
 export interface WalletTransactionOrderByInput {
   column: WalletTransactionOrderBy;
   order: Order;
+}
+
+export interface WarehouseItemInput {
+  id: string;
+  quantity: number;
+  unitCost: number;
 }
 
 //==============================================================

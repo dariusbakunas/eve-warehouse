@@ -1,0 +1,7 @@
+mutation UpdateItemsInWarehouse($id: ID!, $input: [WarehouseItemInput!]!) {
+  updateItemsInWarehouse(id: $id, input: $input) {
+    id
+    quantity
+    unitCost
+  }
+}

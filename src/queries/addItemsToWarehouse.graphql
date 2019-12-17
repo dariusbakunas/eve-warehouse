@@ -1,4 +1,4 @@
-mutation AddItemsToWarehouse($id: ID!, $input: [NewWarehouseItemInput!]!) {
+mutation AddItemsToWarehouse($id: ID!, $input: [WarehouseItemInput!]!) {
   addItemsToWarehouse(id: $id, input: $input) {
     id
     quantity

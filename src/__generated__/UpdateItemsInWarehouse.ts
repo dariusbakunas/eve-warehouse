@@ -5,21 +5,21 @@
 import { WarehouseItemInput } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: AddItemsToWarehouse
+// GraphQL mutation operation: UpdateItemsInWarehouse
 // ====================================================
 
-export interface AddItemsToWarehouse_addItemsToWarehouse {
+export interface UpdateItemsInWarehouse_updateItemsInWarehouse {
   __typename: "WarehouseItem";
   id: string;
   quantity: number;
   unitCost: number;
 }
 
-export interface AddItemsToWarehouse {
-  addItemsToWarehouse: AddItemsToWarehouse_addItemsToWarehouse[];
+export interface UpdateItemsInWarehouse {
+  updateItemsInWarehouse: UpdateItemsInWarehouse_updateItemsInWarehouse[];
 }
 
-export interface AddItemsToWarehouseVariables {
+export interface UpdateItemsInWarehouseVariables {
   id: string;
   input: WarehouseItemInput[];
 }

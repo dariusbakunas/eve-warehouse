@@ -131,7 +131,7 @@ const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
             key={warehouse.id}
             expanded={expanded === `panel-${warehouse.id}`}
             onChange={handleChange(`panel-${warehouse.id}`)}
-            TransitionProps={{ unmountOnExit: true }}
+            TransitionProps={{ unmountOnExit: true, timeout: 0 }}
           >
             <ExpansionPanelSummary
               expandIcon={<ExpandMoreIcon />}
