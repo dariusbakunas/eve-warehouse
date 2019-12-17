@@ -1,12 +1,19 @@
+import { AddItemsToWarehouse, AddItemsToWarehouseVariables } from '../__generated__/AddItemsToWarehouse';
 import { GetWarehouseItems, GetWarehouseItemsVariables } from '../__generated__/GetWarehouseItems';
 import { makeStyles, TableRow, Theme } from '@material-ui/core';
 import { RemoveItemsFromWarehouse, RemoveItemsFromWarehouseVariables } from '../__generated__/RemoveItemsFromWarehouse';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useSnackbar } from 'notistack';
 import { GetWarehouses_warehouses as Warehouse } from '../__generated__/GetWarehouses';
+import AddIcon from '@material-ui/icons/Add';
+import addItemsToWarehouseMutation from '../queries/addItemsToWarehouse.graphql';
+import AddItemToWarehouseDialog, { IFormData } from '../dialogs/AddItemToWarehouseDialog';
+import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import ConfirmDialog from '../dialogs/ConfirmDialog';
 import DeleteIcon from '@material-ui/icons/Delete';
+import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import getWarehouseItemsQuery from '../queries/getWarehouseItems.graphql';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -64,12 +71,14 @@ const useStyles = makeStyles<Theme>(theme => ({
 }));
 
 interface IWarehouseTileProps {
+  onRemoveWarehouse?: (id: string, name: string) => void;
   warehouse: Warehouse;
 }
 
-const WarehouseTile: React.FC<IWarehouseTileProps> = ({ warehouse }) => {
+const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, warehouse }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const [addItemToWarehouseDialogOpen, setAddItemToWarehouseDialogOpen] = useState(false);
   const { confirmDialogProps, showAlert } = useConfirmDialog();
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
@@ -92,6 +101,21 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ warehouse }) => {
           id: warehouse.id,
         });
         setSelected(new Set());
+      },
+    }
+  );
+
+  const [addItemsToWarehouse, { loading: addingItemsToWarehouseLoading }] = useMutation<AddItemsToWarehouse, AddItemsToWarehouseVariables>(
+    addItemsToWarehouseMutation,
+    {
+      onError: error => {
+        enqueueSnackbar(`Failed to add items: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
+      },
+      onCompleted: () => {
+        enqueueSnackbar(`Items added successfully`, { variant: 'success', autoHideDuration: 5000 });
+        refetchItems({
+          id: warehouse.id,
+        });
       },
     }
   );
@@ -131,6 +155,33 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ warehouse }) => {
     });
   };
 
+  const handleAddItemToWarehouseDialogCancel = () => {
+    setAddItemToWarehouseDialogOpen(false);
+  };
+
+  const handleAddItemToWarehouseDialogSubmit = (data: IFormData) => {
+    setAddItemToWarehouseDialogOpen(false);
+
+    if (data.item) {
+      addItemsToWarehouse({
+        variables: {
+          id: warehouse.id,
+          input: [
+            {
+              id: data.item.id,
+              quantity: data.qty,
+              unitCost: data.unitCost,
+            },
+          ],
+        },
+      });
+    }
+  };
+
+  const handleAddItem = (id: string, name: string) => {
+    setAddItemToWarehouseDialogOpen(true);
+  };
+
   const totalIsk = useMemo(() => {
     if (data && data.warehouse) {
       return data.warehouse.items.reduce<number>((acc, item) => {
@@ -140,80 +191,109 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ warehouse }) => {
     }
   }, [data]);
 
-  const loading = itemsLoading || removeItemsLoading;
+  const handleRemoveWarehouse = (id: string, name: string) => {
+    if (onRemoveWarehouse) {
+      onRemoveWarehouse(id, name);
+    }
+  };
+
+  const loading = itemsLoading || removeItemsLoading || addingItemsToWarehouseLoading;
 
   return (
-    <div className={classes.root}>
-      {loading && <LinearProgress />}
-      {!numSelected && (
-        <Toolbar className={classes.filterToolbar}>
-          <Typography className={classes.title} color="inherit" variant="overline">
-            Total: {totalIsk ? `${totalIsk.toLocaleString(undefined, { minimumFractionDigits: 2 })} ISK` : 'N/A'}
-          </Typography>
-        </Toolbar>
-      )}
-      {!!numSelected && (
-        <Toolbar className={classes.selectToolbar}>
-          <Typography className={classes.title} color="inherit" variant="subtitle1">
-            {numSelected} selected
-          </Typography>
-          <Tooltip title="Remove">
-            <IconButton aria-label="remove selected items from warehouse" onClick={handleRemoveItems}>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        </Toolbar>
-      )}
-      {data && data.warehouse && (
-        <div className={classes.tableWrapper}>
-          <Table stickyHeader size="small" aria-label="wallet transactions" className={classes.table}>
-            <TableHead>
-              <TableRow>
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    indeterminate={numSelected > 0 && numSelected < data.warehouse.items.length}
-                    checked={numSelected === data.warehouse.items.length}
-                    onChange={handleSelectAllClick}
-                    inputProps={{ 'aria-label': 'select all desserts' }}
-                  />
-                </TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell align="right">Quantity</TableCell>
-                <TableCell align="right">Unit Cost</TableCell>
-                <TableCell align="right">Total</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.warehouse.items.map(item => {
-                const isRowSelected = selected.has(item.id);
-                const labelId = `table-checkbox-${item.id}`;
-
-                return (
-                  <TableRow
-                    key={item.id}
-                    hover
-                    role="checkbox"
-                    aria-checked={isRowSelected}
-                    tabIndex={-1}
-                    selected={isRowSelected}
-                    onClick={event => handleRowSelect(event, item.id)}
-                  >
+    <React.Fragment>
+      <ExpansionPanelDetails>
+        <div className={classes.root}>
+          {loading && <LinearProgress />}
+          {!numSelected && (
+            <Toolbar className={classes.filterToolbar}>
+              <Typography className={classes.title} color="inherit" variant="overline">
+                Total: {totalIsk ? `${totalIsk.toLocaleString(undefined, { minimumFractionDigits: 2 })} ISK` : 'N/A'}
+              </Typography>
+            </Toolbar>
+          )}
+          {!!numSelected && (
+            <Toolbar className={classes.selectToolbar}>
+              <Typography className={classes.title} color="inherit" variant="subtitle1">
+                {numSelected} selected
+              </Typography>
+              <Tooltip title="Remove">
+                <IconButton aria-label="remove selected items from warehouse" onClick={handleRemoveItems}>
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            </Toolbar>
+          )}
+          {data && data.warehouse && (
+            <div className={classes.tableWrapper}>
+              <Table stickyHeader size="small" aria-label="wallet transactions" className={classes.table}>
+                <TableHead>
+                  <TableRow>
                     <TableCell padding="checkbox">
-                      <Checkbox checked={isRowSelected} inputProps={{ 'aria-labelledby': labelId }} />
+                      <Checkbox
+                        indeterminate={numSelected > 0 && numSelected < data.warehouse.items.length}
+                        checked={numSelected === data.warehouse.items.length}
+                        onChange={handleSelectAllClick}
+                        inputProps={{ 'aria-label': 'select all desserts' }}
+                      />
                     </TableCell>
-                    <TableCell>{item.name}</TableCell>
-                    <TableCell align="right">{item.quantity.toLocaleString()}</TableCell>
-                    <TableCell align="right">{item.unitCost.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
-                    <TableCell align="right">{(item.unitCost * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell align="right">Quantity</TableCell>
+                    <TableCell align="right">Unit Cost</TableCell>
+                    <TableCell align="right">Total</TableCell>
                   </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-          <ConfirmDialog {...confirmDialogProps} />
+                </TableHead>
+                <TableBody>
+                  {data.warehouse.items.map(item => {
+                    const isRowSelected = selected.has(item.id);
+                    const labelId = `table-checkbox-${item.id}`;
+
+                    return (
+                      <TableRow
+                        key={item.id}
+                        hover
+                        role="checkbox"
+                        aria-checked={isRowSelected}
+                        tabIndex={-1}
+                        selected={isRowSelected}
+                        onClick={event => handleRowSelect(event, item.id)}
+                      >
+                        <TableCell padding="checkbox">
+                          <Checkbox checked={isRowSelected} inputProps={{ 'aria-labelledby': labelId }} />
+                        </TableCell>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell align="right">{item.quantity.toLocaleString()}</TableCell>
+                        <TableCell align="right">{item.unitCost.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
+                        <TableCell align="right">{(item.unitCost * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </ExpansionPanelDetails>
+      <ExpansionPanelActions>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => handleAddItem(warehouse.id, warehouse.name)}
+          startIcon={<AddIcon />}
+          disabled={loading}
+        >
+          Add Item
+        </Button>
+        <Button variant="contained" onClick={() => handleRemoveWarehouse(warehouse.id, warehouse.name)} startIcon={<DeleteIcon />} disabled={loading}>
+          Remove Warehouse
+        </Button>
+      </ExpansionPanelActions>
+      <ConfirmDialog {...confirmDialogProps} />
+      <AddItemToWarehouseDialog
+        open={addItemToWarehouseDialogOpen}
+        onCancel={handleAddItemToWarehouseDialogCancel}
+        onSubmit={handleAddItemToWarehouseDialogSubmit}
+      />
+    </React.Fragment>
   );
 };
 
