@@ -11,6 +11,7 @@ import React, { useEffect } from 'react';
 import red from '@material-ui/core/colors/red';
 import TextField from '@material-ui/core/TextField';
 import useForm from 'react-hook-form';
+import QtyNumberFormat from '../components/QtyNumberFormat';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -80,25 +81,29 @@ const AddItemToWarehouseDialog: React.FC<IDialogProps> = ({ open, onCancel, onSu
           className={classes.qtyField}
           label="Qty"
           error={!!errors.qty}
-          type="number"
+          //type="number"
           name="qty"
           InputLabelProps={{
             shrink: true,
           }}
+          InputProps={{
+            inputComponent: QtyNumberFormat as any,
+          }}
           inputRef={register({ required: true, min: 1 })}
-          defaultValue={1}
         />
         <TextField
           className={classes.qtyField}
           label="Unit Cost"
           name="unitCost"
-          type="number"
+          //type="number"
           error={!!errors.unitCost}
           InputLabelProps={{
             shrink: true,
           }}
+          InputProps={{
+            inputComponent: QtyNumberFormat as any,
+          }}
           inputRef={register({ required: true, min: 0 })}
-          defaultValue={0}
         />
       </DialogContent>
       <DialogActions>

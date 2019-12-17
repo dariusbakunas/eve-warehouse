@@ -54,6 +54,7 @@
     "react-dom": "^16.12.0",
     "react-hook-form": "^3.29.3",
     "react-idle-timer": "^4.2.12",
+    "react-number-format": "^4.3.1",
     "uid-safe": "^2.1.5",
     "winston": "^3.2.1"
   },
