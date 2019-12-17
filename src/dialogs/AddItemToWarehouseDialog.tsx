@@ -12,7 +12,6 @@ import QtyNumberFormat from '../components/QtyNumberFormat';
 import React, { useEffect, useState } from 'react';
 import red from '@material-ui/core/colors/red';
 import TextField from '@material-ui/core/TextField';
-import useForm from 'react-hook-form';
 import useValidator from '../hooks/useValidator';
 
 const useStyles = makeStyles((theme: Theme) =>
