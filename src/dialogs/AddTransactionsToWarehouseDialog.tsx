@@ -6,8 +6,8 @@ import {
   GetWarehouseItems_warehouse_items as WarehouseItem,
 } from '../__generated__/GetWarehouseItems';
 import { GetWarehouses } from '../__generated__/GetWarehouses';
-import { NewWarehouseItemInput } from '../__generated__/globalTypes';
 import { useLazyQuery, useQuery } from '@apollo/react-hooks';
+import { WarehouseItemInput } from '../__generated__/globalTypes';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '../components/DialogActions';
@@ -34,7 +34,7 @@ import Typography from '@material-ui/core/Typography';
 export interface IDialogProps {
   open: boolean;
   transactionIds: Set<string>;
-  onSubmit: (warehouseId: string, items: NewWarehouseItemInput[]) => void;
+  onSubmit: (warehouseId: string, items: WarehouseItemInput[]) => void;
   onCancel: () => void;
 }
 
@@ -144,7 +144,7 @@ const AddTransactionsToWarehouseDialog: React.FC<IDialogProps> = ({ open, onSubm
 
   const handleSubmit = () => {
     if (selectedWarehouse && transactionSummary) {
-      const items: NewWarehouseItemInput[] = transactionSummary.walletTransactionSummary.items
+      const items: WarehouseItemInput[] = transactionSummary.walletTransactionSummary.items
         .filter(item => item.credit < 0)
         .map(item => ({
           id: item.id,
