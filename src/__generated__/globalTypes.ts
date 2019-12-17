@@ -73,6 +73,10 @@ export enum WalletTransactionOrderBy {
   unitPrice = "unitPrice",
 }
 
+export interface InvItemFilter {
+  name?: string | null;
+}
+
 export interface MarketOrderFilter {
   characterId?: string | null;
   state?: OrderStateFilter | null;
