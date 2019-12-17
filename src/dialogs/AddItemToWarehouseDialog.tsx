@@ -6,12 +6,13 @@ import DialogContent from '../components/DialogContent';
 import DialogTitle from '../components/DialogTitle';
 import green from '@material-ui/core/colors/green';
 import InvItemAutocomplete, { InvItem } from '../components/InvItemAutocomplete';
+import IskNumberFormat from '../components/IskNumberFormat';
 import Maybe from 'graphql/tsutils/Maybe';
-import React, { useEffect } from 'react';
+import QtyNumberFormat from '../components/QtyNumberFormat';
+import React, { useEffect, useState } from 'react';
 import red from '@material-ui/core/colors/red';
 import TextField from '@material-ui/core/TextField';
 import useForm from 'react-hook-form';
-import QtyNumberFormat from '../components/QtyNumberFormat';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
     qtyField: {
       marginLeft: theme.spacing(1),
       marginRight: theme.spacing(1),
-      width: 100,
+      width: 150,
     },
   })
 );
@@ -54,6 +55,8 @@ const AddItemToWarehouseDialog: React.FC<IDialogProps> = ({ open, onCancel, onSu
 
   useEffect(() => {
     register({ name: 'item' }, { required: true });
+    register({ name: 'qty' }, { required: true, min: 1 });
+    register({ name: 'unitCost' }, { required: true, min: 0 });
   }, [register]);
 
   const handleCancel = () => {
@@ -73,7 +76,7 @@ const AddItemToWarehouseDialog: React.FC<IDialogProps> = ({ open, onCancel, onSu
   };
 
   return (
-    <Dialog open={open} fullWidth={true}>
+    <Dialog open={open} fullWidth={true} maxWidth="md">
       <DialogTitle onClose={handleCancel}>Add item to warehouse</DialogTitle>
       <DialogContent dividers className={classes.root}>
         <InvItemAutocomplete error={!!errors.item} onSelect={handleSelectItem} className={classes.itemField} />
@@ -81,7 +84,6 @@ const AddItemToWarehouseDialog: React.FC<IDialogProps> = ({ open, onCancel, onSu
           className={classes.qtyField}
           label="Qty"
           error={!!errors.qty}
-          //type="number"
           name="qty"
           InputLabelProps={{
             shrink: true,
@@ -89,7 +91,7 @@ const AddItemToWarehouseDialog: React.FC<IDialogProps> = ({ open, onCancel, onSu
           InputProps={{
             inputComponent: QtyNumberFormat as any,
           }}
-          inputRef={register({ required: true, min: 1 })}
+          onChange={event => setValue('qty', +event.target.value)}
         />
         <TextField
           className={classes.qtyField}
@@ -101,9 +103,9 @@ const AddItemToWarehouseDialog: React.FC<IDialogProps> = ({ open, onCancel, onSu
             shrink: true,
           }}
           InputProps={{
-            inputComponent: QtyNumberFormat as any,
+            inputComponent: IskNumberFormat as any,
           }}
-          inputRef={register({ required: true, min: 0 })}
+          onChange={event => setValue('unitCost', +event.target.value)}
         />
       </DialogContent>
       <DialogActions>
