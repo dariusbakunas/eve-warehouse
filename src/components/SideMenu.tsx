@@ -15,6 +15,7 @@ import WalletIcon from '../icons/WalletIcon';
 import List from '@material-ui/core/List';
 import LogsIcon from '../icons/LogsIcon';
 import WarehouseIcon from '../icons/WarehouseIcon';
+import IndustryIcon from '../icons/IndustryIcon';
 
 const useStyles = makeStyles<Theme, { drawerWidth: number }>(theme => ({
   appBarSpacer: theme.mixins.toolbar,
@@ -110,6 +111,12 @@ export const SideMenu: React.FC<SideMenuProps> = ({ children, header }) => {
             <WarehouseIcon />
           </ListItemIcon>
           <ListItemText primary="Warehouse" primaryTypographyProps={{ noWrap: true }} />
+        </ListItem>
+        <ListItem selected={pathname === '/industry'} button onClick={() => handleNavigate('/industry')}>
+          <ListItemIcon>
+            <IndustryIcon />
+          </ListItemIcon>
+          <ListItemText primary="Industry" primaryTypographyProps={{ noWrap: true }} />
         </ListItem>
         <ListItem selected={pathname === '/logs'} button onClick={() => handleNavigate('/logs')}>
           <ListItemIcon>
