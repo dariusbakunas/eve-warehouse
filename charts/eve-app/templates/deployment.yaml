@@ -49,6 +49,11 @@ spec:
               value: {{ .Values.auth0Audience }}
             - name: AUTH0_CALLBACK_URL
               value: {{ .Values.auth0CallbackURL }}
+            - name: COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "eve-app.name" . }}-secret
+                  key: cookie-secret
             - name: EVE_API_HOST
               value: {{ .Values.eveApiHost }}
             - name: EVE_LOGIN_URL

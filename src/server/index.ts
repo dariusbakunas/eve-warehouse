@@ -1,17 +1,17 @@
-import express, { Request, Response, NextFunction } from 'express';
+import * as Sentry from '@sentry/node';
+import { getAccessToken } from '../auth/getAccessToken';
+import Auth0Strategy from 'passport-auth0';
+import auth0Verify, { ISessionUser } from '../auth/auth0Verify';
+import authRoutes from './auth';
+import express, { NextFunction, Request, Response } from 'express';
+import helmet from 'helmet';
+import morgan from 'morgan';
 import next from 'next';
 import passport from 'passport';
-import Auth0Strategy from 'passport-auth0';
-import uid from 'uid-safe';
-import session from 'cookie-session';
-import proxy, { Config } from 'http-proxy-middleware';
-import authRoutes from './auth';
-import auth0Verify, { ISessionUser } from '../auth/auth0Verify';
-import * as Sentry from '@sentry/node';
 import pJson from '../../package.json';
-import morgan from 'morgan';
-import helmet from 'helmet';
-import { getAccessToken } from '../auth/getAccessToken';
+import proxy, { Config } from 'http-proxy-middleware';
+import session from 'cookie-session';
+import uid from 'uid-safe';
 
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -78,7 +78,7 @@ app.prepare().then(() => {
 
   const sessionConfig = {
     name: 'eve-app',
-    secret: uid.sync(18),
+    secret: process.env.COOKIE_SECRET,
     cookie: {
       maxAge: 900 * 1000, // 15 minutes in milliseconds
       secure: !dev,
