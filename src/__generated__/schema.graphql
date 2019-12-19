@@ -1,10 +1,42 @@
 # source: http://localhost:4000/graphql
-# timestamp: Tue Dec 17 2019 15:40:34 GMT-0500 (Eastern Standard Time)
+# timestamp: Wed Dec 18 2019 20:30:30 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
   name: String!
   ticker: String!
+}
+
+type Blueprint {
+  id: ID!
+  character: Character!
+  name: String!
+  isCopy: Boolean!
+  maxRuns: Int!
+  materialEfficiency: Int!
+  timeEfficiency: Int!
+}
+
+input BlueprintFilter {
+  characterId: ID
+}
+
+enum BlueprintsOrderBy {
+  character
+  name
+  maxRuns
+  materialEfficiency
+  timeEfficiency
+}
+
+input BlueprintsOrderByInput {
+  column: BlueprintsOrderBy!
+  order: Order!
+}
+
+type BlueprintsResponse {
+  total: Int!
+  entries: [Blueprint!]!
 }
 
 type Character {
@@ -243,6 +275,7 @@ enum ProcessingStatus {
 }
 
 type Query {
+  blueprints(page: PageInput, filter: BlueprintFilter, orderBy: BlueprintsOrderByInput): BlueprintsResponse!
   character(id: ID!): Character
   characters: [Character!]!
   invItems(filter: InvItemFilter): [InvItem!]!

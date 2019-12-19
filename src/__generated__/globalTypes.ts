@@ -6,6 +6,14 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum BlueprintsOrderBy {
+  character = "character",
+  materialEfficiency = "materialEfficiency",
+  maxRuns = "maxRuns",
+  name = "name",
+  timeEfficiency = "timeEfficiency",
+}
+
 export enum MarketOrderOrderBy {
   issued = "issued",
 }
@@ -71,6 +79,15 @@ export enum WalletTransactionOrderBy {
   quantity = "quantity",
   station = "station",
   unitPrice = "unitPrice",
+}
+
+export interface BlueprintFilter {
+  characterId?: string | null;
+}
+
+export interface BlueprintsOrderByInput {
+  column: BlueprintsOrderBy;
+  order: Order;
 }
 
 export interface InvItemFilter {

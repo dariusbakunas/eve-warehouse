@@ -7,6 +7,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Toolbar from '@material-ui/core/Toolbar';
 import useTabs from '../hooks/useTabs';
 import withApollo from '../lib/withApollo';
+import BlueprintsTab from '../components/BlueprintsTab';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,7 +40,9 @@ const Industry = () => {
           <Tab label="Build Calculator" {...tabProps(2)} />
         </Tabs>
       </Toolbar>
-      <TabPanel {...tabPanelProps(0)}>Blueprints</TabPanel>
+      <TabPanel {...tabPanelProps(0)}>
+        <BlueprintsTab />
+      </TabPanel>
       <TabPanel {...tabPanelProps(1)}>Jobs</TabPanel>
       <TabPanel {...tabPanelProps(2)}>Build Calculator</TabPanel>
     </PageWrapper>
