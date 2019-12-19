@@ -8,6 +8,7 @@
 
 export enum BlueprintsOrderBy {
   character = "character",
+  groupName = "groupName",
   materialEfficiency = "materialEfficiency",
   maxRuns = "maxRuns",
   name = "name",

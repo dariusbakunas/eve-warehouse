@@ -17,6 +17,7 @@ export interface GetBlueprints_blueprints_entries {
   __typename: "Blueprint";
   id: string;
   name: string;
+  groupName: string;
   isCopy: boolean;
   materialEfficiency: number;
   timeEfficiency: number;

@@ -3,8 +3,8 @@ import { BlueprintsOrderBy, Order } from '../__generated__/globalTypes';
 import { useQuery } from '@apollo/react-hooks';
 import DataTable from './DataTable';
 import getBlueprintsQuery from '../queries/getBlueprints.graphql';
-import React, { useState } from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import React, { useState } from 'react';
 
 const BlueprintsTab: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -49,6 +49,7 @@ const BlueprintsTab: React.FC = () => {
         idField="id"
         columns={[
           { field: 'name', title: 'Name', orderBy: BlueprintsOrderBy.name },
+          { field: 'groupName', title: 'Group', orderBy: BlueprintsOrderBy.groupName },
           { field: 'materialEfficiency', title: 'ME', align: 'right', orderBy: BlueprintsOrderBy.materialEfficiency },
           { field: 'timeEfficiency', title: 'TE', align: 'right', orderBy: BlueprintsOrderBy.timeEfficiency },
           { field: row => (row.maxRuns === -1 ? '∞' : row.maxRuns), title: 'Runs Remaining', align: 'right', orderBy: BlueprintsOrderBy.maxRuns },

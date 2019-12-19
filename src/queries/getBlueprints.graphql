@@ -4,6 +4,7 @@ query GetBlueprints($page: PageInput, $filter: BlueprintFilter, $orderBy: Bluepr
     entries {
       id
       name
+      groupName
       isCopy
       materialEfficiency
       timeEfficiency
