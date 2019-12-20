@@ -1,4 +1,8 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import { ParsedUrlQuery } from 'querystring';
+import { useRouter } from 'next/router';
+import BlueprintsTab from '../components/BlueprintsTab';
+import BuildCalculatorTab from '../components/BuildCalculatorTab';
 import PageWrapper from '../components/PageWrapper';
 import React from 'react';
 import Tab from '@material-ui/core/Tab';
@@ -7,7 +11,6 @@ import Tabs from '@material-ui/core/Tabs';
 import Toolbar from '@material-ui/core/Toolbar';
 import useTabs from '../hooks/useTabs';
 import withApollo from '../lib/withApollo';
-import BlueprintsTab from '../components/BlueprintsTab';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -19,9 +22,25 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Industry = () => {
+const getTabIndexFromQuery = (query: ParsedUrlQuery): number => {
+  switch (query.section) {
+    case 'blueprints':
+      return 0;
+    case 'jobs':
+      return 1;
+    case 'builder':
+      return 2;
+    default:
+      return 0;
+  }
+};
+
+const Industry: React.FC = () => {
+  const router = useRouter();
+  const query = router.query;
+  const index = getTabIndexFromQuery(query);
   const classes = useStyles();
-  const { currentTab, handleTabChange, tabProps, tabPanelProps } = useTabs();
+  const { handleTabChange, currentTab, tabProps, tabPanelProps } = useTabs(index);
 
   return (
     <PageWrapper label="Industry">
@@ -35,16 +54,18 @@ const Industry = () => {
           scrollButtons="auto"
           aria-label="industry tabs"
         >
-          <Tab label="Blueprints" {...tabProps(0)} />
-          <Tab label="Jobs" {...tabProps(1)} />
-          <Tab label="Build Calculator" {...tabProps(2)} />
+          <Tab label="Blueprints" {...tabProps(0, 'blueprints')} />
+          <Tab label="Jobs" {...tabProps(1, 'jobs')} />
+          <Tab label="Build Calculator" {...tabProps(2, 'builder')} />
         </Tabs>
       </Toolbar>
       <TabPanel {...tabPanelProps(0)}>
         <BlueprintsTab />
       </TabPanel>
       <TabPanel {...tabPanelProps(1)}>Jobs</TabPanel>
-      <TabPanel {...tabPanelProps(2)}>Build Calculator</TabPanel>
+      <TabPanel {...tabPanelProps(2)}>
+        <BuildCalculatorTab />
+      </TabPanel>
     </PageWrapper>
   );
 };

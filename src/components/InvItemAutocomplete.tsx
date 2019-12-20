@@ -17,12 +17,13 @@ export interface InvItem {
 }
 
 interface IAutocompleteProps {
+  label?: string;
   error?: boolean;
   className?: string;
   onSelect: (item: Maybe<InvItem>) => void;
 }
 
-const InvItemAutocomplete: React.FC<IAutocompleteProps> = ({ className, error, onSelect }) => {
+const InvItemAutocomplete: React.FC<IAutocompleteProps> = ({ className, error, label, onSelect }) => {
   const [open, setOpen] = React.useState(false);
   const [nameFilter, setNameFilter] = React.useState<Maybe<string>>(null);
 
@@ -82,7 +83,7 @@ const InvItemAutocomplete: React.FC<IAutocompleteProps> = ({ className, error, o
         <TextField
           {...params}
           fullWidth
-          label="Select Item"
+          label={label || 'Select Item'}
           InputProps={{
             ...params.InputProps,
             endAdornment: (

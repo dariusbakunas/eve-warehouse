@@ -1,5 +1,4 @@
 import { createStyles, makeStyles, TableCellProps, TableProps, Theme } from '@material-ui/core';
-import { Order } from '../__generated__/globalTypes';
 import Maybe from 'graphql/tsutils/Maybe';
 import React, { useMemo } from 'react';
 import Table from '@material-ui/core/Table';
@@ -31,11 +30,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
-
-type StandardEnum<T> = {
-  [id: string]: T | string;
-  [nu: number]: string;
-};
 
 type colFn<Data extends {}> = (row: Data) => string | number;
 
