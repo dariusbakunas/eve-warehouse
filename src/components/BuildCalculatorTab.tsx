@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
     },
     blueprintSelector: {
-      width: '350px',
+      flex: '0.5',
     },
   })
 );
@@ -23,7 +23,12 @@ const BuildCalculatorTab: React.FC = () => {
 
   return (
     <div className={classes.root}>
-      <InvItemAutocomplete className={classes.blueprintSelector} label="Select Blueprint or Reaction" onSelect={handleSelectItem} />
+      <InvItemAutocomplete
+        categoryIds={['9']}
+        className={classes.blueprintSelector}
+        label="Select Blueprint or Reaction"
+        onSelect={handleSelectItem}
+      />
     </div>
   );
 };

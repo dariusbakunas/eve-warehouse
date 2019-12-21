@@ -48,8 +48,17 @@ const BlueprintsTab: React.FC = () => {
       <DataTable<Blueprint, BlueprintsOrderBy>
         idField="id"
         columns={[
-          { field: 'name', title: 'Name', orderBy: BlueprintsOrderBy.name },
-          { field: 'groupName', title: 'Group', orderBy: BlueprintsOrderBy.groupName },
+          {
+            field: row => row.item.name,
+            title: 'Name',
+            orderBy: BlueprintsOrderBy.name,
+            icon: {
+              label: row => (row.isCopy ? 'BC' : 'BP'),
+              imageUrl: row =>
+                row.isCopy ? `https://images.evetech.net/types/${row.item.id}/bpc` : `https://images.evetech.net/types/${row.item.id}/bp`,
+            },
+          },
+          { field: row => row.item.invGroup.name, title: 'Group', orderBy: BlueprintsOrderBy.groupName },
           { field: 'materialEfficiency', title: 'ME', align: 'right', orderBy: BlueprintsOrderBy.materialEfficiency },
           { field: 'timeEfficiency', title: 'TE', align: 'right', orderBy: BlueprintsOrderBy.timeEfficiency },
           { field: row => (row.maxRuns === -1 ? '∞' : row.maxRuns), title: 'Runs Remaining', align: 'right', orderBy: BlueprintsOrderBy.maxRuns },

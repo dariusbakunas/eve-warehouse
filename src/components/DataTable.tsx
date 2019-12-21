@@ -1,4 +1,5 @@
 import { createStyles, makeStyles, TableCellProps, TableProps, Theme } from '@material-ui/core';
+import Avatar from '@material-ui/core/Avatar';
 import Maybe from 'graphql/tsutils/Maybe';
 import React, { useMemo } from 'react';
 import Table from '@material-ui/core/Table';
@@ -13,6 +14,14 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     table: {
       whiteSpace: 'nowrap',
+    },
+    iconCell: {
+      display: 'flex',
+      alignItems: 'center',
+    },
+    cellIcon: {
+      display: 'inline-block',
+      marginRight: theme.spacing(1),
     },
     tableWrapper: {
       overflowX: 'scroll',
@@ -32,17 +41,24 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type colFn<Data extends {}> = (row: Data) => string | number;
+type imageUrlFn<Data extends {}> = (row: Data) => string;
 
 interface IColumn<Data extends {}, OrderBy extends {}> {
   align?: TableCellProps['align'];
   field: keyof Data | colFn<Data>;
   orderBy?: OrderBy;
+  icon?: {
+    label: string | colFn<Data>;
+    imageUrl?: string | imageUrlFn<Data>;
+  };
   title: string;
 }
 
+type IRowColumn<Data extends {}, OrderBy extends {}> = IColumn<Data, OrderBy> & { value: string | number; cellIcon?: { label: string; imageUrl?: string } };
+
 interface IRow<Data extends {}, OrderBy extends {}> {
   id: string;
-  columns: Array<IColumn<Data, OrderBy> & { value: string | number }>;
+  columns: Array<IRowColumn<Data, OrderBy>>;
 }
 
 interface ITableProps<Data extends {}, OrderBy extends {}> extends TableProps {
@@ -78,18 +94,30 @@ const DataTable = <Data extends {}, OrderBy extends {}>({
     if (data) {
       return data.map(entry => {
         const rowColumns = columns.map(column => {
-          if (typeof column.field === 'function') {
-            return {
-              ...column,
-              value: column.field(entry),
+          const result: IRowColumn<Data, OrderBy> =
+            typeof column.field === 'function'
+              ? {
+                  ...column,
+                  value: column.field(entry),
+                }
+              : {
+                  ...column,
+                  value: `${entry[column.field]}`,
+                };
+
+          if (column.icon) {
+            result.cellIcon = {
+              label: typeof column.icon.label === 'function' ? `${column.icon.label(entry)}` : column.icon.label,
             };
-          } else {
-            return {
-              ...column,
-              value: `${entry[column.field]}`,
-            };
+
+            if (column.icon.imageUrl) {
+              result.cellIcon.imageUrl = typeof column.icon.imageUrl === 'function' ? column.icon.imageUrl(entry) : column.icon.imageUrl;
+            }
           }
+
+          return result;
         });
+
         return {
           id: `${entry[idField]}`,
           columns: rowColumns,
@@ -139,7 +167,18 @@ const DataTable = <Data extends {}, OrderBy extends {}>({
               <TableRow key={row.id}>
                 {row.columns.map((column, index) => (
                   <TableCell key={index} align={column.align}>
-                    {column.value}
+                    {column.cellIcon ? (
+                      <div className={classes.iconCell}>
+                        <div className={classes.cellIcon}>
+                          <Avatar variant="square" src={column.cellIcon.imageUrl}>
+                            {column.cellIcon.label}
+                          </Avatar>
+                        </div>
+                        {column.value}
+                      </div>
+                    ) : (
+                      column.value
+                    )}
                   </TableCell>
                 ))}
               </TableRow>

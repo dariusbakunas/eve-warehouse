@@ -93,6 +93,7 @@ export interface BlueprintsOrderByInput {
 
 export interface InvItemFilter {
   name?: string | null;
+  categoryIds?: string[] | null;
 }
 
 export interface MarketOrderFilter {
