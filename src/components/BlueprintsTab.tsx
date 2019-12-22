@@ -9,7 +9,7 @@ import React, { useState } from 'react';
 const BlueprintsTab: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-  const [currentOrder, setCurrentOrder] = useState<'asc' | 'desc'>('asc');
+  const [currentOrder, setCurrentOrder] = useState<Order>(Order.asc);
   const [orderBy, setOrderBy] = useState<BlueprintsOrderBy>(BlueprintsOrderBy.name);
 
   const { loading, data } = useQuery<GetBlueprints, GetBlueprintsVariables>(getBlueprintsQuery, {
@@ -32,7 +32,7 @@ const BlueprintsTab: React.FC = () => {
     setCurrentPage(0);
   };
 
-  const handleOrderChange = (order: 'asc' | 'desc') => {
+  const handleOrderChange = (order: Order) => {
     setCurrentPage(0);
     setCurrentOrder(order);
   };

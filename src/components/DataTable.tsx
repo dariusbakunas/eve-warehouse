@@ -1,5 +1,7 @@
 import { createStyles, makeStyles, TableCellProps, TableProps, Theme } from '@material-ui/core';
+import { Order } from '../__generated__/globalTypes';
 import Avatar from '@material-ui/core/Avatar';
+import Checkbox from '@material-ui/core/Checkbox';
 import Maybe from 'graphql/tsutils/Maybe';
 import React, { useMemo } from 'react';
 import Table from '@material-ui/core/Table';
@@ -40,11 +42,13 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-type colFn<Data extends {}> = (row: Data) => string | number;
+type colFn<Data extends {}> = (row: Data) => Maybe<string | number>;
 type imageUrlFn<Data extends {}> = (row: Data) => string;
+type classFn<Data extends {}> = (row: Data) => Maybe<string>;
 
 interface IColumn<Data extends {}, OrderBy extends {}> {
   align?: TableCellProps['align'];
+  cellClassName?: string | classFn<Data>;
   field: keyof Data | colFn<Data>;
   orderBy?: OrderBy;
   icon?: {
@@ -54,7 +58,11 @@ interface IColumn<Data extends {}, OrderBy extends {}> {
   title: string;
 }
 
-type IRowColumn<Data extends {}, OrderBy extends {}> = IColumn<Data, OrderBy> & { value: string | number; cellIcon?: { label: string; imageUrl?: string } };
+type IRowColumn<Data extends {}, OrderBy extends {}> = IColumn<Data, OrderBy> & {
+  className?: Maybe<string>;
+  value: string | number;
+  cellIcon?: { label: string; imageUrl?: string };
+};
 
 interface IRow<Data extends {}, OrderBy extends {}> {
   id: string;
@@ -66,10 +74,16 @@ interface ITableProps<Data extends {}, OrderBy extends {}> extends TableProps {
   columns: IColumn<Data, OrderBy>[];
   data: Maybe<Data[]>;
   sortingOptions?: {
-    order?: 'desc' | 'asc';
+    order?: Order;
     orderBy?: OrderBy;
-    onOrderChange: (order: 'desc' | 'asc') => void;
+    onOrderChange: (order: Order) => void;
     onOrderByChange: (orderBy: OrderBy) => void;
+  };
+  selectionOptions?: {
+    selected: Set<string>;
+    onSelectAll: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onRowSelect: (event: React.MouseEvent<unknown>, id: string) => void;
+    rowCount: number;
   };
   pagingOptions?: {
     page: number;
@@ -84,6 +98,7 @@ const DataTable = <Data extends {}, OrderBy extends {}>({
   columns,
   data,
   idField,
+  selectionOptions,
   sortingOptions,
   pagingOptions,
   ...rest
@@ -98,7 +113,7 @@ const DataTable = <Data extends {}, OrderBy extends {}>({
             typeof column.field === 'function'
               ? {
                   ...column,
-                  value: column.field(entry),
+                  value: `${column.field(entry)}`,
                 }
               : {
                   ...column,
@@ -113,6 +128,10 @@ const DataTable = <Data extends {}, OrderBy extends {}>({
             if (column.icon.imageUrl) {
               result.cellIcon.imageUrl = typeof column.icon.imageUrl === 'function' ? column.icon.imageUrl(entry) : column.icon.imageUrl;
             }
+          }
+
+          if (column.cellClassName) {
+            result.className = typeof column.cellClassName === 'function' ? column.cellClassName(entry) : column.cellClassName;
           }
 
           return result;
@@ -130,57 +149,93 @@ const DataTable = <Data extends {}, OrderBy extends {}>({
 
   const handleSort = (event: React.MouseEvent<unknown>, column: OrderBy) => {
     if (sortingOptions) {
-      const isDesc = sortingOptions.orderBy === column && sortingOptions.order === 'desc';
-      sortingOptions.onOrderChange(isDesc ? 'asc' : 'desc');
+      const isDesc = sortingOptions.orderBy === column && sortingOptions.order === Order.desc;
+      sortingOptions.onOrderChange(isDesc ? Order.asc : Order.desc);
       sortingOptions.onOrderByChange(column);
     }
   };
+
+  const numSelected = selectionOptions ? selectionOptions.selected.size : 0;
 
   return (
     <div className={classes.tableWrapper}>
       <Table {...rest} className={classes.table}>
         <TableHead>
           <TableRow>
-            {columns.map(column => (
-              <TableCell key={column.title} align={column.align}>
-                {sortingOptions && column.orderBy ? (
-                  <TableSortLabel
-                    active={sortingOptions.orderBy === column.orderBy}
-                    direction={sortingOptions.order}
-                    onClick={e => handleSort(e, column.orderBy!)}
-                  >
-                    {column.title}
-                    {sortingOptions.orderBy === column.orderBy! ? (
-                      <span className={classes.visuallyHidden}>{sortingOptions.order === 'desc' ? 'sorted descending' : 'sorted ascending'}</span>
-                    ) : null}
-                  </TableSortLabel>
-                ) : (
-                  column.title
-                )}
+            {selectionOptions && (
+              <TableCell padding="checkbox">
+                <Checkbox
+                  indeterminate={numSelected > 0 && numSelected < selectionOptions.rowCount}
+                  checked={numSelected === selectionOptions.rowCount}
+                  onChange={selectionOptions.onSelectAll}
+                  inputProps={{ 'aria-label': 'select all desserts' }}
+                />
               </TableCell>
-            ))}
+            )}
+            {columns.map(column => {
+              return (
+                <TableCell key={column.title} align={column.align}>
+                  {sortingOptions && column.orderBy ? (
+                    <TableSortLabel
+                      active={sortingOptions.orderBy === column.orderBy}
+                      direction={sortingOptions.order}
+                      onClick={e => handleSort(e, column.orderBy!)}
+                    >
+                      {column.title}
+                      {sortingOptions.orderBy === column.orderBy! ? (
+                        <span className={classes.visuallyHidden}>{sortingOptions.order === 'desc' ? 'sorted descending' : 'sorted ascending'}</span>
+                      ) : null}
+                    </TableSortLabel>
+                  ) : (
+                    column.title
+                  )}
+                </TableCell>
+              );
+            })}
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map(row => {
+            const isRowSelected = selectionOptions ? selectionOptions.selected.has(row.id) : false;
+            const labelId = `table-checkbox-${row.id}`;
+
+            const tableRowProps = selectionOptions
+              ? {
+                  hover: true,
+                  role: 'checkbox',
+                  'aria-checked': isRowSelected,
+                  tabIndex: -1,
+                  selected: isRowSelected,
+                  onClick: (event: React.MouseEvent<unknown>) => selectionOptions.onRowSelect(event, row.id),
+                }
+              : {};
+
             return (
-              <TableRow key={row.id}>
-                {row.columns.map((column, index) => (
-                  <TableCell key={index} align={column.align}>
-                    {column.cellIcon ? (
-                      <div className={classes.iconCell}>
-                        <div className={classes.cellIcon}>
-                          <Avatar variant="square" src={column.cellIcon.imageUrl}>
-                            {column.cellIcon.label}
-                          </Avatar>
-                        </div>
-                        {column.value}
-                      </div>
-                    ) : (
-                      column.value
-                    )}
+              <TableRow key={row.id} {...tableRowProps}>
+                {selectionOptions && (
+                  <TableCell padding="checkbox">
+                    <Checkbox checked={isRowSelected} inputProps={{ 'aria-labelledby': labelId }} />
                   </TableCell>
-                ))}
+                )}
+
+                {row.columns.map((column, index) => {
+                  return (
+                    <TableCell key={index} align={column.align} className={column.className || undefined}>
+                      {column.cellIcon ? (
+                        <div className={classes.iconCell}>
+                          <div className={classes.cellIcon}>
+                            <Avatar variant="square" src={column.cellIcon.imageUrl}>
+                              {column.cellIcon.label}
+                            </Avatar>
+                          </div>
+                          {column.value}
+                        </div>
+                      ) : (
+                        column.value
+                      )}
+                    </TableCell>
+                  );
+                })}
               </TableRow>
             );
           })}
