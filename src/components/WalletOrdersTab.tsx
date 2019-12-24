@@ -1,21 +1,16 @@
-import React from 'react';
-import { createStyles, makeStyles, TableRow, Theme } from '@material-ui/core';
-import { useSnackbar } from 'notistack';
-import getMarketOrdersQuery from '../queries/getMarketOrders.graphql';
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import { GetMarketOrders, GetMarketOrdersVariables, GetMarketOrders_marketOrders_orders as MarketOrder } from '../__generated__/getMarketOrders';
+import { MarketOrderOrderBy, Order, OrderStateFilter } from '../__generated__/globalTypes';
 import { useQuery } from '@apollo/react-hooks';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableCell from '@material-ui/core/TableCell';
-import TableBody from '@material-ui/core/TableBody';
-import TablePagination from '@material-ui/core/TablePagination';
-import moment from 'moment';
-import { Order, MarketOrderOrderBy, OrderStateFilter } from '../__generated__/globalTypes';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Maybe from 'graphql/tsutils/Maybe';
-import Toolbar from '@material-ui/core/Toolbar';
+import { useSnackbar } from 'notistack';
 import Chip from '@material-ui/core/Chip';
-import { GetMarketOrders, GetMarketOrdersVariables } from '../__generated__/getMarketOrders';
+import DataTable from './DataTable';
+import getMarketOrdersQuery from '../queries/getMarketOrders.graphql';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Maybe from 'graphql/tsutils/Maybe';
+import moment from 'moment';
+import React from 'react';
+import Toolbar from '@material-ui/core/Toolbar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -152,7 +147,8 @@ const WalletOrdersTab: React.FC<IWalletOrdersTab> = ({
     },
   });
 
-  const { rows, total } = getTableData(data);
+  const tableData = data ? data.marketOrders.orders : null;
+  const total = data ? data.marketOrders.total : 0;
 
   const handleChangePage = (event: unknown, newPage: number) => {
     onPageChange(newPage);
@@ -163,19 +159,10 @@ const WalletOrdersTab: React.FC<IWalletOrdersTab> = ({
     onPageChange(0);
   };
 
-  const handleSort = (event: React.MouseEvent<unknown>, column: MarketOrderOrderBy) => {
-    const isDesc = orderBy === column && order === Order.desc;
+  const handleSort = (column: MarketOrderOrderBy) => {
     onPageChange(0);
-    onOrderChange(isDesc ? Order.asc : Order.desc);
     onOrderByChange(column);
   };
-
-  const sortableHeader = (column: MarketOrderOrderBy, label: string) => (
-    <TableSortLabel active={orderBy === column} direction={order} onClick={e => handleSort(e, column)}>
-      {label}
-      {orderBy === column ? <span className={classes.visuallyHidden}>{order === Order.desc ? 'sorted descending' : 'sorted ascending'}</span> : null}
-    </TableSortLabel>
-  );
 
   const clearOrderStateFilter = (name: string) => () => {
     const newState = {
@@ -197,53 +184,114 @@ const WalletOrdersTab: React.FC<IWalletOrdersTab> = ({
         </Toolbar>
       )}
       {loading && <LinearProgress />}
-      <div className={classes.tableWrapper}>
-        <Table size="small" aria-label="wallet transactions" className={classes.table}>
-          <TableHead>
-            <TableRow>
-              <TableCell>{sortableHeader(MarketOrderOrderBy.issued, 'Issued')}</TableCell>
-              <TableCell>Expires</TableCell>
-              <TableCell>Character</TableCell>
-              <TableCell>Buy/Sell</TableCell>
-              <TableCell>Item</TableCell>
-              <TableCell align="right">Quantity</TableCell>
-              <TableCell align="right">Price</TableCell>
-              <TableCell>State</TableCell>
-              <TableCell>Station</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map(row => (
-              <TableRow key={row.id}>
-                <TableCell>{row.issued}</TableCell>
-                <TableCell>{row.expiresAt}</TableCell>
-                <TableCell>{row.character}</TableCell>
-                <TableCell>{row.buySell}</TableCell>
-                <TableCell>{row.item}</TableCell>
-                <TableCell align="right">{row.quantity}</TableCell>
-                <TableCell align="right">{row.price}</TableCell>
-                <TableCell>{row.state}</TableCell>
-                <TableCell>{row.station}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 15, 25]}
-        component="div"
-        count={total}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        backIconButtonProps={{
-          'aria-label': 'previous page',
+      <DataTable<MarketOrder, MarketOrderOrderBy>
+        idField="id"
+        columns={[
+          { field: row => moment(row.issued).format('MM/DD/YYYY HH:mm'), title: 'Issued', orderBy: MarketOrderOrderBy.issued },
+          {
+            field: row =>
+              moment(row.issued)
+                .add(row.duration, 'days')
+                .format('MM/DD/YYYY HH:mm'),
+            title: 'Expires',
+          },
+          {
+            field: row => row.character ? row.character.name : null,
+            title: 'Character',
+          },
+          {
+            field: row => (row.isBuy ? 'buy' : 'sell'),
+            title: 'Buy/Sell',
+          },
+          {
+            field: row => row.item.name,
+            title: 'Item',
+            icon: {
+              imageUrl: row => `https://images.evetech.net/types/${row.item.id}/icon`,
+            },
+          },
+          {
+            field: row => `${row.volumeRemain.toLocaleString()}/${row.volumeTotal.toLocaleString()}`,
+            title: 'Quantity',
+            align: 'right',
+          },
+          {
+            field: row => row.price.toLocaleString(undefined, { minimumFractionDigits: 2 }),
+            title: 'Price',
+            align: 'right',
+          },
+          {
+            field: row => row.state,
+            title: 'State',
+          },
+          {
+            field: row => row.location.name,
+            title: 'Station',
+          },
+        ]}
+        data={tableData}
+        pagingOptions={{
+          page: page,
+          rowCount: total,
+          rowsPerPage: rowsPerPage,
+          onChangePage: handleChangePage,
+          onChangeRowsPerPage: handleChangeRowsPerPage,
         }}
-        nextIconButtonProps={{
-          'aria-label': 'next page',
+        size="small"
+        sortingOptions={{
+          order: order,
+          orderBy: orderBy,
+          onOrderByChange: handleSort,
+          onOrderChange: onOrderChange,
         }}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
       />
+      {/*<div className={classes.tableWrapper}>*/}
+      {/*  <Table size="small" aria-label="wallet transactions" className={classes.table}>*/}
+      {/*    <TableHead>*/}
+      {/*      <TableRow>*/}
+      {/*        <TableCell>{sortableHeader(MarketOrderOrderBy.issued, 'Issued')}</TableCell>*/}
+      {/*        <TableCell>Expires</TableCell>*/}
+      {/*        <TableCell>Character</TableCell>*/}
+      {/*        <TableCell>Buy/Sell</TableCell>*/}
+      {/*        <TableCell>Item</TableCell>*/}
+      {/*        <TableCell align="right">Quantity</TableCell>*/}
+      {/*        <TableCell align="right">Price</TableCell>*/}
+      {/*        <TableCell>State</TableCell>*/}
+      {/*        <TableCell>Station</TableCell>*/}
+      {/*      </TableRow>*/}
+      {/*    </TableHead>*/}
+      {/*    <TableBody>*/}
+      {/*      {rows.map(row => (*/}
+      {/*        <TableRow key={row.id}>*/}
+      {/*          <TableCell>{row.issued}</TableCell>*/}
+      {/*          <TableCell>{row.expiresAt}</TableCell>*/}
+      {/*          <TableCell>{row.character}</TableCell>*/}
+      {/*          <TableCell>{row.buySell}</TableCell>*/}
+      {/*          <TableCell>{row.item}</TableCell>*/}
+      {/*          <TableCell align="right">{row.quantity}</TableCell>*/}
+      {/*          <TableCell align="right">{row.price}</TableCell>*/}
+      {/*          <TableCell>{row.state}</TableCell>*/}
+      {/*          <TableCell>{row.station}</TableCell>*/}
+      {/*        </TableRow>*/}
+      {/*      ))}*/}
+      {/*    </TableBody>*/}
+      {/*  </Table>*/}
+      {/*</div>*/}
+      {/*<TablePagination*/}
+      {/*  rowsPerPageOptions={[5, 10, 15, 25]}*/}
+      {/*  component="div"*/}
+      {/*  count={total}*/}
+      {/*  rowsPerPage={rowsPerPage}*/}
+      {/*  page={page}*/}
+      {/*  backIconButtonProps={{*/}
+      {/*    'aria-label': 'previous page',*/}
+      {/*  }}*/}
+      {/*  nextIconButtonProps={{*/}
+      {/*    'aria-label': 'next page',*/}
+      {/*  }}*/}
+      {/*  onChangePage={handleChangePage}*/}
+      {/*  onChangeRowsPerPage={handleChangeRowsPerPage}*/}
+      {/*/>*/}
     </React.Fragment>
   );
 };

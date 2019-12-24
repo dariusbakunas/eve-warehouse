@@ -5,6 +5,7 @@ query GetMarketOrders($page: PageInput, $filter: MarketOrderFilter, $orderBy: Ma
       id
       duration
       item {
+        id
         name
       }
       issued

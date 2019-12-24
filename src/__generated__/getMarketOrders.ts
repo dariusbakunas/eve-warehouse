@@ -10,6 +10,7 @@ import { PageInput, MarketOrderFilter, MarketOrderOrderByInput, OrderState } fro
 
 export interface GetMarketOrders_marketOrders_orders_item {
   __typename: "InvItem";
+  id: string;
   name: string;
 }
 
