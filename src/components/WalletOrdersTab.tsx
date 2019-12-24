@@ -30,71 +30,8 @@ const useStyles = makeStyles((theme: Theme) =>
     positive: {
       color: '#187119',
     },
-    table: {
-      whiteSpace: 'nowrap',
-    },
-    tableWrapper: {
-      overflowX: 'scroll',
-    },
-    visuallyHidden: {
-      border: 0,
-      clip: 'rect(0 0 0 0)',
-      height: 1,
-      margin: -1,
-      overflow: 'hidden',
-      padding: 0,
-      position: 'absolute',
-      top: 20,
-      width: 1,
-    },
   })
 );
-
-interface ITableRow {
-  id: string;
-  character: Maybe<string>;
-  issued: string;
-  item: Maybe<string>;
-  quantity: string;
-  state: string;
-  price: string;
-  buySell: string;
-  expiresAt: string;
-  station: string;
-}
-
-const getTableData: (data?: GetMarketOrders) => { rows: ITableRow[]; total: number } = data => {
-  if (!data || !data.marketOrders) {
-    return {
-      total: 0,
-      rows: [],
-    };
-  }
-
-  const {
-    marketOrders: { orders, total },
-  } = data;
-
-  const rows = orders.map(order => ({
-    id: order.id,
-    character: order.character ? order.character.name : null,
-    issued: moment(order.issued).format('MM/DD/YYYY HH:mm'),
-    item: order.item ? order.item.name : null,
-    quantity: `${order.volumeRemain.toLocaleString()}/${order.volumeTotal.toLocaleString()}`,
-    price: order.price.toLocaleString(undefined, { minimumFractionDigits: 2 }),
-    state: order.state,
-    buySell: order.isBuy ? 'buy' : 'sell',
-    expiresAt: moment(order.issued)
-      .add(order.duration, 'days')
-      .format('MM/DD/YYYY HH:mm'),
-    station: order.location.name,
-  }));
-
-  return {
-    total: total,
-    rows: rows,
-  };
-};
 
 interface IWalletOrdersTab {
   orderStateFilter: OrderStateFilter;
@@ -196,7 +133,7 @@ const WalletOrdersTab: React.FC<IWalletOrdersTab> = ({
             title: 'Expires',
           },
           {
-            field: row => row.character ? row.character.name : null,
+            field: row => (row.character ? row.character.name : null),
             title: 'Character',
           },
           {
@@ -245,53 +182,6 @@ const WalletOrdersTab: React.FC<IWalletOrdersTab> = ({
           onOrderChange: onOrderChange,
         }}
       />
-      {/*<div className={classes.tableWrapper}>*/}
-      {/*  <Table size="small" aria-label="wallet transactions" className={classes.table}>*/}
-      {/*    <TableHead>*/}
-      {/*      <TableRow>*/}
-      {/*        <TableCell>{sortableHeader(MarketOrderOrderBy.issued, 'Issued')}</TableCell>*/}
-      {/*        <TableCell>Expires</TableCell>*/}
-      {/*        <TableCell>Character</TableCell>*/}
-      {/*        <TableCell>Buy/Sell</TableCell>*/}
-      {/*        <TableCell>Item</TableCell>*/}
-      {/*        <TableCell align="right">Quantity</TableCell>*/}
-      {/*        <TableCell align="right">Price</TableCell>*/}
-      {/*        <TableCell>State</TableCell>*/}
-      {/*        <TableCell>Station</TableCell>*/}
-      {/*      </TableRow>*/}
-      {/*    </TableHead>*/}
-      {/*    <TableBody>*/}
-      {/*      {rows.map(row => (*/}
-      {/*        <TableRow key={row.id}>*/}
-      {/*          <TableCell>{row.issued}</TableCell>*/}
-      {/*          <TableCell>{row.expiresAt}</TableCell>*/}
-      {/*          <TableCell>{row.character}</TableCell>*/}
-      {/*          <TableCell>{row.buySell}</TableCell>*/}
-      {/*          <TableCell>{row.item}</TableCell>*/}
-      {/*          <TableCell align="right">{row.quantity}</TableCell>*/}
-      {/*          <TableCell align="right">{row.price}</TableCell>*/}
-      {/*          <TableCell>{row.state}</TableCell>*/}
-      {/*          <TableCell>{row.station}</TableCell>*/}
-      {/*        </TableRow>*/}
-      {/*      ))}*/}
-      {/*    </TableBody>*/}
-      {/*  </Table>*/}
-      {/*</div>*/}
-      {/*<TablePagination*/}
-      {/*  rowsPerPageOptions={[5, 10, 15, 25]}*/}
-      {/*  component="div"*/}
-      {/*  count={total}*/}
-      {/*  rowsPerPage={rowsPerPage}*/}
-      {/*  page={page}*/}
-      {/*  backIconButtonProps={{*/}
-      {/*    'aria-label': 'previous page',*/}
-      {/*  }}*/}
-      {/*  nextIconButtonProps={{*/}
-      {/*    'aria-label': 'next page',*/}
-      {/*  }}*/}
-      {/*  onChangePage={handleChangePage}*/}
-      {/*  onChangeRowsPerPage={handleChangeRowsPerPage}*/}
-      {/*/>*/}
     </React.Fragment>
   );
 };
