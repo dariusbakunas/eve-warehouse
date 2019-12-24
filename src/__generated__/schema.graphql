@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Sat Dec 21 2019 10:40:44 GMT-0500 (Eastern Standard Time)
+# timestamp: Tue Dec 24 2019 08:58:15 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -83,15 +83,15 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the
 """
 scalar DateTime
 
-type InventoryItem {
+type InvCategory {
   id: ID!
-  name: String
-  description: String
+  name: String!
 }
 
 type InvGroup {
   id: ID!
   name: String!
+  category: InvCategory!
 }
 
 type InvItem {
@@ -144,7 +144,7 @@ type MarketOrder {
   escrow: Float
 
   """Item transacted in this order"""
-  item: InventoryItem!
+  item: InvItem!
 
   """True if this is buy order"""
   isBuy: Boolean!
@@ -369,9 +369,8 @@ type WalletTransaction {
   character: Character!
   date: DateTime!
   isBuy: Boolean!
-  item: InventoryItem!
+  item: InvItem!
   location: Location!
-  invGroup: InvGroup!
   marketGroup: MarketGroup
   quantity: Int!
   unitPrice: Float!

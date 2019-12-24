@@ -14,10 +14,14 @@ query GetTransactions($page: PageInput, $filter: WalletTransactionFilter, $order
         name
       }
       item {
+        id
         name
-      }
-      invGroup {
-        name
+        invGroup {
+          name
+          category {
+            id
+          }
+        }
       }
       location {
         name

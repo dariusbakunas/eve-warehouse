@@ -9,8 +9,8 @@ import { PageInput, MarketOrderFilter, MarketOrderOrderByInput, OrderState } fro
 // ====================================================
 
 export interface GetMarketOrders_marketOrders_orders_item {
-  __typename: "InventoryItem";
-  name: string | null;
+  __typename: "InvItem";
+  name: string;
 }
 
 export interface GetMarketOrders_marketOrders_orders_character {

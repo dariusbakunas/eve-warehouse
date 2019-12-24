@@ -18,14 +18,22 @@ export interface GetTransactions_walletTransactions_transactions_client {
   name: string;
 }
 
-export interface GetTransactions_walletTransactions_transactions_item {
-  __typename: "InventoryItem";
-  name: string | null;
+export interface GetTransactions_walletTransactions_transactions_item_invGroup_category {
+  __typename: "InvCategory";
+  id: string;
 }
 
-export interface GetTransactions_walletTransactions_transactions_invGroup {
+export interface GetTransactions_walletTransactions_transactions_item_invGroup {
   __typename: "InvGroup";
   name: string;
+  category: GetTransactions_walletTransactions_transactions_item_invGroup_category;
+}
+
+export interface GetTransactions_walletTransactions_transactions_item {
+  __typename: "InvItem";
+  id: string;
+  name: string;
+  invGroup: GetTransactions_walletTransactions_transactions_item_invGroup;
 }
 
 export interface GetTransactions_walletTransactions_transactions_location {
@@ -42,7 +50,6 @@ export interface GetTransactions_walletTransactions_transactions {
   credit: number;
   client: GetTransactions_walletTransactions_transactions_client;
   item: GetTransactions_walletTransactions_transactions_item;
-  invGroup: GetTransactions_walletTransactions_transactions_invGroup;
   location: GetTransactions_walletTransactions_transactions_location;
   unitPrice: number;
   quantity: number;

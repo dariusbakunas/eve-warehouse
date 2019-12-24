@@ -20,7 +20,7 @@ import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Maybe from 'graphql/tsutils/Maybe';
 import moment from 'moment';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
@@ -257,8 +257,16 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
         columns={[
           { field: row => moment(row.date).format('MM/DD/YYYY HH:mm'), title: 'Date', orderBy: WalletTransactionOrderBy.date },
           { field: row => (row.character ? row.character.name : null), title: 'Character', orderBy: WalletTransactionOrderBy.character },
-          { field: row => (row.item ? row.item.name : null), title: 'Item', orderBy: WalletTransactionOrderBy.item },
-          { field: row => row.invGroup.name, title: 'Group', orderBy: WalletTransactionOrderBy.invGroup },
+          {
+            field: row => (row.item ? row.item.name : null),
+            title: 'Item',
+            orderBy: WalletTransactionOrderBy.item,
+            icon: {
+              label: row => '',
+              imageUrl: row => `https://images.evetech.net/types/${row.item.id}/icon`,
+            },
+          },
+          { field: row => (row.item ? row.item.invGroup.name : null), title: 'Group', orderBy: WalletTransactionOrderBy.invGroup },
           { field: row => row.unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2 }), title: 'Price', align: 'right' },
           { field: row => row.quantity.toLocaleString(), title: 'Quantity', align: 'right' },
           {
