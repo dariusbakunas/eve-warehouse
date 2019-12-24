@@ -16,3 +16,8 @@ Combined transactions, custom filters:
 
 ![filters](docs/img/transaction_filters.png)
 
+#### Industry
+
+List of blueprints:
+
+![blueprints](docs/img/blueprints.png)
