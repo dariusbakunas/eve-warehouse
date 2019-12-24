@@ -75,9 +75,9 @@ const Wallet = () => {
   const [journalOrderBy, setJournalOrderby] = useState<WalletJournalOrderBy>(WalletJournalOrderBy.date);
   const [marketOrderBy, setMarketOrderBy] = useState<MarketOrderOrderBy>(MarketOrderOrderBy.issued);
   const [transactionsOrderType, setTransactionsOrderType] = useState<Maybe<OrderType>>(null);
-  const [transactionsRowsPerPage, setTransactionsRowsPerPage] = useState(15);
+  const [transactionsRowsPerPage, setTransactionsRowsPerPage] = useState(10);
   const [journalRowsPerPage, setJournalRowsPerPage] = useState(15);
-  const [orderRowsPerPage, setOrderRowsPerPage] = useState(15);
+  const [orderRowsPerPage, setOrderRowsPerPage] = useState(10);
   const [currentTab, setCurrentTab] = useState<number>(0);
   const [orderStateFilter, setOrderStateFilter] = React.useState<OrderStateFilter>({
     active: true,

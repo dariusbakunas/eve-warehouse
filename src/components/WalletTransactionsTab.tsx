@@ -262,7 +262,6 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
             title: 'Item',
             orderBy: WalletTransactionOrderBy.item,
             icon: {
-              label: row => '',
               imageUrl: row => `https://images.evetech.net/types/${row.item.id}/icon`,
             },
           },

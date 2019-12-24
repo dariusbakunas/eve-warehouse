@@ -52,7 +52,7 @@ interface IColumn<Data extends {}, OrderBy extends {}> {
   field: keyof Data | colFn<Data>;
   orderBy?: OrderBy;
   icon?: {
-    label: string | colFn<Data>;
+    label?: string | colFn<Data>;
     imageUrl?: string | imageUrlFn<Data>;
   };
   title: string;
@@ -61,7 +61,7 @@ interface IColumn<Data extends {}, OrderBy extends {}> {
 type IRowColumn<Data extends {}, OrderBy extends {}> = IColumn<Data, OrderBy> & {
   className?: Maybe<string>;
   value: string | number;
-  cellIcon?: { label: string; imageUrl?: string };
+  cellIcon?: { label?: string; imageUrl?: string };
 };
 
 interface IRow<Data extends {}, OrderBy extends {}> {
@@ -123,11 +123,8 @@ const DataTable = <Data extends {}, OrderBy extends {}>({
           if (column.icon) {
             result.cellIcon = {
               label: typeof column.icon.label === 'function' ? `${column.icon.label(entry)}` : column.icon.label,
+              imageUrl: typeof column.icon.imageUrl === 'function' ? column.icon.imageUrl(entry) : column.icon.imageUrl,
             };
-
-            if (column.icon.imageUrl) {
-              result.cellIcon.imageUrl = typeof column.icon.imageUrl === 'function' ? column.icon.imageUrl(entry) : column.icon.imageUrl;
-            }
           }
 
           if (column.cellClassName) {
