@@ -1,5 +1,9 @@
 ## Eve APP
 
+Eve Online web application for character monitoring, industry
+
+See also: [Eve GraphQL API](https://github.com/dariusbakunas/eve-api)
+
 ### Features
 
 #### Multiple characters
