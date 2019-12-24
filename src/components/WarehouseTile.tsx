@@ -358,13 +358,7 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
         </div>
       </ExpansionPanelDetails>
       <ExpansionPanelActions>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleAddItem}
-          startIcon={<AddIcon />}
-          disabled={loading}
-        >
+        <Button variant="contained" color="primary" onClick={handleAddItem} startIcon={<AddIcon />} disabled={loading}>
           Add Item
         </Button>
         <Button variant="contained" onClick={() => handleRemoveWarehouse(warehouse.id, warehouse.name)} startIcon={<DeleteIcon />} disabled={loading}>
