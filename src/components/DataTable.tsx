@@ -2,6 +2,9 @@ import { createStyles, makeStyles, TableCellProps, TableProps, Theme } from '@ma
 import { Order } from '../__generated__/globalTypes';
 import Avatar from '@material-ui/core/Avatar';
 import Checkbox from '@material-ui/core/Checkbox';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import IconButton from '@material-ui/core/IconButton';
 import Maybe from 'graphql/tsutils/Maybe';
 import React, { useMemo } from 'react';
 import Table from '@material-ui/core/Table';
@@ -67,11 +70,29 @@ type IRowColumn<Data extends {}, OrderBy extends {}> = IColumn<Data, OrderBy> & 
 interface IRow<Data extends {}, OrderBy extends {}> {
   id: string;
   columns: Array<IRowColumn<Data, OrderBy>>;
+  raw: Data;
 }
+
+type ActionIcon = 'edit' | 'delete';
+
+const renderIcon = (icon: ActionIcon) => {
+  switch (icon) {
+    case 'edit':
+      return <EditIcon fontSize="small" />;
+    case 'delete':
+      return <DeleteIcon fontSize="small" />;
+  }
+};
 
 interface ITableProps<Data extends {}, OrderBy extends {}> extends TableProps {
   idField: keyof Data;
   columns: IColumn<Data, OrderBy>[];
+  actions?: Array<{
+    ariaLabel?: string;
+    tooltip?: string;
+    icon: 'edit' | 'delete';
+    onAction: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, row: Data) => void;
+  }>;
   data: Maybe<Data[]>;
   sortingOptions?: {
     order?: Order;
@@ -95,6 +116,7 @@ interface ITableProps<Data extends {}, OrderBy extends {}> extends TableProps {
 }
 
 const DataTable = <Data extends {}, OrderBy extends {}>({
+  actions,
   columns,
   data,
   idField,
@@ -137,6 +159,7 @@ const DataTable = <Data extends {}, OrderBy extends {}>({
         return {
           id: `${entry[idField]}`,
           columns: rowColumns,
+          raw: entry,
         };
       });
     } else {
@@ -189,6 +212,7 @@ const DataTable = <Data extends {}, OrderBy extends {}>({
                 </TableCell>
               );
             })}
+            {actions && <TableCell />}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -233,6 +257,15 @@ const DataTable = <Data extends {}, OrderBy extends {}>({
                     </TableCell>
                   );
                 })}
+                {actions && (
+                  <TableCell align="right">
+                    {actions.map((action, index) => (
+                      <IconButton key={index} aria-label={action.ariaLabel} size="small" onClick={e => action.onAction(e, row.raw)}>
+                        {renderIcon(action.icon)}
+                      </IconButton>
+                    ))}
+                  </TableCell>
+                )}
               </TableRow>
             );
           })}
