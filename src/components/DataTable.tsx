@@ -6,7 +6,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/IconButton';
 import Maybe from 'graphql/tsutils/Maybe';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -14,6 +14,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
+import { GetWarehouseItems_warehouse_items as WarehouseItem } from '../__generated__/GetWarehouseItems';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -91,7 +92,7 @@ interface ITableProps<Data extends {}, OrderBy extends {}> extends TableProps {
     ariaLabel?: string;
     tooltip?: string;
     icon: 'edit' | 'delete';
-    onAction: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, row: Data) => void;
+    onAction: (row: Data) => void;
   }>;
   data: Maybe<Data[]>;
   sortingOptions?: {
@@ -174,6 +175,11 @@ const DataTable = <Data extends {}, OrderBy extends {}>({
       sortingOptions.onOrderByChange(column);
     }
   };
+
+  const handleAction = useCallback((event: React.MouseEvent<HTMLButtonElement, MouseEvent>, row: Data, callback: (row: Data) => void) => {
+    event.stopPropagation();
+    callback(row);
+  }, []);
 
   const numSelected = selectionOptions ? selectionOptions.selected.size : 0;
 
@@ -260,7 +266,7 @@ const DataTable = <Data extends {}, OrderBy extends {}>({
                 {actions && (
                   <TableCell align="right">
                     {actions.map((action, index) => (
-                      <IconButton key={index} aria-label={action.ariaLabel} size="small" onClick={e => action.onAction(e, row.raw)}>
+                      <IconButton key={index} aria-label={action.ariaLabel} size="small" onClick={e => handleAction(e, row.raw, action.onAction)}>
                         {renderIcon(action.icon)}
                       </IconButton>
                     ))}

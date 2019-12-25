@@ -16,6 +16,7 @@ import AddItemToWarehouseDialog, { IFormData as IAddItemFormData } from '../dial
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import ConfirmDialog from '../dialogs/ConfirmDialog';
+import DataTable from './DataTable';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
@@ -65,21 +66,8 @@ const useStyles = makeStyles<Theme>(theme => ({
   expand: {
     marginLeft: 'auto',
   },
-  table: {
-    whiteSpace: 'nowrap',
-  },
   title: {
     flex: '1 1 100%',
-  },
-  tableWrapper: {
-    width: '100%',
-    maxHeight: 300,
-    overflowY: 'auto',
-    overflowX: 'scroll',
-  },
-  rowButton: {
-    marginRight: theme.spacing(1),
-    marginLeft: theme.spacing(1),
   },
 }));
 
@@ -246,23 +234,20 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
     }
   };
 
-  const handleRemoveItem = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string, name: string) => {
-    event.stopPropagation();
-
-    showAlert(`Remove ${name}?`, `${name} will be removed`, async confirm => {
+  const handleRemoveItem = (item: WarehouseItem) => {
+    showAlert(`Remove ${item.name}?`, `${item.name} will be removed`, async confirm => {
       if (confirm) {
         removeItems({
           variables: {
             id: warehouse.id,
-            itemIds: [id],
+            itemIds: [item.id],
           },
         });
       }
     });
   };
 
-  const handleEditItem = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, item: WarehouseItem) => {
-    event.stopPropagation();
+  const handleEditItem = (item: WarehouseItem) => {
     setCurrentItem(item);
     setUpdateItemDialogOpen(true);
   };
@@ -294,66 +279,38 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
             </Toolbar>
           )}
           {data && data.warehouse && (
-            <div className={classes.tableWrapper}>
-              <Table stickyHeader size="small" aria-label="wallet transactions" className={classes.table}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        indeterminate={numSelected > 0 && numSelected < data.warehouse.items.length}
-                        checked={numSelected === data.warehouse.items.length}
-                        onChange={handleSelectAllClick}
-                        inputProps={{ 'aria-label': 'select all desserts' }}
-                      />
-                    </TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell align="right">Quantity</TableCell>
-                    <TableCell align="right">Unit Cost</TableCell>
-                    <TableCell align="right">Total</TableCell>
-                    <TableCell />
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {data.warehouse.items.map(item => {
-                    const isRowSelected = selected.has(item.id);
-                    const labelId = `table-checkbox-${item.id}`;
-
-                    return (
-                      <TableRow
-                        key={item.id}
-                        hover
-                        role="checkbox"
-                        aria-checked={isRowSelected}
-                        tabIndex={-1}
-                        selected={isRowSelected}
-                        onClick={event => handleRowSelect(event, item.id)}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox checked={isRowSelected} inputProps={{ 'aria-labelledby': labelId }} />
-                        </TableCell>
-                        <TableCell>{item.name}</TableCell>
-                        <TableCell align="right">{item.quantity.toLocaleString()}</TableCell>
-                        <TableCell align="right">{item.unitCost.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
-                        <TableCell align="right">{(item.unitCost * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
-                        <TableCell align="right">
-                          <IconButton aria-label="edit" className={classes.rowButton} size="small" onClick={e => handleEditItem(e, item)}>
-                            <EditIcon fontSize="small" />
-                          </IconButton>
-                          <IconButton
-                            aria-label="delete"
-                            className={classes.rowButton}
-                            size="small"
-                            onClick={e => handleRemoveItem(e, item.id, item.name)}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+            <DataTable<WarehouseItem, {}>
+              idField="id"
+              actions={[
+                { icon: 'edit', onAction: handleEditItem },
+                { icon: 'delete', onAction: handleRemoveItem },
+              ]}
+              columns={[
+                {
+                  field: 'name',
+                  title: 'Name',
+                  icon: {
+                    imageUrl: row => `https://images.evetech.net/types/${row.id}/icon`,
+                  },
+                },
+                { field: row => row.quantity.toLocaleString(), title: 'Quantity', align: 'right' },
+                { field: row => row.unitCost.toLocaleString(undefined, { minimumFractionDigits: 2 }), title: 'Unit Cost', align: 'right' },
+                {
+                  field: row => (row.unitCost * row.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 }),
+                  title: 'Total',
+                  align: 'right',
+                },
+              ]}
+              data={data.warehouse.items}
+              size="small"
+              aria-label="warehouse items"
+              selectionOptions={{
+                selected: selected,
+                rowCount: data.warehouse.items.length,
+                onRowSelect: handleRowSelect,
+                onSelectAll: handleSelectAllClick,
+              }}
+            />
           )}
         </div>
       </ExpansionPanelDetails>
