@@ -4,7 +4,7 @@ import {
   GetWarehouseItemsVariables,
   GetWarehouseItems_warehouse_items as WarehouseItem,
 } from '../__generated__/GetWarehouseItems';
-import { makeStyles, TableRow, Theme } from '@material-ui/core';
+import { makeStyles, Theme } from '@material-ui/core';
 import { RemoveItemsFromWarehouse, RemoveItemsFromWarehouseVariables } from '../__generated__/RemoveItemsFromWarehouse';
 import { UpdateItemsInWarehouse, UpdateItemsInWarehouseVariables } from '../__generated__/UpdateItemsInWarehouse';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -14,11 +14,9 @@ import AddIcon from '@material-ui/icons/Add';
 import addItemsToWarehouseMutation from '../queries/addItemsToWarehouse.graphql';
 import AddItemToWarehouseDialog, { IFormData as IAddItemFormData } from '../dialogs/AddItemToWarehouseDialog';
 import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
 import ConfirmDialog from '../dialogs/ConfirmDialog';
 import DataTable from './DataTable';
 import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
 import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import getWarehouseItemsQuery from '../queries/getWarehouseItems.graphql';
@@ -27,10 +25,6 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Maybe from 'graphql/tsutils/Maybe';
 import React, { useMemo, useState } from 'react';
 import removeItemsFromWarehouseMutation from '../queries/removeItemsFromWarehouse.graphql';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';

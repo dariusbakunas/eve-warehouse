@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Tue Dec 24 2019 08:58:15 GMT-0500 (Eastern Standard Time)
+# timestamp: Wed Dec 25 2019 17:42:57 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -38,6 +38,17 @@ input BlueprintsOrderByInput {
 type BlueprintsResponse {
   total: Int!
   entries: [Blueprint!]!
+}
+
+type BuildInfo {
+  materials: [BuildMaterial!]!
+  product: InvItem!
+}
+
+type BuildMaterial {
+  item: InvItem!
+  quantity: Int!
+  time: Int!
 }
 
 type Character {
@@ -278,6 +289,7 @@ enum ProcessingStatus {
 
 type Query {
   blueprints(page: PageInput, filter: BlueprintFilter, orderBy: BlueprintsOrderByInput): BlueprintsResponse!
+  buildInfo(blueprintId: ID!): BuildInfo
   character(id: ID!): Character
   characters: [Character!]!
   invItems(filter: InvItemFilter): [InvItem!]!

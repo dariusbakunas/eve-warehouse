@@ -1,0 +1,12 @@
+query GetBuildInfo($id: ID!) {
+  buildInfo(blueprintId: $id) {
+    materials {
+      item {
+        id
+        name
+      }
+      quantity
+      time
+    }
+  }
+}
