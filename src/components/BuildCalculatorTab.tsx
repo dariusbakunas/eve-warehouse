@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
     controls: {
       alignItems: 'center',
       display: 'flex',
+      flexWrap: 'wrap',
       marginBottom: theme.spacing(1),
     },
   })
@@ -40,12 +41,21 @@ interface IMaterialRow {
   jobQuantity: string;
 }
 
+const STRUCTURE_RIG_BONUSES: { [key: number]: { [key: string]: number } } = {
+  0: { lowSec: 0, highSec: 0, nullSec: 0 },
+  1: { lowSec: 3.8, highSec: 2, nullSec: 4.2 },
+  2: { lowSec: 4.56, highSec: 2.4, nullSec: 5.04 },
+};
+
 const BuildCalculatorTab: React.FC = () => {
   const classes = useStyles();
   const [blueprint, setBlueprint] = usePersistentState<Maybe<InvItem>>(`BuildCalculatorTab:blueprint`, null);
   const [me, setMe] = usePersistentState<number>('BuildCalculatorTab:me', 10);
   const [te, setTe] = usePersistentState<number>('BuildCalculatorTab:te', 20);
+  const [sec, setSec] = usePersistentState<string>('BuildCalculatorTab:sec', 'nullSec');
   const [runs, setRuns] = usePersistentState<Maybe<number>>('BuildCalculatorTab:runs', 1);
+  const [rig, setRig] = usePersistentState<number>('BuildCalculatorTab:rig', 0);
+  const [facility, setFacility] = usePersistentState<string>('BuildCalculatorTab:facility', 'complex');
 
   const { loading, data } = useQuery<GetBuildInfo, GetBuildInfoVariables>(getBuildInfoQuery, {
     skip: !blueprint,
@@ -63,25 +73,29 @@ const BuildCalculatorTab: React.FC = () => {
       const {
         buildInfo: { materials },
       } = data;
+
+      const structureRigBonus = STRUCTURE_RIG_BONUSES[rig][sec];
+      const facilityBonus = facility === 'complex' ? 1 : 0;
+
       return materials.map(material => {
         let jobQuantity = 'N/A';
-        const unitQuantity = Math.ceil(material.quantity * (1 - me * 0.01)).toLocaleString();
+        const unitQuantity = material.quantity * (1 - me * 0.01) * (1 - structureRigBonus * 0.01) * (1 - facilityBonus * 0.01);
 
         if (runs) {
-          jobQuantity = Math.max(runs, Math.ceil(material.quantity * (1 - me * 0.01) * runs)).toLocaleString();
+          jobQuantity = Math.max(runs, Math.ceil(unitQuantity * runs)).toLocaleString();
         }
 
         return {
           id: material.item.id,
           name: material.item.name,
           jobQuantity: jobQuantity,
-          unitQuantity: unitQuantity,
+          unitQuantity: Math.ceil(unitQuantity).toLocaleString(),
         };
       });
     } else {
       return [];
     }
-  }, [data, runs, me, te]);
+  }, [data, runs, me, te, sec, rig, facility]);
 
   const handleMeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setMe(event.target.value as number);
@@ -89,6 +103,18 @@ const BuildCalculatorTab: React.FC = () => {
 
   const handleTeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setTe(event.target.value as number);
+  };
+
+  const handleSecChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setSec(event.target.value as string);
+  };
+
+  const handleFacilityChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setFacility(event.target.value as string);
+  };
+
+  const handleRigChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setRig(event.target.value as number);
   };
 
   const handleRunsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -142,6 +168,29 @@ const BuildCalculatorTab: React.FC = () => {
               min: 1,
             }}
           />
+        </FormControl>
+        <FormControl className={classes.formControl}>
+          <InputLabel id="facility-select-label">Facility</InputLabel>
+          <Select labelId="facility-select-label" id="facility-select" value={facility} onChange={handleFacilityChange}>
+            <MenuItem value={'other'}>Other</MenuItem>
+            <MenuItem value={'complex'}>Engineering Complex</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl className={classes.formControl}>
+          <InputLabel id="sec-select-label">Security</InputLabel>
+          <Select labelId="sec-select-label" id="sec-select" value={sec} onChange={handleSecChange}>
+            <MenuItem value={'highSec'}>High Sec</MenuItem>
+            <MenuItem value={'lowSec'}>Low Sec</MenuItem>
+            <MenuItem value={'nullSec'}>Null Sec</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl className={classes.formControl}>
+          <InputLabel id="rig-select-label">ME Rig</InputLabel>
+          <Select labelId="rig-select-label" id="rig-select" value={rig} onChange={handleRigChange}>
+            <MenuItem value={0}>No Rig</MenuItem>
+            <MenuItem value={1}>T1 Rig</MenuItem>
+            <MenuItem value={2}>T2 Rig</MenuItem>
+          </Select>
         </FormControl>
       </div>
       <DataTable<IMaterialRow, {}>

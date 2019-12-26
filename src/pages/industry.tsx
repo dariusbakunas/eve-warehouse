@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Industry: React.FC = () => {
   const classes = useStyles();
-  const { handleTabChange, currentTab, tabProps, tabPanelProps } = useTabs('industryTab', 0);
+  const { handleTabChange, currentTab, tabProps, tabPanelProps } = useTabs('industryTab');
 
   return (
     <PageWrapper label="Industry">

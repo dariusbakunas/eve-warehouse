@@ -1,8 +1,15 @@
 import { usePersistentState } from './usePersistentState';
-import React from 'react';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react';
 
-const useTabs = (key: string, defaultTab: number) => {
-  const [currentTab, setCurrentTab] = usePersistentState<number>(key, defaultTab);
+const useTabs = (key: string) => {
+  const router = useRouter();
+  const query = router.query;
+  const [currentTab, setCurrentTab] = usePersistentState<number>(key, +query.tab);
+
+  useEffect(() => {
+    router.push(`${router.pathname}?tab=${currentTab}`, `/industry?tab=${currentTab}`, { shallow: true });
+  }, [currentTab]);
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setCurrentTab(newValue);
