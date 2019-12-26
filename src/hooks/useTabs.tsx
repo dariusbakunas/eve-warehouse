@@ -1,26 +1,17 @@
-import { useRouter } from 'next/router';
+import { usePersistentState } from './usePersistentState';
 import React from 'react';
 
-const useTabs = (initialTab: number) => {
-  const router = useRouter();
-  const [currentTab, setCurrentTab] = React.useState(initialTab);
+const useTabs = (key: string, defaultTab: number) => {
+  const [currentTab, setCurrentTab] = usePersistentState<number>(key, defaultTab);
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setCurrentTab(newValue);
   };
 
-  const getTabClickHandler = (section: string) => (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    event.preventDefault();
-    router.push(`${router.pathname}?section=${section}`, `/industry?section=${section}`, { shallow: true });
-  };
-
-  const tabProps = (index: number, section: string) => {
+  const tabProps = (index: number) => {
     return {
-      component: 'a',
-      href: `${router.pathname}?section=${section}`,
       id: `scrollable-auto-tab-${index}`,
       'aria-controls': `scrollable-auto-tabpanel-${index}`,
-      onClick: getTabClickHandler(section),
     };
   };
 

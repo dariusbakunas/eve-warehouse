@@ -43,9 +43,9 @@ interface IMaterialRow {
 const BuildCalculatorTab: React.FC = () => {
   const classes = useStyles();
   const [blueprint, setBlueprint] = usePersistentState<Maybe<InvItem>>(`BuildCalculatorTab:blueprint`, null);
-  const [me, setMe] = useState<number>(10);
-  const [te, setTe] = useState<number>(20);
-  const [runs, setRuns] = useState<Maybe<number>>(1);
+  const [me, setMe] = usePersistentState<number>('BuildCalculatorTab:me', 10);
+  const [te, setTe] = usePersistentState<number>('BuildCalculatorTab:te', 20);
+  const [runs, setRuns] = usePersistentState<Maybe<number>>('BuildCalculatorTab:runs', 1);
 
   const { loading, data } = useQuery<GetBuildInfo, GetBuildInfoVariables>(getBuildInfoQuery, {
     skip: !blueprint,
