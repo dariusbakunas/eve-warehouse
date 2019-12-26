@@ -6,7 +6,9 @@ query GetBuildInfo($id: ID!) {
         name
       }
       quantity
-      time
     }
+    quantity
+    time
+    productionLimit
   }
 }

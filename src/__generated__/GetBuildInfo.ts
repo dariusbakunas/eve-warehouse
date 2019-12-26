@@ -16,12 +16,14 @@ export interface GetBuildInfo_buildInfo_materials {
   __typename: "BuildMaterial";
   item: GetBuildInfo_buildInfo_materials_item;
   quantity: number;
-  time: number;
 }
 
 export interface GetBuildInfo_buildInfo {
   __typename: "BuildInfo";
   materials: GetBuildInfo_buildInfo_materials[];
+  quantity: number;
+  time: number;
+  productionLimit: number;
 }
 
 export interface GetBuildInfo {
