@@ -77,6 +77,7 @@ const useValidator = <T extends {}>(defaults: Partial<T> = {}) => {
     register,
     errors,
     setValue,
+    values,
   };
 };
 

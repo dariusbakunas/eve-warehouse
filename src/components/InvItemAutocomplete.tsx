@@ -21,10 +21,11 @@ interface IAutocompleteProps {
   error?: boolean;
   className?: string;
   categoryIds?: string[];
+  value: Maybe<InvItem>;
   onSelect: (item: Maybe<InvItem>) => void;
 }
 
-const InvItemAutocomplete: React.FC<IAutocompleteProps> = ({ className, categoryIds, error, label, onSelect }) => {
+const InvItemAutocomplete: React.FC<IAutocompleteProps> = ({ className, categoryIds, error, label, onSelect, value }) => {
   const [open, setOpen] = React.useState(false);
   const [nameFilter, setNameFilter] = React.useState<Maybe<string>>(null);
 
@@ -81,6 +82,7 @@ const InvItemAutocomplete: React.FC<IAutocompleteProps> = ({ className, category
       }}
       onChange={handleItemSelect}
       onInputChange={handleInputChange}
+      value={value}
       renderInput={params => (
         <TextField
           {...params}

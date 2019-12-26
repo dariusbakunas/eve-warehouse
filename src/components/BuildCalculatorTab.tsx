@@ -1,5 +1,6 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { GetBuildInfo, GetBuildInfoVariables } from '../__generated__/GetBuildInfo';
+import { usePersistentState } from '../hooks/usePersistentState';
 import { useQuery } from '@apollo/react-hooks';
 import DataTable from './DataTable';
 import FormControl from '@material-ui/core/FormControl';
@@ -8,7 +9,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import InvItemAutocomplete, { InvItem } from './InvItemAutocomplete';
 import Maybe from 'graphql/tsutils/Maybe';
 import MenuItem from '@material-ui/core/MenuItem';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 
@@ -41,7 +42,7 @@ interface IMaterialRow {
 
 const BuildCalculatorTab: React.FC = () => {
   const classes = useStyles();
-  const [blueprint, setBlueprint] = useState<Maybe<InvItem>>(null);
+  const [blueprint, setBlueprint] = usePersistentState<Maybe<InvItem>>(`BuildCalculatorTab:blueprint`, null);
   const [me, setMe] = useState<number>(10);
   const [te, setTe] = useState<number>(20);
   const [runs, setRuns] = useState<Maybe<number>>(1);
@@ -107,6 +108,7 @@ const BuildCalculatorTab: React.FC = () => {
           className={classes.blueprintSelector}
           categoryIds={['9']}
           label="Select Blueprint or Reaction"
+          value={blueprint}
           onSelect={handleSelectItem}
         />
         <FormControl className={classes.formControl}>

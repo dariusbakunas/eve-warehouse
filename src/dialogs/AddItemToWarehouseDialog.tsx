@@ -50,7 +50,7 @@ export interface IFormData {
 }
 
 const AddItemToWarehouseDialog: React.FC<IDialogProps> = ({ open, onCancel, onSubmit }) => {
-  const { register, handleSubmit, errors, setValue } = useValidator<IFormData>();
+  const { register, handleSubmit, errors, setValue, values } = useValidator<IFormData>();
   const classes = useStyles();
 
   useEffect(() => {
@@ -81,7 +81,7 @@ const AddItemToWarehouseDialog: React.FC<IDialogProps> = ({ open, onCancel, onSu
     <Dialog open={open} fullWidth={true} maxWidth="md">
       <DialogTitle onClose={handleCancel}>Add item to warehouse</DialogTitle>
       <DialogContent dividers className={classes.root}>
-        <InvItemAutocomplete error={!!errors.item} onSelect={handleSelectItem} className={classes.itemField} />
+        <InvItemAutocomplete error={!!errors.item} onSelect={handleSelectItem} className={classes.itemField} value={values['item']} />
         <TextField
           className={classes.qtyField}
           label="Qty"
