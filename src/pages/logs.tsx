@@ -1,13 +1,24 @@
-import { useQuery } from '@apollo/react-hooks';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import { GetCharacterNames } from '../__generated__/GetCharacterNames';
+import { GetProcessingLogs, GetProcessingLogsVariables } from '../__generated__/GetProcessingLogs';
+import { useQuery } from '@apollo/react-hooks';
+import { useSnackbar } from 'notistack';
+import CheckIcon from '@material-ui/icons/Check';
 import Chip from '@material-ui/core/Chip';
+import ClearIcon from '@material-ui/icons/Clear';
+import FilterListIcon from '@material-ui/icons/FilterList';
 import FormControl from '@material-ui/core/FormControl';
+import getCharacterNames from '../queries/getCharacterNames.graphql';
+import getProcessingLogsQuery from '../queries/getProcessingLogs.graphql';
 import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import Maybe from 'graphql/tsutils/Maybe';
 import MenuItem from '@material-ui/core/MenuItem';
+import moment from 'moment';
 import Paper from '@material-ui/core/Paper';
 import Popover from '@material-ui/core/Popover';
+import React, { ChangeEvent, useState } from 'react';
 import Select from '@material-ui/core/Select';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -17,17 +28,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import CheckIcon from '@material-ui/icons/Check';
-import ClearIcon from '@material-ui/icons/Clear';
-import FilterListIcon from '@material-ui/icons/FilterList';
-import Maybe from 'graphql/tsutils/Maybe';
-import moment from 'moment';
-import React, { ChangeEvent, useState } from 'react';
-import { GetCharacterNames } from '../__generated__/GetCharacterNames';
-import { GetProcessingLogs, GetProcessingLogsVariables } from '../__generated__/GetProcessingLogs';
 import withApollo from '../lib/withApollo';
-import getCharacterNames from '../queries/getCharacterNames.graphql';
-import getProcessingLogsQuery from '../queries/getProcessingLogs.graphql';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -103,6 +104,7 @@ const getTableData: (data?: GetProcessingLogs) => ITableRow[] = data => {
 };
 
 const Logs = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const [filterMenuAnchor, setFilterMenuAnchor] = useState<HTMLButtonElement | null>(null);
   const [characterFilter, setCharacterFilter] = useState<Maybe<{ id: string; name: string }>>(null);
@@ -113,6 +115,9 @@ const Logs = () => {
       filter: {
         characterId: characterFilter ? characterFilter.id : null,
       },
+    },
+    onError: error => {
+      enqueueSnackbar(`Logs failed to load: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
     },
   });
 
