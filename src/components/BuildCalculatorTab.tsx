@@ -81,6 +81,7 @@ const STRUCTURE_RIG_BONUSES: { [key: number]: { [key: string]: number } } = {
 const BuildCalculatorTab: React.FC = () => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const [isReaction, setIsReaction] = usePersistentState<boolean>(`BuildCalculatorTab:isReaction`, false);
   const [blueprint, setBlueprint] = usePersistentState<Maybe<InvItem>>(`BuildCalculatorTab:blueprint`, null);
   const [me, setMe] = usePersistentState<number>('BuildCalculatorTab:me', 10);
   const [te, setTe] = usePersistentState<number>('BuildCalculatorTab:te', 20);
@@ -117,6 +118,10 @@ const BuildCalculatorTab: React.FC = () => {
   });
 
   const handleSelectItem = (item: Maybe<InvItem>) => {
+    // TODO: is there better way to determine if this is reaction?
+    if (item) {
+      setIsReaction(item.name.includes('Reaction'));
+    }
     setBlueprint(item);
   };
 
@@ -153,12 +158,14 @@ const BuildCalculatorTab: React.FC = () => {
         buildInfo: { materials },
       } = buildInfoResponse;
 
+      const actualMe = isReaction ? 0 : me;
+
       const structureRigBonus = STRUCTURE_RIG_BONUSES[rig][sec];
       const facilityBonus = facility === 'complex' ? 1 : 0;
 
       return materials.map(material => {
         let jobQuantity = null;
-        const unitQuantity = material.quantity * (1 - me * 0.01) * (1 - structureRigBonus * 0.01) * (1 - facilityBonus * 0.01);
+        const unitQuantity = material.quantity * (1 - actualMe * 0.01) * (1 - structureRigBonus * 0.01) * (1 - facilityBonus * 0.01);
 
         if (runs) {
           jobQuantity = Math.max(runs, Math.ceil(unitQuantity * runs));
@@ -255,7 +262,7 @@ const BuildCalculatorTab: React.FC = () => {
           value={blueprint}
           onSelect={handleSelectItem}
         />
-        <FormControl className={classes.formControl}>
+        <FormControl className={classes.formControl} disabled={isReaction}>
           <InputLabel id="me-select-label">ME</InputLabel>
           <Select labelId="me-select-label" id="me-select" value={me} onChange={handleMeChange}>
             {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
@@ -265,7 +272,7 @@ const BuildCalculatorTab: React.FC = () => {
             ))}
           </Select>
         </FormControl>
-        <FormControl className={classes.formControl}>
+        <FormControl className={classes.formControl} disabled={isReaction}>
           <InputLabel id="te-select-label">TE</InputLabel>
           <Select labelId="te-select-label" id="te-select" value={te} onChange={handleTeChange}>
             {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(num => (
