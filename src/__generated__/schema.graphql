@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Wed Dec 25 2019 20:05:26 GMT-0500 (Eastern Standard Time)
+# timestamp: Fri Dec 27 2019 10:25:45 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -63,6 +63,7 @@ type Character {
   securityStatus: Float!
   skillGroups: [SkillGroup!]!
   skillGroup(id: ID!): SkillGroup
+  skillQueue: [SkillQueueItem!]!
   totalSp: Int
 }
 
@@ -336,6 +337,17 @@ type SkillGroup {
   totalSp: Int
   totalLevels: Int
   trainedSp: Int
+}
+
+type SkillQueueItem {
+  position: Int!
+  finishDate: DateTime
+  finishedLevel: Int!
+  levelEndSp: Int!
+  levelStartSp: Int!
+  skill: Skill!
+  startDate: DateTime
+  trainingStartSp: Int!
 }
 
 """

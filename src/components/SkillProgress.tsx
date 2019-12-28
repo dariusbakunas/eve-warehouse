@@ -1,9 +1,14 @@
-import React from 'react';
-import range from 'lodash.range';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import clsx from 'clsx';
+import countdown from 'countdown';
 import Maybe from 'graphql/tsutils/Maybe';
+import moment from 'moment';
+import range from 'lodash.range';
+import React from 'react';
 
 interface ISkillProgressProps {
+  startDate?: string;
+  finishDate?: string;
   trainedLevel?: Maybe<number>;
   queuedLevel?: Maybe<number>;
   injected?: boolean;
@@ -12,8 +17,12 @@ interface ISkillProgressProps {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      display: 'inline-block',
-      verticalAlign: 'middle',
+      display: 'inline-flex',
+      alignItems: 'center',
+    },
+    countdown: {
+      color: 'rgb(105, 105, 105)',
+      marginRight: theme.spacing(1),
     },
     slot: ({ injected }: ISkillProgressProps) => ({
       display: 'inline-block',
@@ -34,16 +43,23 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const SkillProgress: React.FC<ISkillProgressProps> = ({ trainedLevel, queuedLevel, injected }) => {
+const SkillProgress: React.FC<ISkillProgressProps> = ({ trainedLevel, queuedLevel, injected, startDate, finishDate }) => {
+  countdown.setLabels('|s|m|h|d', '|s|m|h|d', ' ', ' ')
+  const start = startDate ? moment(startDate).toDate() : null;
+  const end = finishDate ? moment(finishDate).toDate() : null;
+
   const classes = useStyles({ injected });
+  const countDown = countdown(start, end, ~countdown.MONTHS & ~countdown.WEEKS).toString();
 
   return (
     <div className={classes.root}>
+      {countDown && <span className={classes.countdown}>{countDown}</span>}
       {range(5).map((n: number) => {
         const isTrained = trainedLevel && trainedLevel > n;
-
         const isQueued = !isTrained && queuedLevel && queuedLevel > n;
-        return <span key={n} className={`${classes.slot} ${isTrained ? classes.trained : null} ${isQueued ? classes.queued : null}`} />;
+
+        const className = clsx(classes.slot, { [classes.trained]: isTrained }, { [classes.queued]: isQueued });
+        return <span key={n} className={className} />;
       })}
     </div>
   );

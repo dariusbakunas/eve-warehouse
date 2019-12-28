@@ -1,33 +1,35 @@
-import React, { ChangeEvent, useState } from 'react';
+import { GetCharacterNames_characters as Character, GetCharacterNames } from '../__generated__/GetCharacterNames';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import FilterListIcon from '@material-ui/core/SvgIcon/SvgIcon';
-import Toolbar from '@material-ui/core/Toolbar';
-import { useQuery } from '@apollo/react-hooks';
-import getCharacterNames from '../queries/getCharacterNames.graphql';
-import { GetCharacterNames, GetCharacterNames_characters as Character } from '../__generated__/GetCharacterNames';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Maybe from 'graphql/tsutils/Maybe';
-import withApollo from '../lib/withApollo';
-import getCharacterSkillGroupsQuery from '../queries/getCharacterSkillGroups.graphql';
-import getSkillGroupSkillsQuery from '../queries/getSkillGroupSkills.graphql';
 import {
   GetCharacterSkillGroups,
-  GetCharacterSkillGroups_character_skillGroups as SkillGroup,
   GetCharacterSkillGroupsVariables,
+  GetCharacterSkillGroups_character_skillGroups as SkillGroup,
 } from '../__generated__/GetCharacterSkillGroups';
+import { GetCharacterSkillQueue, GetCharacterSkillQueueVariables } from '../__generated__/GetCharacterSkillQueue';
 import { GetSkillGroupSkills, GetSkillGroupSkillsVariables } from '../__generated__/GetSkillGroupSkills';
+import { useQuery } from '@apollo/react-hooks';
 import { useSnackbar } from 'notistack';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import FormControl from '@material-ui/core/FormControl';
+import getCharacterNames from '../queries/getCharacterNames.graphql';
+import getCharacterSkillGroupsQuery from '../queries/getCharacterSkillGroups.graphql';
+import getCharacterSkillQueueQuery from '../queries/getCharacterSkillQueue.graphql';
+import getSkillGroupSkillsQuery from '../queries/getSkillGroupSkills.graphql';
 import GridList from '@material-ui/core/GridList';
+import InputLabel from '@material-ui/core/InputLabel';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import List from '@material-ui/core/List';
+import ListItem, { ListItemProps } from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Maybe from 'graphql/tsutils/Maybe';
+import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
+import React, { ChangeEvent, useState } from 'react';
+import Select from '@material-ui/core/Select';
 import SkillGroupButton from '../components/SkillGroupButton';
 import SkillProgress from '../components/SkillProgress';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import withApollo from '../lib/withApollo';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,13 +43,16 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2),
     },
+    lvl: {
+      color: 'rgb(0, 160, 193)',
+      marginLeft: theme.spacing(1),
+    },
     skillGroupsContainer: {
       display: 'flex',
       flexWrap: 'wrap',
       justifyContent: 'space-around',
       overflow: 'hidden',
       padding: theme.spacing(2),
-      backgroundColor: theme.palette.background.paper,
     },
     skillsContainer: {
       display: 'flex',
@@ -56,6 +61,11 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'space-around',
       maxHeight: '400px',
       padding: theme.spacing(2),
+      backgroundColor: '#dedede',
+    },
+    skillQueueContainer: {
+      maxHeight: '400px',
+      overflowY: 'scroll',
     },
     title: {
       flex: 1,
@@ -81,6 +91,16 @@ const Skills = () => {
       }
     },
   });
+
+  const { loading: skillQueueLoading, data: skillQueue } = useQuery<GetCharacterSkillQueue, GetCharacterSkillQueueVariables>(
+    getCharacterSkillQueueQuery,
+    {
+      skip: !currentCharacter,
+      variables: {
+        id: currentCharacter ? currentCharacter.id : '-1',
+      },
+    }
+  );
 
   const { loading: skillGroupsLoading, data: skillGroupData } = useQuery<GetCharacterSkillGroups, GetCharacterSkillGroupsVariables>(
     getCharacterSkillGroupsQuery,
@@ -126,6 +146,16 @@ const Skills = () => {
     setCurrentSkillGroup(group);
   };
 
+  const loading = characterNamesLoading || skillGroupsLoading || skillGroupSkillsLoading || skillQueueLoading;
+
+  const lvl: { [key: number]: string } = {
+    1: 'I',
+    2: 'II',
+    3: 'III',
+    4: 'IV',
+    5: 'V',
+  };
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
@@ -134,7 +164,7 @@ const Skills = () => {
             Skills
           </Typography>
         </Toolbar>
-        {(characterNamesLoading || skillGroupsLoading || skillGroupSkillsLoading) && <LinearProgress />}
+        {loading && <LinearProgress />}
         {characterNamesData && currentCharacter && (
           <Toolbar className={classes.labelToolbar}>
             <FormControl>
@@ -174,6 +204,29 @@ const Skills = () => {
                 </li>
               ))}
             </GridList>
+          </div>
+        )}
+        {skillQueue && skillQueue.character && skillQueue.character.skillQueue && (
+          <div className={classes.skillQueueContainer}>
+            <List dense>
+              {skillQueue.character.skillQueue.map(item => (
+                <ListItem key={item.position} button>
+                  <div className="MuiListItemText-root MuiListItemText-dense">
+                    <span className="MuiTypography-root MuiListItemText-primary MuiTypography-body2">
+                      {item.position + 1}. {item.skill.name}
+                    </span>
+                    <span className={classes.lvl}>{lvl[item.finishedLevel]}</span>
+                  </div>
+                  <SkillProgress
+                    startDate={item.startDate}
+                    finishDate={item.finishDate}
+                    trainedLevel={item.skill.trainedSkillLevel}
+                    injected={item.skill.trainedSkillLevel != null}
+                    queuedLevel={item.finishedLevel}
+                  />
+                </ListItem>
+              ))}
+            </List>
           </div>
         )}
       </Paper>

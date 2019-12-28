@@ -1,0 +1,18 @@
+query GetCharacterSkillQueue($id: ID!) {
+  character(id: $id) {
+    skillQueue {
+      skill {
+        id
+        name
+        trainedSkillLevel
+      }
+      finishDate
+      finishedLevel
+      position
+      startDate
+      levelStartSp
+      levelEndSp
+      trainingStartSp
+    }
+  }
+}
