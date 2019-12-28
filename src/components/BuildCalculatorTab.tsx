@@ -12,6 +12,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import React, { useEffect, useMemo, useState } from 'react';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
+import { getItemImageUrl } from '../utils/getItemImageUrl';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -201,7 +202,7 @@ const BuildCalculatorTab: React.FC = () => {
             field: 'name',
             title: 'Name',
             icon: {
-              imageUrl: row => `https://images.evetech.net/types/${row.id}/icon`,
+              imageUrl: row => getItemImageUrl(row.id, row.name),
             },
           },
           { field: 'unitQuantity', title: 'Unit Quantity', align: 'right' },

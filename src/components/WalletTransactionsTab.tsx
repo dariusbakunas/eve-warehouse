@@ -1,5 +1,6 @@
 import { AddItemsToWarehouse, AddItemsToWarehouseVariables } from '../__generated__/AddItemsToWarehouse';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import { getItemImageUrl } from '../utils/getItemImageUrl';
 import { GetTransactionIds, GetTransactionIdsVariables } from '../__generated__/GetTransactionIds';
 import {
   GetTransactions,
@@ -262,7 +263,7 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
             title: 'Item',
             orderBy: WalletTransactionOrderBy.item,
             icon: {
-              imageUrl: row => `https://images.evetech.net/types/${row.item.id}/icon`,
+              imageUrl: row => getItemImageUrl(row.item.id, row.item.name),
             },
           },
           { field: row => (row.item ? row.item.invGroup.name : null), title: 'Group', orderBy: WalletTransactionOrderBy.invGroup },

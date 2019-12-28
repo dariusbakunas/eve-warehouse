@@ -31,6 +31,7 @@ import Typography from '@material-ui/core/Typography';
 import updateItemsInWarehouseMutation from '../queries/updateItemsInWarehouse.graphql';
 import UpdateWarehouseItemDialog, { IFormData as IUpdateItemFormData } from '../dialogs/UpdateWarehouseItemDialog';
 import useConfirmDialog from '../hooks/useConfirmDialog';
+import { getItemImageUrl } from '../utils/getItemImageUrl';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -284,7 +285,7 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
                   field: 'name',
                   title: 'Name',
                   icon: {
-                    imageUrl: row => `https://images.evetech.net/types/${row.id}/icon`,
+                    imageUrl: row => getItemImageUrl(row.id, row.name),
                   },
                 },
                 { field: row => row.quantity.toLocaleString(), title: 'Quantity', align: 'right' },

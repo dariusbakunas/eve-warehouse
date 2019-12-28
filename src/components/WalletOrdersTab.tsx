@@ -1,4 +1,5 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import { getItemImageUrl } from '../utils/getItemImageUrl';
 import { GetMarketOrders, GetMarketOrdersVariables, GetMarketOrders_marketOrders_orders as MarketOrder } from '../__generated__/getMarketOrders';
 import { MarketOrderOrderBy, Order, OrderStateFilter } from '../__generated__/globalTypes';
 import { useQuery } from '@apollo/react-hooks';
@@ -144,7 +145,7 @@ const WalletOrdersTab: React.FC<IWalletOrdersTab> = ({
             field: row => row.item.name,
             title: 'Item',
             icon: {
-              imageUrl: row => `https://images.evetech.net/types/${row.item.id}/icon`,
+              imageUrl: row => getItemImageUrl(row.item.id, row.item.name),
             },
           },
           {
