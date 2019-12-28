@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Sat Dec 28 2019 12:42:28 GMT-0500 (Eastern Standard Time)
+# timestamp: Sat Dec 28 2019 13:41:02 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -451,6 +451,7 @@ type Warehouse {
 }
 
 type WarehouseItem {
+  warehouse: Warehouse!
   item: InvItem!
   quantity: Int!
   unitCost: Float!

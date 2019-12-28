@@ -1,18 +1,22 @@
+import { CheckWarehouseItems, CheckWarehouseItemsVariables } from '../__generated__/CheckWarehouseItems';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { GetBuildInfo, GetBuildInfoVariables } from '../__generated__/GetBuildInfo';
+import { getItemImageUrl } from '../utils/getItemImageUrl';
+import { useLazyQuery, useQuery } from '@apollo/react-hooks';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { useQuery } from '@apollo/react-hooks';
+import { useSnackbar } from 'notistack';
+import checkWarehouseItemsQuery from '../queries/checkWarehouseItems.graphql';
 import DataTable from './DataTable';
 import FormControl from '@material-ui/core/FormControl';
 import getBuildInfoQuery from '../queries/getBuildInfo.graphql';
 import InputLabel from '@material-ui/core/InputLabel';
 import InvItemAutocomplete, { InvItem } from './InvItemAutocomplete';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Maybe from 'graphql/tsutils/Maybe';
 import MenuItem from '@material-ui/core/MenuItem';
 import React, { useEffect, useMemo, useState } from 'react';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
-import { getItemImageUrl } from '../utils/getItemImageUrl';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,14 +36,22 @@ const useStyles = makeStyles((theme: Theme) =>
       flexWrap: 'wrap',
       marginBottom: theme.spacing(1),
     },
+    negative: {
+      color: '#8b251f',
+    },
+    positive: {
+      color: '#187119',
+    },
   })
 );
 
 interface IMaterialRow {
   id: string;
   name: string;
-  unitQuantity: string;
-  jobQuantity: string;
+  unitQuantity: number;
+  jobQuantity: Maybe<number>;
+  jobDiff: Maybe<number>;
+  warehouseQuantity: number;
 }
 
 const STRUCTURE_RIG_BONUSES: { [key: number]: { [key: string]: number } } = {
@@ -50,6 +62,7 @@ const STRUCTURE_RIG_BONUSES: { [key: number]: { [key: string]: number } } = {
 
 const BuildCalculatorTab: React.FC = () => {
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
   const [blueprint, setBlueprint] = usePersistentState<Maybe<InvItem>>(`BuildCalculatorTab:blueprint`, null);
   const [me, setMe] = usePersistentState<number>('BuildCalculatorTab:me', 10);
   const [te, setTe] = usePersistentState<number>('BuildCalculatorTab:te', 20);
@@ -58,10 +71,30 @@ const BuildCalculatorTab: React.FC = () => {
   const [rig, setRig] = usePersistentState<number>('BuildCalculatorTab:rig', 0);
   const [facility, setFacility] = usePersistentState<string>('BuildCalculatorTab:facility', 'complex');
 
-  const { loading, data } = useQuery<GetBuildInfo, GetBuildInfoVariables>(getBuildInfoQuery, {
+  const [checkWarehouseItems, { loading: warehouseItemsLoading, data: warehouseItemsResponse }] = useLazyQuery<
+    CheckWarehouseItems,
+    CheckWarehouseItemsVariables
+  >(checkWarehouseItemsQuery, {
+    fetchPolicy: 'no-cache',
+    onError: error => {
+      enqueueSnackbar(`Warehouse items failed to load: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
+    },
+  });
+
+  const { loading: buildItemsLoading, data: buildInfoResponse } = useQuery<GetBuildInfo, GetBuildInfoVariables>(getBuildInfoQuery, {
     skip: !blueprint,
     variables: {
       id: blueprint ? blueprint.id : '-1',
+    },
+    onCompleted: data => {
+      checkWarehouseItems({
+        variables: {
+          itemIds: data && data.buildInfo ? data.buildInfo.materials.map(item => item.item.id) : [],
+        },
+      });
+    },
+    onError: error => {
+      enqueueSnackbar(`Build info failed to load: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
     },
   });
 
@@ -69,34 +102,67 @@ const BuildCalculatorTab: React.FC = () => {
     setBlueprint(item);
   };
 
+  const warehouseItems = useMemo(() => {
+    if (warehouseItemsResponse && warehouseItemsResponse.warehouseItems) {
+      return warehouseItemsResponse.warehouseItems.reduce<{ [key: string]: { quantity: number; unitCost: number } }>((acc, item) => {
+        const existing = acc[item.item.id];
+        if (existing) {
+          // average unit cost if item is found in multiple warehouses
+          const newQuantity = existing.quantity + item.quantity;
+          const newCost = (existing.quantity * existing.unitCost + item.quantity * item.unitCost) / newQuantity;
+
+          acc[item.item.id] = {
+            quantity: existing.quantity + item.quantity,
+            unitCost: newCost,
+          };
+        } else {
+          acc[item.item.id] = {
+            quantity: item.quantity,
+            unitCost: item.unitCost,
+          };
+        }
+
+        return acc;
+      }, {});
+    }
+
+    return {};
+  }, [warehouseItemsResponse]);
+
   const rows: IMaterialRow[] = useMemo(() => {
-    if (data && data.buildInfo) {
+    if (warehouseItems && buildInfoResponse && buildInfoResponse.buildInfo) {
       const {
         buildInfo: { materials },
-      } = data;
+      } = buildInfoResponse;
 
       const structureRigBonus = STRUCTURE_RIG_BONUSES[rig][sec];
       const facilityBonus = facility === 'complex' ? 1 : 0;
 
       return materials.map(material => {
-        let jobQuantity = 'N/A';
+        let jobQuantity = null;
         const unitQuantity = material.quantity * (1 - me * 0.01) * (1 - structureRigBonus * 0.01) * (1 - facilityBonus * 0.01);
 
         if (runs) {
-          jobQuantity = Math.max(runs, Math.ceil(unitQuantity * runs)).toLocaleString();
+          jobQuantity = Math.max(runs, Math.ceil(unitQuantity * runs));
         }
+
+        const warehouseItem = warehouseItems[material.item.id];
+        const warehouseQuantity = warehouseItem ? warehouseItem.quantity : 0;
+        const jobDiff = jobQuantity && jobQuantity > warehouseQuantity ? warehouseQuantity - jobQuantity : null;
 
         return {
           id: material.item.id,
           name: material.item.name,
-          jobQuantity: jobQuantity,
-          unitQuantity: Math.ceil(unitQuantity).toLocaleString(),
+          jobQuantity,
+          unitQuantity: Math.ceil(unitQuantity),
+          warehouseQuantity,
+          jobDiff,
         };
       });
     } else {
       return [];
     }
-  }, [data, runs, me, te, sec, rig, facility]);
+  }, [warehouseItems, buildInfoResponse, runs, me, te, sec, rig, facility]);
 
   const handleMeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setMe(event.target.value as number);
@@ -128,8 +194,11 @@ const BuildCalculatorTab: React.FC = () => {
     }
   };
 
+  const loading = buildItemsLoading || warehouseItemsLoading;
+
   return (
     <div className={classes.root}>
+      {loading && <LinearProgress />}
       <div className={classes.controls}>
         <InvItemAutocomplete
           className={classes.blueprintSelector}
@@ -205,8 +274,15 @@ const BuildCalculatorTab: React.FC = () => {
               imageUrl: row => getItemImageUrl(row.id, row.name),
             },
           },
-          { field: 'unitQuantity', title: 'Unit Quantity', align: 'right' },
-          { field: 'jobQuantity', title: 'Job Quantity', align: 'right' },
+          { field: row => row.unitQuantity.toLocaleString(), title: 'Unit Quantity', align: 'right' },
+          {
+            field: row =>
+              row.jobQuantity ? `${row.jobQuantity.toLocaleString()} ${row.jobDiff != null ? `(${row.jobDiff.toLocaleString()})` : ''}` : 'N/A',
+            title: 'Job Quantity',
+            align: 'right',
+            cellClassName: row => (row.jobQuantity && row.jobQuantity < row.warehouseQuantity ? classes.positive : classes.negative),
+          },
+          { field: row => row.warehouseQuantity.toLocaleString(), title: 'Warehouse Quantity', align: 'right' },
         ]}
         data={rows}
       />
