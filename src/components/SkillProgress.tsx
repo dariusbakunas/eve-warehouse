@@ -72,7 +72,7 @@ const SkillProgress: React.FC<ISkillProgressProps> = ({ trainedLevel, queuedLeve
     };
   });
 
-  if (dynamicTimer) {
+  if (dynamicTimer && end) {
     tsId = countdown(
       ts => {
         if (!countDownEl || !countDownEl.current) {
