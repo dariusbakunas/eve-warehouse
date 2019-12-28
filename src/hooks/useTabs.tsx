@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 const useTabs = (key: string) => {
   const router = useRouter();
   const query = router.query;
-  const [currentTab, setCurrentTab] = usePersistentState<number>(key, +query.tab);
+  const [currentTab, setCurrentTab] = usePersistentState<number>(key, +query.tab || 0);
 
   useEffect(() => {
     router.push(`${router.pathname}?tab=${currentTab}`, `/industry?tab=${currentTab}`, { shallow: true });
