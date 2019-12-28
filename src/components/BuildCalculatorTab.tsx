@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       justifyContent: 'flex-end',
       marginTop: theme.spacing(3),
-      '& div': {
+      '&>div': {
         display: 'inline-flex',
         width: '320px',
       },

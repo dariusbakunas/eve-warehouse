@@ -1,17 +1,17 @@
-import React from 'react';
+import { IUser } from '../auth/auth0Verify';
 import { Request } from 'express';
+import { Theme } from '@material-ui/core';
+import { WithApolloProps } from 'next-with-apollo';
+import { withStyles } from '@material-ui/styles';
 import App, { AppContext } from 'next/app';
+import getCurrentUser from '../auth/getCurrentUser';
 import Head from 'next/head';
 import Header from '../components/Header';
-import SideMenu from '../components/SideMenu';
-import { withStyles } from '@material-ui/styles';
-import theme from '../config/theme';
-import Router from 'next/router';
-import { WithApolloProps } from 'next-with-apollo';
-import { Theme } from '@material-ui/core';
+import React from 'react';
 import Root from '../components/Root';
-import getCurrentUser from '../auth/getCurrentUser';
-import { IUser } from '../auth/auth0Verify';
+import Router from 'next/router';
+import SideMenu from '../components/SideMenu';
+import theme from '../config/theme';
 
 interface IPageProps {
   user?: IUser;
