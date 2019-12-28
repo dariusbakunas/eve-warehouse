@@ -4,9 +4,12 @@ import countdown from 'countdown';
 import Maybe from 'graphql/tsutils/Maybe';
 import moment from 'moment';
 import range from 'lodash.range';
-import React from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
+
+countdown.setLabels('|s|m|h|d', '|s|m|h|d', ' ', ' ');
 
 interface ISkillProgressProps {
+  dynamicTimer?: boolean;
   startDate?: string;
   finishDate?: string;
   trainedLevel?: Maybe<number>;
@@ -43,17 +46,56 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const SkillProgress: React.FC<ISkillProgressProps> = ({ trainedLevel, queuedLevel, injected, startDate, finishDate }) => {
-  countdown.setLabels('|s|m|h|d', '|s|m|h|d', ' ', ' ')
-  const start = startDate ? moment(startDate).toDate() : null;
+const SkillProgress: React.FC<ISkillProgressProps> = ({ trainedLevel, queuedLevel, injected, startDate, finishDate, dynamicTimer }) => {
+  let start;
+  let countDown;
+  let tsId: any;
+  const countDownEl = useRef(null);
+
+  if (startDate) {
+    if (moment(startDate).isBefore()) {
+      start = new Date();
+    } else {
+      start = moment(startDate).toDate();
+    }
+  }
+
   const end = finishDate ? moment(finishDate).toDate() : null;
 
   const classes = useStyles({ injected });
-  const countDown = countdown(start, end, ~countdown.MONTHS & ~countdown.WEEKS).toString();
+
+  useEffect(() => {
+    return () => {
+      if (tsId) {
+        window.clearInterval(tsId);
+      }
+    };
+  });
+
+  if (dynamicTimer) {
+    tsId = countdown(
+      ts => {
+        if (!countDownEl || !countDownEl.current) {
+          return;
+        }
+
+        //@ts-ignore
+        countDownEl.current.innerHTML = ts.toString();
+      },
+      end,
+      ~countdown.MONTHS & ~countdown.WEEKS & ~countdown.MILLISECONDS
+    );
+  } else {
+    countDown = countdown(start, end, ~countdown.MONTHS & ~countdown.WEEKS & ~countdown.MILLISECONDS).toString();
+  }
 
   return (
     <div className={classes.root}>
-      {countDown && <span className={classes.countdown}>{countDown}</span>}
+      {(countDown || dynamicTimer) && (
+        <span className={classes.countdown} ref={countDownEl}>
+          {countDown}
+        </span>
+      )}
       {range(5).map((n: number) => {
         const isTrained = trainedLevel && trainedLevel > n;
         const isQueued = !isTrained && queuedLevel && queuedLevel > n;

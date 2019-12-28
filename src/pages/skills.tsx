@@ -218,6 +218,7 @@ const Skills = () => {
                     <span className={classes.lvl}>{lvl[item.finishedLevel]}</span>
                   </div>
                   <SkillProgress
+                    dynamicTimer={item.position === 0}
                     startDate={item.startDate}
                     finishDate={item.finishDate}
                     trainedLevel={item.skill.trainedSkillLevel}
