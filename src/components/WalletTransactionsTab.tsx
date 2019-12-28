@@ -109,6 +109,10 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
       onCompleted: data => {
         setSelected(new Set(data.walletTransactionIds));
       },
+      onError: error => {
+        enqueueSnackbar(`Wallet transactions ids failed to load: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
+        setSelected(new Set());
+      },
     }
   );
 

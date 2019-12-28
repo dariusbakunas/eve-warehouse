@@ -31,6 +31,7 @@ const InvItemAutocomplete: React.FC<IAutocompleteProps> = ({ className, category
 
   const { loading, data } = useQuery<GetInvItems, GetInvItemsVariables>(getInvItemsQuery, {
     skip: !nameFilter || nameFilter.length < 3,
+    fetchPolicy: 'no-cache',
     variables: {
       filter: {
         name: nameFilter,

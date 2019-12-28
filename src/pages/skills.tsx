@@ -19,7 +19,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import List from '@material-ui/core/List';
 import ListItem, { ListItemProps } from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import Maybe from 'graphql/tsutils/Maybe';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
@@ -90,6 +89,9 @@ const Skills = () => {
         setCurrentCharacter(data.characters[0]);
       }
     },
+    onError: error => {
+      enqueueSnackbar(`List of characters failed to load: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
+    },
   });
 
   const { loading: skillQueueLoading, data: skillQueue } = useQuery<GetCharacterSkillQueue, GetCharacterSkillQueueVariables>(
@@ -98,6 +100,9 @@ const Skills = () => {
       skip: !currentCharacter,
       variables: {
         id: currentCharacter ? currentCharacter.id : '-1',
+      },
+      onError: error => {
+        enqueueSnackbar(`Skill queue failed to load: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
       },
     }
   );
@@ -114,6 +119,9 @@ const Skills = () => {
         if (data.character && !currentSkillGroup) {
           setCurrentSkillGroup(data.character.skillGroups[0]);
         }
+      },
+      onError: error => {
+        enqueueSnackbar(`Skill groups failed to load: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
       },
     }
   );
