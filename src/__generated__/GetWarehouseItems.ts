@@ -6,10 +6,15 @@
 // GraphQL query operation: GetWarehouseItems
 // ====================================================
 
-export interface GetWarehouseItems_warehouse_items {
-  __typename: "WarehouseItem";
+export interface GetWarehouseItems_warehouse_items_item {
+  __typename: "InvItem";
   id: string;
   name: string;
+}
+
+export interface GetWarehouseItems_warehouse_items {
+  __typename: "WarehouseItem";
+  item: GetWarehouseItems_warehouse_items_item;
   quantity: number;
   unitCost: number;
 }

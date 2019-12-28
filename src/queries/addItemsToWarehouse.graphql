@@ -1,6 +1,8 @@
 mutation AddItemsToWarehouse($id: ID!, $input: [WarehouseItemInput!]!) {
   addItemsToWarehouse(id: $id, input: $input) {
-    id
+    item {
+      id
+    }
     quantity
     unitCost
   }

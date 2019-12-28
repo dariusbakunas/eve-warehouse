@@ -8,9 +8,14 @@ import { WarehouseItemInput } from "./globalTypes";
 // GraphQL mutation operation: AddItemsToWarehouse
 // ====================================================
 
+export interface AddItemsToWarehouse_addItemsToWarehouse_item {
+  __typename: "InvItem";
+  id: string;
+}
+
 export interface AddItemsToWarehouse_addItemsToWarehouse {
   __typename: "WarehouseItem";
-  id: string;
+  item: AddItemsToWarehouse_addItemsToWarehouse_item;
   quantity: number;
   unitCost: number;
 }

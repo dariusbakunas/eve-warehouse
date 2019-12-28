@@ -1,4 +1,5 @@
 import { AddItemsToWarehouse, AddItemsToWarehouseVariables } from '../__generated__/AddItemsToWarehouse';
+import { getItemImageUrl } from '../utils/getItemImageUrl';
 import {
   GetWarehouseItems,
   GetWarehouseItemsVariables,
@@ -31,7 +32,6 @@ import Typography from '@material-ui/core/Typography';
 import updateItemsInWarehouseMutation from '../queries/updateItemsInWarehouse.graphql';
 import UpdateWarehouseItemDialog, { IFormData as IUpdateItemFormData } from '../dialogs/UpdateWarehouseItemDialog';
 import useConfirmDialog from '../hooks/useConfirmDialog';
-import { getItemImageUrl } from '../utils/getItemImageUrl';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -149,7 +149,7 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked && data && data.warehouse) {
-      setSelected(new Set(data.warehouse.items.map(item => item.id)));
+      setSelected(new Set(data.warehouse.items.map(item => item.item.id)));
     } else {
       setSelected(new Set());
     }
@@ -204,7 +204,7 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
           id: warehouse.id,
           input: [
             {
-              id: currentItem.id,
+              id: currentItem.item.id,
               quantity: data.qty,
               unitCost: data.unitCost,
             },
@@ -230,12 +230,12 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
   };
 
   const handleRemoveItem = (item: WarehouseItem) => {
-    showAlert(`Remove ${item.name}?`, `${item.name} will be removed`, async confirm => {
+    showAlert(`Remove ${item.item.name}?`, `${item.item.name} will be removed`, async confirm => {
       if (confirm) {
         removeItems({
           variables: {
             id: warehouse.id,
-            itemIds: [item.id],
+            itemIds: [item.item.id],
           },
         });
       }
@@ -275,17 +275,17 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
           )}
           {data && data.warehouse && (
             <DataTable<WarehouseItem, {}>
-              idField="id"
+              idField={row => row.item.id}
               actions={[
                 { icon: 'edit', onAction: handleEditItem },
                 { icon: 'delete', onAction: handleRemoveItem },
               ]}
               columns={[
                 {
-                  field: 'name',
+                  field: row => row.item.name,
                   title: 'Name',
                   icon: {
-                    imageUrl: row => getItemImageUrl(row.id, row.name),
+                    imageUrl: row => getItemImageUrl(row.item.id, row.item.name),
                   },
                 },
                 { field: row => row.quantity.toLocaleString(), title: 'Quantity', align: 'right' },

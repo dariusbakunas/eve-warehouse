@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Fri Dec 27 2019 10:25:45 GMT-0500 (Eastern Standard Time)
+# timestamp: Sat Dec 28 2019 12:42:28 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -304,6 +304,7 @@ type Query {
   walletTransactions(page: PageInput, filter: WalletTransactionFilter, orderBy: WalletTransactionOrderByInput): WalletTransactions!
   walletTransactionSummary(ids: [ID!]!): WalletTransactionSummary!
   walletTransactionIds(filter: WalletTransactionFilter): [ID!]!
+  warehouseItems(itemIds: [ID!]!, warehouseIds: [ID!]): [WarehouseItem!]
   warehouse(id: ID!): Warehouse
   warehouses: [Warehouse!]!
 }
@@ -450,8 +451,7 @@ type Warehouse {
 }
 
 type WarehouseItem {
-  id: ID!
-  name: String!
+  item: InvItem!
   quantity: Int!
   unitCost: Float!
 }

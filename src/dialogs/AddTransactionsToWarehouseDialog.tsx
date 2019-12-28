@@ -112,7 +112,7 @@ const AddTransactionsToWarehouseDialog: React.FC<IDialogProps> = ({ open, onSubm
   useEffect(() => {
     if (warehouseItems && warehouseItems.warehouse && transactionSummary) {
       const wareHouseItemMap = warehouseItems.warehouse.items.reduce<{ [key: string]: WarehouseItem }>((acc, item) => {
-        acc[item.id] = item;
+        acc[item.item.id] = item;
         return acc;
       }, {});
 

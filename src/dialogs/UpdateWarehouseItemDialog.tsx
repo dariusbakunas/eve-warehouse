@@ -74,7 +74,7 @@ const UpdateWarehouseItemDialog: React.FC<IDialogProps> = ({ item, open, onCance
 
   return (
     <Dialog open={open} fullWidth={true}>
-      <DialogTitle onClose={handleCancel}>Update {item.name}</DialogTitle>
+      <DialogTitle onClose={handleCancel}>Update {item.item.name}</DialogTitle>
       <DialogContent dividers className={classes.root}>
         <TextField
           className={classes.qtyField}

@@ -46,6 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type colFn<Data extends {}> = (row: Data) => Maybe<string | number>;
+type idFn<Data extends {}> = (row: Data) => string;
 type imageUrlFn<Data extends {}> = (row: Data) => string;
 type classFn<Data extends {}> = (row: Data) => Maybe<string>;
 
@@ -85,7 +86,7 @@ const renderIcon = (icon: ActionIcon) => {
 };
 
 interface ITableProps<Data extends {}, OrderBy extends {}> extends TableProps {
-  idField: keyof Data;
+  idField: keyof Data | idFn<Data>;
   columns: IColumn<Data, OrderBy>[];
   actions?: Array<{
     ariaLabel?: string;
@@ -157,7 +158,7 @@ const DataTable = <Data extends {}, OrderBy extends {}>({
         });
 
         return {
-          id: `${entry[idField]}`,
+          id: typeof idField === 'function' ? idField(entry) : `${entry[idField]}`,
           columns: rowColumns,
           raw: entry,
         };
