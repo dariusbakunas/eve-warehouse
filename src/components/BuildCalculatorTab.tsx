@@ -42,6 +42,19 @@ const useStyles = makeStyles((theme: Theme) =>
     positive: {
       color: '#187119',
     },
+    totals: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      marginTop: theme.spacing(3),
+      '& div': {
+        display: 'inline-flex',
+        width: '320px',
+      },
+    },
+    totalsLabel: {
+      fontWeight: 'bold',
+      flex: 1,
+    },
   })
 );
 
@@ -51,7 +64,12 @@ interface IMaterialRow {
   unitQuantity: number;
   jobQuantity: Maybe<number>;
   jobDiff: Maybe<number>;
+  warehouseCost: Maybe<number>;
   warehouseQuantity: number;
+}
+
+interface ITotals {
+  warehouseCost: Maybe<number>;
 }
 
 const STRUCTURE_RIG_BONUSES: { [key: number]: { [key: string]: number } } = {
@@ -148,6 +166,7 @@ const BuildCalculatorTab: React.FC = () => {
 
         const warehouseItem = warehouseItems[material.item.id];
         const warehouseQuantity = warehouseItem ? warehouseItem.quantity : 0;
+        const warehouseCost = warehouseItem && jobQuantity ? warehouseItem.unitCost * jobQuantity : null;
         const jobDiff = jobQuantity && jobQuantity > warehouseQuantity ? warehouseQuantity - jobQuantity : null;
 
         return {
@@ -156,6 +175,7 @@ const BuildCalculatorTab: React.FC = () => {
           jobQuantity,
           unitQuantity: Math.ceil(unitQuantity),
           warehouseQuantity,
+          warehouseCost,
           jobDiff,
         };
       });
@@ -163,6 +183,34 @@ const BuildCalculatorTab: React.FC = () => {
       return [];
     }
   }, [warehouseItems, buildInfoResponse, runs, me, te, sec, rig, facility]);
+
+  const totals = useMemo<ITotals>(() => {
+    const result: ITotals = {
+      warehouseCost: null,
+    };
+
+    if (runs) {
+      const aggregate = rows.reduce<{ warehouseCostAvailable: boolean; totalWarehouseCost: number }>(
+        (acc, row) => {
+          if (row.warehouseCost && acc.warehouseCostAvailable) {
+            acc.totalWarehouseCost += row.warehouseCost;
+          } else {
+            acc.warehouseCostAvailable = false;
+          }
+          return acc;
+        },
+        { warehouseCostAvailable: true, totalWarehouseCost: 0 }
+      );
+
+      if (aggregate.warehouseCostAvailable) {
+        result.warehouseCost = aggregate.totalWarehouseCost / runs;
+      }
+    }
+
+    return result;
+  }, [rows, runs]);
+
+  console.log(totals);
 
   const handleMeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setMe(event.target.value as number);
@@ -283,9 +331,20 @@ const BuildCalculatorTab: React.FC = () => {
             cellClassName: row => (row.jobQuantity && row.jobQuantity < row.warehouseQuantity ? classes.positive : classes.negative),
           },
           { field: row => row.warehouseQuantity.toLocaleString(), title: 'Warehouse Quantity', align: 'right' },
+          {
+            field: row => (row.warehouseCost ? row.warehouseCost.toLocaleString(undefined, { maximumFractionDigits: 2 }) : 'N/A'),
+            title: 'Warehouse Cost',
+            align: 'right',
+          },
         ]}
         data={rows}
       />
+      <div className={classes.totals}>
+        <div>
+          <span className={classes.totalsLabel}>Warehouse Cost:</span>
+          <span>{totals.warehouseCost ? `${totals.warehouseCost.toLocaleString(undefined, { minimumFractionDigits: 2 })} ISK` : 'N/A'}</span>
+        </div>
+      </div>
     </div>
   );
 };
