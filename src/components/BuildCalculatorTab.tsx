@@ -44,9 +44,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     totals: {
       display: 'flex',
-      justifyContent: 'flex-end',
+      flexDirection: 'column',
       marginTop: theme.spacing(3),
       '&>div': {
+        alignSelf: 'flex-end',
         display: 'inline-flex',
         width: '320px',
       },
@@ -70,6 +71,7 @@ interface IMaterialRow {
 
 interface ITotals {
   warehouseCost: Maybe<number>;
+  productionCount: Maybe<number>;
 }
 
 const STRUCTURE_RIG_BONUSES: { [key: number]: { [key: string]: number } } = {
@@ -194,9 +196,10 @@ const BuildCalculatorTab: React.FC = () => {
   const totals = useMemo<ITotals>(() => {
     const result: ITotals = {
       warehouseCost: null,
+      productionCount: null,
     };
 
-    if (runs) {
+    if (runs && buildInfoResponse && buildInfoResponse.buildInfo) {
       const aggregate = rows.reduce<{ warehouseCostAvailable: boolean; totalWarehouseCost: number }>(
         (acc, row) => {
           if (row.warehouseCost && acc.warehouseCostAvailable) {
@@ -210,14 +213,14 @@ const BuildCalculatorTab: React.FC = () => {
       );
 
       if (aggregate.warehouseCostAvailable) {
-        result.warehouseCost = aggregate.totalWarehouseCost / runs;
+        result.warehouseCost = aggregate.totalWarehouseCost / runs / buildInfoResponse.buildInfo.quantity;
       }
+
+      result.productionCount = buildInfoResponse.buildInfo.quantity * runs;
     }
 
     return result;
-  }, [rows, runs]);
-
-  console.log(totals);
+  }, [rows, runs, buildInfoResponse]);
 
   const handleMeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setMe(event.target.value as number);
@@ -347,6 +350,10 @@ const BuildCalculatorTab: React.FC = () => {
         data={rows}
       />
       <div className={classes.totals}>
+        <div>
+          <span className={classes.totalsLabel}>Units Produced:</span>
+          <span>{totals.productionCount ? `${totals.productionCount.toLocaleString()}` : 'N/A'}</span>
+        </div>
         <div>
           <span className={classes.totalsLabel}>Warehouse Cost:</span>
           <span>{totals.warehouseCost ? `${totals.warehouseCost.toLocaleString(undefined, { minimumFractionDigits: 2 })} ISK` : 'N/A'}</span>
