@@ -83,7 +83,6 @@ const STRUCTURE_RIG_BONUSES: { [key: number]: { [key: string]: number } } = {
 const BuildCalculatorTab: React.FC = () => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
-  const [isReaction, setIsReaction] = useState<boolean>(false);
   const [blueprint, setBlueprint] = useApplicationState<Maybe<InvItem>>('BuildCalculatorTab:blueprint', null);
   const [me, setMe] = useState<number>(10);
   const [te, setTe] = useState<number>(20);
@@ -120,12 +119,10 @@ const BuildCalculatorTab: React.FC = () => {
   });
 
   const handleSelectItem = (item: Maybe<InvItem>) => {
-    // TODO: is there better way to determine if this is reaction?
-    if (item) {
-      setIsReaction(item.name.includes('Reaction'));
-    }
     setBlueprint(item);
   };
+  
+  const isReaction = blueprint ? blueprint.name.includes('Reaction') : false;
 
   const warehouseItems = useMemo(() => {
     if (warehouseItemsResponse && warehouseItemsResponse.warehouseItems) {
@@ -356,7 +353,7 @@ const BuildCalculatorTab: React.FC = () => {
         </div>
         <div>
           <span className={classes.totalsLabel}>Warehouse Cost:</span>
-          <span>{totals.warehouseCost ? `${totals.warehouseCost.toLocaleString(undefined, { minimumFractionDigits: 2 })} ISK` : 'N/A'}</span>
+          <span>{totals.warehouseCost ? `${totals.warehouseCost.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 0 })} ISK` : 'N/A'}</span>
         </div>
       </div>
     </div>
