@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Sat Dec 28 2019 13:41:02 GMT-0500 (Eastern Standard Time)
+# timestamp: Sat Dec 28 2019 19:23:28 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -215,6 +215,7 @@ type MarketOrders {
 }
 
 type Mutation {
+  setCache(key: ID!, value: String!): ID!
   addCharacter(code: String!): Character!
   updateCharacter(id: ID!, code: String!): Character!
   removeCharacter(id: ID!): ID!
@@ -293,6 +294,7 @@ enum ProcessingStatus {
 type Query {
   blueprints(page: PageInput, filter: BlueprintFilter, orderBy: BlueprintsOrderByInput): BlueprintsResponse!
   buildInfo(blueprintId: ID!): BuildInfo
+  cache(key: ID!): String
   character(id: ID!): Character
   characters: [Character!]!
   invItems(filter: InvItemFilter): [InvItem!]!
