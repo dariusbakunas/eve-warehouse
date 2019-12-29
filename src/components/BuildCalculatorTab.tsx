@@ -2,8 +2,8 @@ import { CheckWarehouseItems, CheckWarehouseItemsVariables } from '../__generate
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { GetBuildInfo, GetBuildInfoVariables } from '../__generated__/GetBuildInfo';
 import { getItemImageUrl } from '../utils/getItemImageUrl';
+import { useApplicationState } from '../hooks/useApplicationState';
 import { useLazyQuery, useQuery } from '@apollo/react-hooks';
-import { usePersistentState } from '../hooks/usePersistentState';
 import { useSnackbar } from 'notistack';
 import checkWarehouseItemsQuery from '../queries/checkWarehouseItems.graphql';
 import DataTable from './DataTable';
@@ -81,14 +81,14 @@ const STRUCTURE_RIG_BONUSES: { [key: number]: { [key: string]: number } } = {
 const BuildCalculatorTab: React.FC = () => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
-  const [isReaction, setIsReaction] = usePersistentState<boolean>(`BuildCalculatorTab:isReaction`, false);
-  const [blueprint, setBlueprint] = usePersistentState<Maybe<InvItem>>(`BuildCalculatorTab:blueprint`, null);
-  const [me, setMe] = usePersistentState<number>('BuildCalculatorTab:me', 10);
-  const [te, setTe] = usePersistentState<number>('BuildCalculatorTab:te', 20);
-  const [sec, setSec] = usePersistentState<string>('BuildCalculatorTab:sec', 'nullSec');
-  const [runs, setRuns] = usePersistentState<Maybe<number>>('BuildCalculatorTab:runs', 1);
-  const [rig, setRig] = usePersistentState<number>('BuildCalculatorTab:rig', 0);
-  const [facility, setFacility] = usePersistentState<string>('BuildCalculatorTab:facility', 'complex');
+  const [isReaction, setIsReaction] = useState<boolean>(false);
+  const [blueprint, setBlueprint] = useApplicationState<Maybe<InvItem>>('BuildCalculatorTab:blueprint', null);
+  const [me, setMe] = useState<number>(10);
+  const [te, setTe] = useState<number>(20);
+  const [sec, setSec] = useState<string>('nullSec');
+  const [runs, setRuns] = useState<Maybe<number>>(1);
+  const [rig, setRig] = useState<number>(0);
+  const [facility, setFacility] = useState<string>('complex');
 
   const [checkWarehouseItems, { loading: warehouseItemsLoading, data: warehouseItemsResponse }] = useLazyQuery<
     CheckWarehouseItems,

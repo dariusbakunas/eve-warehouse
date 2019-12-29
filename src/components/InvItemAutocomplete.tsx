@@ -118,4 +118,4 @@ const InvItemAutocomplete: React.FC<IAutocompleteProps> = ({ className, category
   );
 };
 
-export default InvItemAutocomplete;
+export default React.memo(InvItemAutocomplete);

@@ -1,14 +1,15 @@
-import theme from '../config/theme';
-import { ThemeProvider } from '@material-ui/styles';
-import React, { useRef, useState } from 'react';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { LayoutProvider } from '../context/LayoutContext';
-import { SnackbarProvider } from 'notistack';
-import layoutConfig from '../config/layoutConfig';
-import IdleTimer from 'react-idle-timer';
-import { makeStyles, Theme } from '@material-ui/core';
+import { ApplicationStateProvider } from '../context/ApplicationContext';
 import { IUser } from '../auth/auth0Verify';
+import { LayoutProvider } from '../context/LayoutContext';
+import { makeStyles, Theme } from '@material-ui/core';
+import { SnackbarProvider } from 'notistack';
+import { ThemeProvider } from '@material-ui/styles';
 import { useRouter } from 'next/router';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import IdleTimer from 'react-idle-timer';
+import layoutConfig from '../config/layoutConfig';
+import React, { useRef, useState } from 'react';
+import theme from '../config/theme';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -58,7 +59,9 @@ const Root: React.FC<IProps> = ({ children, user }) => {
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         <SnackbarProvider maxSnack={3}>
-          <div className={classes.root}>{children}</div>
+          <div className={classes.root}>
+            <ApplicationStateProvider>{children}</ApplicationStateProvider>
+          </div>
         </SnackbarProvider>
       </LayoutProvider>
     </ThemeProvider>
