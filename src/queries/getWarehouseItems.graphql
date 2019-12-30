@@ -5,6 +5,10 @@ query GetWarehouseItems($id: ID!) {
       item {
         id
         name
+        jitaPrice: marketPrice(systemId: 30000142) {
+          buy
+          sell
+        }
       }
       quantity
       unitCost

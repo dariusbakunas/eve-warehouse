@@ -6,10 +6,17 @@
 // GraphQL query operation: GetWarehouseItems
 // ====================================================
 
+export interface GetWarehouseItems_warehouse_items_item_jitaPrice {
+  __typename: "ItemMarketPrice";
+  buy: number | null;
+  sell: number | null;
+}
+
 export interface GetWarehouseItems_warehouse_items_item {
   __typename: "InvItem";
   id: string;
   name: string;
+  jitaPrice: GetWarehouseItems_warehouse_items_item_jitaPrice | null;
 }
 
 export interface GetWarehouseItems_warehouse_items {

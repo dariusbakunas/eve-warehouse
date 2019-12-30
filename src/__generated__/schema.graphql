@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Sun Dec 29 2019 20:35:32 GMT-0500 (Eastern Standard Time)
+# timestamp: Sun Dec 29 2019 21:29:56 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -183,11 +183,17 @@ type InvItem {
   id: ID!
   name: String!
   invGroup: InvGroup!
+  marketPrice(systemId: ID!): ItemMarketPrice
 }
 
 input InvItemFilter {
   name: String
   categoryIds: [ID!]
+}
+
+type ItemMarketPrice {
+  buy: Float
+  sell: Float
 }
 
 type JournalEntries {

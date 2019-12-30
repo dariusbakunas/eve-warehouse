@@ -289,7 +289,15 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
                   },
                 },
                 { field: row => row.quantity.toLocaleString(), title: 'Quantity', align: 'right' },
-                { field: row => row.unitCost.toLocaleString(undefined, { minimumFractionDigits: 2 }), title: 'Unit Cost', align: 'right' },
+                { field: row => row.unitCost.toLocaleString(undefined, { maximumFractionDigits: 2 }), title: 'Unit Cost', align: 'right' },
+                {
+                  field: row =>
+                    row.item.jitaPrice && row.item.jitaPrice.buy
+                      ? row.item.jitaPrice.buy.toLocaleString(undefined, { maximumFractionDigits: 2 })
+                      : 'N/A',
+                  title: 'Jita Cost',
+                  align: 'right',
+                },
                 {
                   field: row => (row.unitCost * row.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 }),
                   title: 'Total',
