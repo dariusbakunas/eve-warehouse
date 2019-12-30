@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Sun Dec 29 2019 20:13:32 GMT-0500 (Eastern Standard Time)
+# timestamp: Sun Dec 29 2019 20:35:32 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -301,7 +301,7 @@ type Query {
   processingLogs(filter: ProcessingLogFilter): [ProcessingLogEntry!]!
   scopes: [Scope!]!
   userByEmail(email: String!): User
-  marketOrders(page: PageInput, filter: CharacterMarketOrderFilter, orderBy: CharacterMarketOrderOrderByInput): CharacterMarketOrders!
+  characterMarketOrders(page: PageInput, filter: CharacterMarketOrderFilter, orderBy: CharacterMarketOrderOrderByInput): CharacterMarketOrders!
   walletJournal(page: PageInput, filter: WalletJournalFilter, orderBy: WalletJournalOrderByInput): JournalEntries!
   walletTransactions(page: PageInput, filter: WalletTransactionFilter, orderBy: WalletTransactionOrderByInput): WalletTransactions!
   walletTransactionSummary(ids: [ID!]!): WalletTransactionSummary!

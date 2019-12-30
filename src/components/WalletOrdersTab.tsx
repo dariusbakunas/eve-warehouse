@@ -1,7 +1,11 @@
 import { CharacterMarketOrderOrderBy, Order, OrderStateFilter } from '../__generated__/globalTypes';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { getItemImageUrl } from '../utils/getItemImageUrl';
-import { GetMarketOrders, GetMarketOrdersVariables, GetMarketOrders_marketOrders_orders as MarketOrder } from '../__generated__/getMarketOrders';
+import {
+  GetMarketOrders,
+  GetMarketOrdersVariables,
+  GetMarketOrders_characterMarketOrders_orders as MarketOrder,
+} from '../__generated__/getMarketOrders';
 import { useQuery } from '@apollo/react-hooks';
 import { useSnackbar } from 'notistack';
 import Chip from '@material-ui/core/Chip';
@@ -85,8 +89,8 @@ const WalletOrdersTab: React.FC<IWalletOrdersTab> = ({
     },
   });
 
-  const tableData = data ? data.marketOrders.orders : null;
-  const total = data ? data.marketOrders.total : 0;
+  const tableData = data ? data.characterMarketOrders.orders : null;
+  const total = data ? data.characterMarketOrders.total : 0;
 
   const handleChangePage = (event: unknown, newPage: number) => {
     onPageChange(newPage);

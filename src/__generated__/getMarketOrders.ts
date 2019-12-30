@@ -8,23 +8,23 @@ import { PageInput, CharacterMarketOrderFilter, CharacterMarketOrderOrderByInput
 // GraphQL query operation: GetMarketOrders
 // ====================================================
 
-export interface GetMarketOrders_marketOrders_orders_item {
+export interface GetMarketOrders_characterMarketOrders_orders_item {
   __typename: "InvItem";
   id: string;
   name: string;
 }
 
-export interface GetMarketOrders_marketOrders_orders_character {
+export interface GetMarketOrders_characterMarketOrders_orders_character {
   __typename: "Character";
   name: string;
 }
 
-export interface GetMarketOrders_marketOrders_orders_location {
+export interface GetMarketOrders_characterMarketOrders_orders_location {
   __typename: "Location";
   name: string;
 }
 
-export interface GetMarketOrders_marketOrders_orders {
+export interface GetMarketOrders_characterMarketOrders_orders {
   __typename: "CharacterMarketOrder";
   id: string;
   /**
@@ -34,7 +34,7 @@ export interface GetMarketOrders_marketOrders_orders {
   /**
    * Item transacted in this order
    */
-  item: GetMarketOrders_marketOrders_orders_item;
+  item: GetMarketOrders_characterMarketOrders_orders_item;
   /**
    * Date and time when this order was issued
    */
@@ -42,11 +42,11 @@ export interface GetMarketOrders_marketOrders_orders {
   /**
    * Character who issued the order
    */
-  character: GetMarketOrders_marketOrders_orders_character;
+  character: GetMarketOrders_characterMarketOrders_orders_character;
   /**
    * Location where order was placed
    */
-  location: GetMarketOrders_marketOrders_orders_location;
+  location: GetMarketOrders_characterMarketOrders_orders_location;
   /**
    * For buy orders, the amount of ISK in escrow
    */
@@ -77,14 +77,14 @@ export interface GetMarketOrders_marketOrders_orders {
   volumeTotal: number;
 }
 
-export interface GetMarketOrders_marketOrders {
+export interface GetMarketOrders_characterMarketOrders {
   __typename: "CharacterMarketOrders";
   total: number;
-  orders: GetMarketOrders_marketOrders_orders[];
+  orders: GetMarketOrders_characterMarketOrders_orders[];
 }
 
 export interface GetMarketOrders {
-  marketOrders: GetMarketOrders_marketOrders;
+  characterMarketOrders: GetMarketOrders_characterMarketOrders;
 }
 
 export interface GetMarketOrdersVariables {

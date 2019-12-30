@@ -1,5 +1,5 @@
 query GetMarketOrders($page: PageInput, $filter: CharacterMarketOrderFilter, $orderBy: CharacterMarketOrderOrderByInput) {
-  marketOrders(page: $page, filter: $filter, orderBy: $orderBy) {
+  characterMarketOrders(page: $page, filter: $filter, orderBy: $orderBy) {
     total
     orders {
       id
