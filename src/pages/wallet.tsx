@@ -1,6 +1,13 @@
+import {
+  CharacterMarketOrderOrderBy,
+  Order,
+  OrderStateFilter,
+  OrderType,
+  WalletJournalOrderBy,
+  WalletTransactionOrderBy,
+} from '../__generated__/globalTypes';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { GetCharacterNames } from '../__generated__/GetCharacterNames';
-import { MarketOrderOrderBy, Order, OrderStateFilter, OrderType, WalletJournalOrderBy, WalletTransactionOrderBy } from '../__generated__/globalTypes';
 import { useQuery } from '@apollo/react-hooks';
 import Checkbox from '@material-ui/core/Checkbox';
 import debounce from 'lodash.debounce';
@@ -73,7 +80,7 @@ const Wallet = () => {
   const [journalOrder, setJournalOrder] = useState<Order>(Order.desc);
   const [marketOrder, setMarketOrder] = useState<Order>(Order.desc);
   const [journalOrderBy, setJournalOrderby] = useState<WalletJournalOrderBy>(WalletJournalOrderBy.date);
-  const [marketOrderBy, setMarketOrderBy] = useState<MarketOrderOrderBy>(MarketOrderOrderBy.issued);
+  const [marketOrderBy, setMarketOrderBy] = useState<CharacterMarketOrderOrderBy>(CharacterMarketOrderOrderBy.issued);
   const [transactionsOrderType, setTransactionsOrderType] = useState<Maybe<OrderType>>(null);
   const [transactionsRowsPerPage, setTransactionsRowsPerPage] = useState(10);
   const [journalRowsPerPage, setJournalRowsPerPage] = useState(15);

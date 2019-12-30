@@ -121,7 +121,7 @@ const BuildCalculatorTab: React.FC = () => {
   const handleSelectItem = (item: Maybe<InvItem>) => {
     setBlueprint(item);
   };
-  
+
   const isReaction = blueprint ? blueprint.name.includes('Reaction') : false;
 
   const warehouseItems = useMemo(() => {

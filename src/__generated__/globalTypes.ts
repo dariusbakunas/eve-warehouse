@@ -15,7 +15,7 @@ export enum BlueprintsOrderBy {
   timeEfficiency = "timeEfficiency",
 }
 
-export enum MarketOrderOrderBy {
+export enum CharacterMarketOrderOrderBy {
   issued = "issued",
 }
 
@@ -91,19 +91,19 @@ export interface BlueprintsOrderByInput {
   order: Order;
 }
 
-export interface InvItemFilter {
-  name?: string | null;
-  categoryIds?: string[] | null;
-}
-
-export interface MarketOrderFilter {
+export interface CharacterMarketOrderFilter {
   characterId?: string | null;
   state?: OrderStateFilter | null;
 }
 
-export interface MarketOrderOrderByInput {
-  column: MarketOrderOrderBy;
+export interface CharacterMarketOrderOrderByInput {
+  column: CharacterMarketOrderOrderBy;
   order: Order;
+}
+
+export interface InvItemFilter {
+  name?: string | null;
+  categoryIds?: string[] | null;
 }
 
 export interface OrderStateFilter {

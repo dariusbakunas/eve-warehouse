@@ -2,7 +2,7 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { PageInput, MarketOrderFilter, MarketOrderOrderByInput, OrderState } from "./globalTypes";
+import { PageInput, CharacterMarketOrderFilter, CharacterMarketOrderOrderByInput, OrderState } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetMarketOrders
@@ -25,7 +25,7 @@ export interface GetMarketOrders_marketOrders_orders_location {
 }
 
 export interface GetMarketOrders_marketOrders_orders {
-  __typename: "MarketOrder";
+  __typename: "CharacterMarketOrder";
   id: string;
   /**
    * Number of days for which order is valid (starting from the issued date). An order expires at time issued + duration
@@ -78,7 +78,7 @@ export interface GetMarketOrders_marketOrders_orders {
 }
 
 export interface GetMarketOrders_marketOrders {
-  __typename: "MarketOrders";
+  __typename: "CharacterMarketOrders";
   total: number;
   orders: GetMarketOrders_marketOrders_orders[];
 }
@@ -89,6 +89,6 @@ export interface GetMarketOrders {
 
 export interface GetMarketOrdersVariables {
   page?: PageInput | null;
-  filter?: MarketOrderFilter | null;
-  orderBy?: MarketOrderOrderByInput | null;
+  filter?: CharacterMarketOrderFilter | null;
+  orderBy?: CharacterMarketOrderOrderByInput | null;
 }

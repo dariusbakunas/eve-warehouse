@@ -1,7 +1,7 @@
+import { CharacterMarketOrderOrderBy, Order, OrderStateFilter } from '../__generated__/globalTypes';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { getItemImageUrl } from '../utils/getItemImageUrl';
 import { GetMarketOrders, GetMarketOrdersVariables, GetMarketOrders_marketOrders_orders as MarketOrder } from '../__generated__/getMarketOrders';
-import { MarketOrderOrderBy, Order, OrderStateFilter } from '../__generated__/globalTypes';
 import { useQuery } from '@apollo/react-hooks';
 import { useSnackbar } from 'notistack';
 import Chip from '@material-ui/core/Chip';
@@ -39,11 +39,11 @@ interface IWalletOrdersTab {
   characterFilter: Maybe<{ id: string; name: string }>;
   onPageChange: (page: number) => void;
   order: Order;
-  orderBy: MarketOrderOrderBy;
+  orderBy: CharacterMarketOrderOrderBy;
   onClearCharacterFilter: () => void;
   onRowsPerPageChange: (rows: number) => void;
   onOrderChange: (order: Order) => void;
-  onOrderByChange: (orderBy: MarketOrderOrderBy) => void;
+  onOrderByChange: (orderBy: CharacterMarketOrderOrderBy) => void;
   onOrderStateFilterChange: (state: OrderStateFilter) => void;
   page: number;
   rowsPerPage: number;
@@ -97,7 +97,7 @@ const WalletOrdersTab: React.FC<IWalletOrdersTab> = ({
     onPageChange(0);
   };
 
-  const handleSort = (column: MarketOrderOrderBy) => {
+  const handleSort = (column: CharacterMarketOrderOrderBy) => {
     onPageChange(0);
     onOrderByChange(column);
   };
@@ -122,10 +122,10 @@ const WalletOrdersTab: React.FC<IWalletOrdersTab> = ({
         </Toolbar>
       )}
       {loading && <LinearProgress />}
-      <DataTable<MarketOrder, MarketOrderOrderBy>
+      <DataTable<MarketOrder, CharacterMarketOrderOrderBy>
         idField="id"
         columns={[
-          { field: row => moment(row.issued).format('MM/DD/YYYY HH:mm'), title: 'Issued', orderBy: MarketOrderOrderBy.issued },
+          { field: row => moment(row.issued).format('MM/DD/YYYY HH:mm'), title: 'Issued', orderBy: CharacterMarketOrderOrderBy.issued },
           {
             field: row =>
               moment(row.issued)
