@@ -1,6 +1,6 @@
+import { ISessionUser, IUser } from './auth0Verify';
 import { Request } from 'express';
 import fetch from 'isomorphic-fetch';
-import { ISessionUser, IUser } from './auth0Verify';
 
 const getCurrentUser: (req: Request & { user?: ISessionUser }) => Promise<IUser> = async req => {
   if (typeof window === 'undefined') {

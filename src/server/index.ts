@@ -1,9 +1,10 @@
 import * as Sentry from '@sentry/node';
+import { Firestore } from '@google-cloud/firestore';
 import { getAccessToken } from '../auth/getAccessToken';
 import Auth0Strategy from 'passport-auth0';
 import auth0Verify, { ISessionUser } from '../auth/auth0Verify';
-import authRoutes from './auth';
 import express, { NextFunction, Request, Response } from 'express';
+import getAuthRoutes from './auth';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import next from 'next';
@@ -11,7 +12,6 @@ import passport from 'passport';
 import pJson from '../../package.json';
 import proxy, { Config } from 'http-proxy-middleware';
 import session from 'cookie-session';
-import uid from 'uid-safe';
 
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -23,25 +23,54 @@ Sentry.init({
   release: `${pJson.name}@${pJson.version}`,
 });
 
-const apiProxyConfig: Config = {
-  changeOrigin: true,
-  onError: (err, req, res) => {
-    res.writeHead(500, {
-      'Content-Type': 'application/json',
-    });
+(async function() {
+  if (process.env.APP_ENGINE === 'true') {
+    require('@google-cloud/debug-agent').start();
+    const firestore = new Firestore();
+    const ref = firestore.collection('configs').doc('eve-mate-app');
+    const doc = await ref.get();
 
-    res.end(JSON.stringify({ message: err.message }));
-  },
-  onProxyReq: async (proxyReq, req: Request & { user: ISessionUser }) => {
-    if (req.session && req.user) {
-      const { accessToken } = req.user;
-      proxyReq.setHeader('authorization', `Bearer ${accessToken}`);
+    if (!doc.exists) {
+      throw new Error('Unable to load app engine configs');
+    } else {
+      const configs = doc.data();
+
+      if (configs) {
+        Object.keys(configs).forEach(key => {
+          process.env[key] = configs[key];
+        });
+      }
     }
-  },
-  target: process.env.EVE_API_HOST,
-};
+  }
 
-app.prepare().then(() => {
+  const requiredEnv = ['AUTH0_AUDIENCE', 'AUTH0_DOMAIN', 'AUTH0_CLIENT_ID'];
+
+  requiredEnv.forEach(env => {
+    if (!process.env[env]) {
+      throw new Error(`process.env.${env} is required`);
+    }
+  });
+
+  const apiProxyConfig: Config = {
+    changeOrigin: true,
+    onError: (err, req, res) => {
+      res.writeHead(500, {
+        'Content-Type': 'application/json',
+      });
+
+      res.end(JSON.stringify({ message: err.message }));
+    },
+    onProxyReq: async (proxyReq, req: Request & { user: ISessionUser }) => {
+      if (req.session && req.user) {
+        const { accessToken } = req.user;
+        proxyReq.setHeader('authorization', `Bearer ${accessToken}`);
+      }
+    },
+    target: process.env.EVE_API_HOST,
+  };
+
+  await app.prepare();
+
   const server = express();
   server.use(helmet());
   server.use(Sentry.Handlers.requestHandler());
@@ -134,7 +163,7 @@ app.prepare().then(() => {
 
   server.use(express.json());
   server.use(express.urlencoded());
-  server.use('/auth', authRoutes);
+  server.use('/auth', getAuthRoutes(process.env.AUTH0_DOMAIN!, process.env.AUTH0_CLIENT_ID!, process.env.AUTH0_AUDIENCE!, process.env.BASE_URL));
 
   const restrictAccess = (req: Request, res: Response, nextFn: NextFunction) => {
     const request = req as Request & {
@@ -172,4 +201,4 @@ app.prepare().then(() => {
     if (err) throw err;
     console.log(`> Ready on http://localhost:${port}`);
   });
-});
+})();
