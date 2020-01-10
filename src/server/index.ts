@@ -23,6 +23,13 @@ Sentry.init({
   release: `${pJson.name}@${pJson.version}`,
 });
 
+export interface IClientEnv {
+  EVE_API_HOST: string;
+  EVE_LOGIN_URL: string;
+  EVE_CLIENT_ID: string;
+  EVE_CHARACTER_REDIRECT_URL: string;
+}
+
 (async function() {
   if (process.env.APP_ENGINE === 'true') {
     require('@google-cloud/debug-agent').start();
@@ -151,6 +158,13 @@ Sentry.init({
     return done(null, user);
   });
 
+  const clientEnv: IClientEnv = {
+    EVE_API_HOST: process.env.EVE_API_HOST!,
+    EVE_LOGIN_URL: process.env.EVE_LOGIN_URL!,
+    EVE_CLIENT_ID: process.env.EVE_CLIENT_ID!,
+    EVE_CHARACTER_REDIRECT_URL: process.env.EVE_CHARACTER_REDIRECT_URL!,
+  };
+
   server.get('/health-check', (req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('Status: OK!');
@@ -164,6 +178,9 @@ Sentry.init({
   server.use(express.json());
   server.use(express.urlencoded());
   server.use('/auth', getAuthRoutes(process.env.AUTH0_DOMAIN!, process.env.AUTH0_CLIENT_ID!, process.env.AUTH0_AUDIENCE!, process.env.BASE_URL));
+  server.use('/env', (req, res) => {
+    res.json(clientEnv);
+  });
 
   const restrictAccess = (req: Request, res: Response, nextFn: NextFunction) => {
     const request = req as Request & {

@@ -1,6 +1,7 @@
 import { AddCharacterVariables, AddCharacter as NewCharacterResponse } from '../__generated__/AddCharacter';
 import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 import { GetCharacters_characters as Character, GetCharacters as CharactersResponse } from '../__generated__/GetCharacters';
+import { IClientEnv } from '../server';
 import { makeStyles, Theme } from '@material-ui/core';
 import { RemoveCharacter, RemoveCharacterVariables } from '../__generated__/RemoveCharacter';
 import { UpdateCharacter, UpdateCharacterVariables } from '../__generated__/UpdateCharacter';
@@ -52,7 +53,11 @@ const getGridListCols = (width?: Breakpoint) => {
   return 1;
 };
 
-export const Characters: React.FC<WithWidthProps> = ({ width }) => {
+interface ICharactersPageProps extends WithWidthProps {
+  env: IClientEnv;
+}
+
+export const Characters: React.FC<ICharactersPageProps> = ({ env, width }) => {
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const { confirmDialogProps, showAlert } = useConfirmDialog();
@@ -130,8 +135,8 @@ export const Characters: React.FC<WithWidthProps> = ({ width }) => {
     setScopeDialogOpen(false);
 
     if (scopes && scopes.length) {
-      const url = `${process.env.EVE_LOGIN_URL}/oauth/authorize?response_type=code&redirect_uri=${process.env.EVE_CHARACTER_REDIRECT_URL}&client_id=${
-        process.env.EVE_CLIENT_ID
+      const url = `${env.EVE_LOGIN_URL}/oauth/authorize?response_type=code&redirect_uri=${env.EVE_CHARACTER_REDIRECT_URL}&client_id=${
+        env.EVE_CLIENT_ID
       }&scope=${scopes.join(' ')}`;
       window.location.href = url;
     }
@@ -167,9 +172,9 @@ export const Characters: React.FC<WithWidthProps> = ({ width }) => {
     if (character) {
       if (scopes && scopes.length) {
         const state = btoa(JSON.stringify({ id: character.id }));
-        const url = `${process.env.EVE_LOGIN_URL}/oauth/authorize?response_type=code&redirect_uri=${
-          process.env.EVE_CHARACTER_REDIRECT_URL
-        }&client_id=${process.env.EVE_CLIENT_ID}&scope=${scopes.join(' ')}&state=${state}`;
+        const url = `${env.EVE_LOGIN_URL}/oauth/authorize?response_type=code&redirect_uri=${
+          env.EVE_CHARACTER_REDIRECT_URL
+        }&client_id=${env.EVE_CLIENT_ID}&scope=${scopes.join(' ')}&state=${state}`;
         window.location.href = url;
       } else {
         console.warn(`skipping ${character.name} update, no scopes were selected`);

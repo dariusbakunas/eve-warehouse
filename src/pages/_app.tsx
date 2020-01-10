@@ -1,9 +1,11 @@
+import { IClientEnv } from '../server';
 import { IUser } from '../auth/auth0Verify';
 import { Request } from 'express';
 import { Theme } from '@material-ui/core';
 import { WithApolloProps } from 'next-with-apollo';
 import { withStyles } from '@material-ui/styles';
 import App, { AppContext } from 'next/app';
+import getClientEnv from '../auth/getClientEnv';
 import getCurrentUser from '../auth/getCurrentUser';
 import Head from 'next/head';
 import Header from '../components/Header';
@@ -13,8 +15,9 @@ import Router from 'next/router';
 import SideMenu from '../components/SideMenu';
 import theme from '../config/theme';
 
-interface IPageProps {
+export interface IPageProps {
   user?: IUser;
+  env?: IClientEnv;
 }
 
 const styles = (theme: Theme) => ({
@@ -51,8 +54,8 @@ class EveApp extends App<IProps, IState> {
     }
 
     const request: Request = ctx.req as Request;
-
     pageProps.user = await getCurrentUser(request);
+    pageProps.env = await getClientEnv(request);
 
     return { pageProps };
   }

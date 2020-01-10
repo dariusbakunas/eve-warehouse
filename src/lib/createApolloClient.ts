@@ -1,7 +1,7 @@
-import { InMemoryCache, NormalizedCacheObject } from 'apollo-cache-inmemory';
-import ApolloClient from 'apollo-client';
-import { setContext } from 'apollo-link-context';
 import { HttpLink } from 'apollo-link-http';
+import { InMemoryCache, NormalizedCacheObject } from 'apollo-cache-inmemory';
+import { setContext } from 'apollo-link-context';
+import ApolloClient from 'apollo-client';
 
 const createApolloClient: (token?: string) => ApolloClient<NormalizedCacheObject> = token => {
   const authLink = setContext((_, { headers }) => ({
