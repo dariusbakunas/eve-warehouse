@@ -57,7 +57,6 @@ affinity: {}
 auth0Domain: eve-app.auth0.com
 auth0Audience: http://eve-api:4000
 auth0CallbackURL: https://eve-app.geekspace.us/auth/callback
-auth0ClientID: cA4W1Eh4uVCrT3jYWCBZXLZEnr4HS8Ah
 eveClientID: 6824e828c9f64b61abecdcb5c13496c5
 eveLoginURL: https://login.eveonline.com
 eveCharacterRedirectURL: https://eve-app.geekspace.us/characters
