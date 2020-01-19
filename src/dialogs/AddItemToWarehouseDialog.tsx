@@ -1,27 +1,21 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import commonStyles from '../config/commonStyles';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '../components/DialogActions';
 import DialogContent from '../components/DialogContent';
 import DialogTitle from '../components/DialogTitle';
-import green from '@material-ui/core/colors/green';
 import InvItemAutocomplete, { InvItem } from '../components/InvItemAutocomplete';
 import IskNumberFormat from '../components/IskNumberFormat';
 import Maybe from 'graphql/tsutils/Maybe';
 import QtyNumberFormat from '../components/QtyNumberFormat';
 import React, { useEffect, useState } from 'react';
-import red from '@material-ui/core/colors/red';
 import TextField from '@material-ui/core/TextField';
 import useValidator from '../hooks/useValidator';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    negative: {
-      color: red[500],
-    },
-    positive: {
-      color: green[500],
-    },
+    ...commonStyles(theme),
     root: {
       display: 'flex',
       flexWrap: 'nowrap',

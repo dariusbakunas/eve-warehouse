@@ -9,6 +9,7 @@ import {
 import { useQuery } from '@apollo/react-hooks';
 import { useSnackbar } from 'notistack';
 import Chip from '@material-ui/core/Chip';
+import commonStyles from '../config/commonStyles';
 import DataTable from './DataTable';
 import getMarketOrdersQuery from '../queries/getMarketOrders.graphql';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -19,6 +20,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    ...commonStyles(theme),
     filterToolbar: {
       display: 'flex',
       justifyContent: 'left',
@@ -28,12 +30,6 @@ const useStyles = makeStyles((theme: Theme) =>
       },
       paddingLeft: theme.spacing(1.5),
       paddingRight: theme.spacing(1.5),
-    },
-    negative: {
-      color: '#8b251f',
-    },
-    positive: {
-      color: '#187119',
     },
   })
 );

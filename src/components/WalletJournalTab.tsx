@@ -16,9 +16,11 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
+import commonStyles from '../config/commonStyles';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    ...commonStyles(theme),
     filterToolbar: {
       display: 'flex',
       justifyContent: 'left',
@@ -28,12 +30,6 @@ const useStyles = makeStyles((theme: Theme) =>
       },
       paddingLeft: theme.spacing(1.5),
       paddingRight: theme.spacing(1.5),
-    },
-    negative: {
-      color: '#8b251f',
-    },
-    positive: {
-      color: '#187119',
     },
     table: {
       whiteSpace: 'nowrap',

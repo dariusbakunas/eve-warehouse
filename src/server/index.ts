@@ -170,6 +170,8 @@ export interface IClientEnv {
     res.end('Status: OK!');
   });
 
+  server.use('/public', express.static('public'));
+
   server.use(passport.initialize());
   server.use(passport.session());
 

@@ -13,6 +13,7 @@ import { useSnackbar } from 'notistack';
 import addItemsToWarehouseMutation from '../queries/addItemsToWarehouse.graphql';
 import AddTransactionsToWarehouseDialog from '../dialogs/AddTransactionsToWarehouseDialog';
 import Chip from '@material-ui/core/Chip';
+import commonStyles from '../config/commonStyles';
 import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import DataTable from './DataTable';
 import getTransactionIdsQuery from '../queries/getTransactionIds.graphql';
@@ -28,6 +29,7 @@ import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    ...commonStyles(theme),
     filterToolbar: {
       display: 'flex',
       justifyContent: 'left',
@@ -38,25 +40,9 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingLeft: theme.spacing(1.5),
       paddingRight: theme.spacing(1.5),
     },
-    selectToolbar: {
-      display: 'flex',
-      background: theme.palette.primary.light,
-      justifyContent: 'left',
-      '& > *': {
-        margin: theme.spacing(0.5),
-      },
-      paddingLeft: theme.spacing(1.5),
-      paddingRight: theme.spacing(1.5),
-    },
     formControl: {
       margin: theme.spacing(1),
       minWidth: 150,
-    },
-    negative: {
-      color: '#8b251f',
-    },
-    positive: {
-      color: '#187119',
     },
     title: {
       flex: '1 1 100%',

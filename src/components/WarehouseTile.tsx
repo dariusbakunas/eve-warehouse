@@ -15,6 +15,7 @@ import AddIcon from '@material-ui/icons/Add';
 import addItemsToWarehouseMutation from '../queries/addItemsToWarehouse.graphql';
 import AddItemToWarehouseDialog, { IFormData as IAddItemFormData } from '../dialogs/AddItemToWarehouseDialog';
 import Button from '@material-ui/core/Button';
+import commonStyles from '../config/commonStyles';
 import ConfirmDialog from '../dialogs/ConfirmDialog';
 import DataTable from './DataTable';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -34,6 +35,7 @@ import UpdateWarehouseItemDialog, { IFormData as IUpdateItemFormData } from '../
 import useConfirmDialog from '../hooks/useConfirmDialog';
 
 const useStyles = makeStyles<Theme>(theme => ({
+  ...commonStyles(theme),
   root: {
     width: '100%',
     minHeight: '100px',
@@ -42,16 +44,6 @@ const useStyles = makeStyles<Theme>(theme => ({
     display: 'flex',
     justifyContent: 'left',
     flexWrap: 'wrap',
-    '& > *': {
-      margin: theme.spacing(0.5),
-    },
-    paddingLeft: theme.spacing(1.5),
-    paddingRight: theme.spacing(1.5),
-  },
-  selectToolbar: {
-    display: 'flex',
-    background: theme.palette.primary.light,
-    justifyContent: 'left',
     '& > *': {
       margin: theme.spacing(0.5),
     },

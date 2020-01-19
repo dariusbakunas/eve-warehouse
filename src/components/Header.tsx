@@ -1,21 +1,22 @@
-import React, { MouseEvent, useContext } from 'react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import clsx from 'clsx';
-import AppBar from '@material-ui/core/AppBar/AppBar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Toolbar from '@material-ui/core/Toolbar';
-import Button from '@material-ui/core/Button';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import Avatar from '@material-ui/core/Avatar';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import AppBar from '@material-ui/core/AppBar/AppBar';
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
-import MenuRounded from '@material-ui/icons/MenuRounded';
+import clsx from 'clsx';
+import IconButton from '@material-ui/core/IconButton';
 import LayoutContext from '../context/LayoutContext';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuRounded from '@material-ui/icons/MenuRounded';
+import React, { MouseEvent, useContext } from 'react';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles<Theme, { drawerWidth: number }>(theme => ({
   appBar: {
+    backgroundColor: '#1F1F1F',
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,

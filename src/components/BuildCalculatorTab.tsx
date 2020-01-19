@@ -6,6 +6,7 @@ import { useApplicationState } from '../hooks/useApplicationState';
 import { useLazyQuery, useQuery } from '@apollo/react-hooks';
 import { useSnackbar } from 'notistack';
 import checkWarehouseItemsQuery from '../queries/checkWarehouseItems.graphql';
+import commonStyles from '../config/commonStyles';
 import DataTable from './DataTable';
 import FormControl from '@material-ui/core/FormControl';
 import getBuildInfoQuery from '../queries/getBuildInfo.graphql';
@@ -20,6 +21,7 @@ import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    ...commonStyles(theme),
     root: {},
     formControl: {
       margin: theme.spacing(1),
@@ -35,12 +37,6 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       flexWrap: 'wrap',
       marginBottom: theme.spacing(1),
-    },
-    negative: {
-      color: '#8b251f',
-    },
-    positive: {
-      color: '#187119',
     },
     totals: {
       display: 'flex',
@@ -353,7 +349,11 @@ const BuildCalculatorTab: React.FC = () => {
         </div>
         <div>
           <span className={classes.totalsLabel}>Warehouse Cost:</span>
-          <span>{totals.warehouseCost ? `${totals.warehouseCost.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 0 })} ISK` : 'N/A'}</span>
+          <span>
+            {totals.warehouseCost
+              ? `${totals.warehouseCost.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 0 })} ISK`
+              : 'N/A'}
+          </span>
         </div>
       </div>
     </div>

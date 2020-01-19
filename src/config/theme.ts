@@ -4,20 +4,16 @@ import { indigo, red } from '@material-ui/core/colors';
 // A custom theme for this app
 const theme = createMuiTheme({
   palette: {
+    type: 'dark',
     primary: {
-      light: '#CFD8DC',
-      main: '#607D8B',
-      dark: '#455A64',
+      main: '#29b6f6',
+      contrastText: '#E1E1E1',
     },
     secondary: {
-      main: '#343240',
+      main: '#b0bec5',
     },
     error: {
-      main: red.A400,
-    },
-    background: {
-      paper: '#fff',
-      default: '#F0F2F2',
+      main: '#CF6679',
     },
   },
 });
