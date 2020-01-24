@@ -22,8 +22,8 @@ const useStyles = makeStyles<Theme>(theme => ({
 
 interface CharacterTileProps {
   character: Character;
-  onRemove: (id: string, name: string) => void;
-  onUpdate: (character: Character) => void;
+  onRemove?: (id: string, name: string) => void;
+  onUpdate?: (character: Character) => void;
 }
 
 const CharacterTile: React.FC<CharacterTileProps> = ({ character, onRemove, onUpdate }) => {
@@ -42,12 +42,16 @@ const CharacterTile: React.FC<CharacterTileProps> = ({ character, onRemove, onUp
 
   const handleRemove = () => {
     setAnchorEl(null);
-    onRemove(id, name);
+    if (onRemove) {
+      onRemove(id, name);
+    }
   };
 
   const handleUpdate = () => {
     setAnchorEl(null);
-    onUpdate(character);
+    if (onUpdate) {
+      onUpdate(character);
+    }
   };
 
   return (

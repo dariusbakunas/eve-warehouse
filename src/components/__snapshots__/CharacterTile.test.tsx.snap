@@ -1,0 +1,96 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CharacterTile renders without errors 1`] = `
+<Fragment>
+  <WithStyles(ForwardRef(Card))
+    className="makeStyles-card-1"
+  >
+    <WithStyles(ForwardRef(CardHeader))
+      action={
+        <ForwardRef(WithStyles)
+          aria-label="settings"
+          onClick={[Function]}
+        >
+          <UNDEFINED />
+        </ForwardRef(WithStyles)>
+      }
+      avatar={
+        <ForwardRef(WithStyles)
+          aria-label="recipe"
+          src="https://image.eveonline.com/Character/1704528d-6ef0-4590-9108-02a900cfd075_128_128.jpg"
+        >
+          B
+        </ForwardRef(WithStyles)>
+      }
+      subheader="Born: 2008-09-14 1:19 PM"
+      title="Bartholome"
+    />
+    <WithStyles(ForwardRef(CardContent))>
+      <div>
+        <strong>
+          Alliance:
+        </strong>
+         
+        Bauch, Rippin and Lehner [Group]
+         [
+        BRL
+        ]
+      </div>
+      <div>
+        <strong>
+          Corporation:
+        </strong>
+         
+        Krajcik - Conroy 
+         [
+        KC
+        ]
+      </div>
+      <div>
+        <strong>
+          Security status:
+        </strong>
+         
+        -1.20
+      </div>
+      <div>
+        <strong>
+          Total SP:
+        </strong>
+         
+        12,231,323
+      </div>
+    </WithStyles(ForwardRef(CardContent))>
+  </WithStyles(ForwardRef(Card))>
+  <WithStyles(ForwardRef(Menu))
+    anchorEl={null}
+    anchorOrigin={
+      Object {
+        "horizontal": "left",
+        "vertical": "bottom",
+      }
+    }
+    getContentAnchorEl={null}
+    id="character-menu-1704528d-6ef0-4590-9108-02a900cfd075_128"
+    onClose={[Function]}
+    open={false}
+  >
+    <WithStyles(ForwardRef(MenuItem))
+      onClick={[Function]}
+    >
+      <WithStyles(ForwardRef(Typography))>
+        Update Scopes
+      </WithStyles(ForwardRef(Typography))>
+    </WithStyles(ForwardRef(MenuItem))>
+    <WithStyles(ForwardRef(MenuItem))
+      onClick={[Function]}
+    >
+      <WithStyles(ForwardRef(Typography))
+        color="error"
+      >
+        Remove
+      </WithStyles(ForwardRef(Typography))>
+    </WithStyles(ForwardRef(MenuItem))>
+  </WithStyles(ForwardRef(Menu))>
+</Fragment>
+`;

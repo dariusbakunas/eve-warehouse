@@ -12,6 +12,7 @@ module.exports = {
   },
   preset: 'ts-jest/presets/js-with-ts',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  snapshotSerializers: ['enzyme-to-json/serializer'],
   setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
   testEnvironment: 'jsdom',
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
