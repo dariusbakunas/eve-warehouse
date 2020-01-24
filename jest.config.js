@@ -1,21 +1,19 @@
 module.exports = {
   transform: {
-    '^.+\\.tsx?$': 'ts-jest',
+    '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$',
-  collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!**/node_modules/**',
-    '!**/vendor/**',
-  ],
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!**/node_modules/**', '!**/vendor/**'],
   globals: {
     'ts-jest': {
-      babelConfig: true,
+      //babelConfig: true,
+      tsConfig: '<rootDir>/tsconfig.test.json',
     },
   },
-  preset: 'ts-jest',
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  testEnvironment: 'node',
+  preset: 'ts-jest/presets/js-with-ts',
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
+  testEnvironment: 'jsdom',
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
   //setupFiles: ["<rootDir>/jest.setup.js"]
 };

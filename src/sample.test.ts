@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 describe('Sample Test', () => {
   it('should pass', function() {
