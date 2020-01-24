@@ -11,17 +11,18 @@ const useStyles = makeStyles((theme: Theme) =>
       background: 'url(public/background.jpg) no-repeat center center fixed',
       '-webkit-background-size': 'cover',
     },
+    message: {
+      textAlign: 'center',
+      marginBottom: theme.spacing(2),
+    },
     login: {
       marginRight: 5,
-      width: 150,
-    },
-    signup: {
       width: 150,
     },
   })
 );
 
-const Login: React.FC<WithRouterProps> = ({ router }) => {
+const Verify: React.FC<WithRouterProps> = ({ router }) => {
   const classes = useStyles();
 
   const handleLoginClick = () => {
@@ -32,6 +33,9 @@ const Login: React.FC<WithRouterProps> = ({ router }) => {
 
   return (
     <Grid container spacing={0} direction="column" alignItems="center" justify="center" style={{ minHeight: '100vh' }} className={classes.root}>
+      <Grid item xs={3} className={classes.message}>
+        Thanks for signing up, please verify your email address to activate your account
+      </Grid>
       <Grid item xs={3}>
         <Button className={classes.login} variant="contained" color="primary" onClick={handleLoginClick}>
           LOGIN
@@ -41,4 +45,4 @@ const Login: React.FC<WithRouterProps> = ({ router }) => {
   );
 };
 
-export default withRouter(Login);
+export default withRouter(Verify);

@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Sun Dec 29 2019 21:29:56 GMT-0500 (Eastern Standard Time)
+# timestamp: Fri Jan 24 2020 13:21:19 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -221,7 +221,6 @@ type MarketGroup {
 }
 
 type Mutation {
-  setCache(key: ID!, value: String!): ID!
   addCharacter(code: String!): Character!
   updateCharacter(id: ID!, code: String!): Character!
   removeCharacter(id: ID!): ID!
@@ -300,7 +299,6 @@ enum ProcessingStatus {
 type Query {
   blueprints(page: PageInput, filter: BlueprintFilter, orderBy: BlueprintsOrderByInput): BlueprintsResponse!
   buildInfo(blueprintId: ID!): BuildInfo
-  cache(key: ID!): String
   character(id: ID!): Character
   characters: [Character!]!
   invItems(filter: InvItemFilter): [InvItem!]!
@@ -318,8 +316,6 @@ type Query {
 }
 
 input RegistrationInput {
-  firstName: String
-  lastName: String
   username: String!
   email: String!
   code: String!
@@ -354,7 +350,7 @@ type SkillQueueItem {
   finishedLevel: Int!
   levelEndSp: Int!
   levelStartSp: Int!
-  skill: Skill!
+  skill: Skill
   startDate: DateTime
   trainingStartSp: Int!
 }
@@ -369,8 +365,6 @@ scalar Time
 type User {
   id: ID!
   username: String!
-  firstName: String
-  lastName: String
   email: String!
   status: UserStatus!
 }
@@ -378,6 +372,7 @@ type User {
 enum UserStatus {
   ACTIVE
   INACTIVE
+  NOT_VERIFIED
 }
 
 input WalletJournalFilter {

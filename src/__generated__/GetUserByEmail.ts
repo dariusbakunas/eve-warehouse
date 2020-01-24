@@ -13,8 +13,6 @@ export interface GetUserByEmail_userByEmail {
   id: string;
   email: string;
   username: string;
-  firstName: string | null;
-  lastName: string | null;
   status: UserStatus;
 }
 

@@ -221,7 +221,7 @@ const Skills = () => {
                 <ListItem key={item.position} button>
                   <div className="MuiListItemText-root MuiListItemText-dense">
                     <span className="MuiTypography-root MuiListItemText-primary MuiTypography-body2">
-                      {item.position + 1}. {item.skill.name}
+                      {item.position + 1}. {item.skill?.name}
                     </span>
                     <span className={classes.lvl}>{lvl[item.finishedLevel]}</span>
                   </div>
@@ -229,8 +229,8 @@ const Skills = () => {
                     dynamicTimer={item.position === 0}
                     startDate={item.startDate}
                     finishDate={item.finishDate}
-                    trainedLevel={item.skill.trainedSkillLevel}
-                    injected={item.skill.trainedSkillLevel != null}
+                    trainedLevel={item.skill?.trainedSkillLevel}
+                    injected={item.skill?.trainedSkillLevel != null}
                     queuedLevel={item.finishedLevel}
                   />
                 </ListItem>

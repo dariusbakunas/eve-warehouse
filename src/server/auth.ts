@@ -43,8 +43,12 @@ const getAuthRoutes = (auth0Domain: string, auth0ClientId: string, auth0Audience
       return request.logIn(user, loginErr => {
         if (err) return next(err);
 
-        if (user && user.status === 'GUEST') {
-          return res.redirect('/register');
+        if (user) {
+          if (user.status === 'GUEST') {
+            return res.redirect('/register');
+          } else if (user.status === 'NOT_VERIFIED') {
+            return res.redirect('/verify');
+          }
         }
 
         return res.redirect('/characters');

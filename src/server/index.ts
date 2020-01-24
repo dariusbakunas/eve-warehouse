@@ -192,8 +192,12 @@ export interface IClientEnv {
 
     if (!request.isAuthenticated()) return res.redirect('/login');
 
-    if (request.user && request.user.status === 'GUEST' && request.originalUrl !== '/register' && request.baseUrl !== '/register') {
-      return res.redirect('/register');
+    if (request.user) {
+      if (request.user.status === 'GUEST' && request.originalUrl !== '/register' && request.baseUrl !== '/register') {
+        return res.redirect('/register');
+      } else if (request.user.status === 'NOT_VERIFIED' && request.originalUrl !== '/verify' && request.baseUrl !== '/verify') {
+        return res.redirect('/verify');
+      }
     }
 
     return nextFn();

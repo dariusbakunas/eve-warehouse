@@ -1,15 +1,15 @@
-import ApolloClient from 'apollo-client';
-import { NormalizedCacheObject } from 'apollo-cache-inmemory';
-import gql from 'graphql-tag';
-import createApolloClient from '../lib/createApolloClient';
 import { GetUserByEmail, GetUserByEmailVariables } from '../__generated__/GetUserByEmail';
-import Maybe from 'graphql/tsutils/Maybe';
+import { NormalizedCacheObject } from 'apollo-cache-inmemory';
+import ApolloClient from 'apollo-client';
+import createApolloClient from '../lib/createApolloClient';
+import gql from 'graphql-tag';
 import logger from '../logger';
+import Maybe from 'graphql/tsutils/Maybe';
 
 export interface IUser {
   email: string;
   picture?: string;
-  status: 'ACTIVE' | 'GUEST' | 'INACTIVE';
+  status: 'ACTIVE' | 'GUEST' | 'INACTIVE' | 'NOT_VERIFIED';
 }
 
 export interface ISessionUser extends IUser {
@@ -26,8 +26,6 @@ const getUser = (apolloClient: ApolloClient<NormalizedCacheObject>, email: strin
           id
           email
           username
-          firstName
-          lastName
           status
         }
       }

@@ -60,6 +60,7 @@ export enum ProcessingStatus {
 export enum UserStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
+  NOT_VERIFIED = "NOT_VERIFIED",
 }
 
 export enum WalletJournalOrderBy {
@@ -122,8 +123,6 @@ export interface ProcessingLogFilter {
 }
 
 export interface RegistrationInput {
-  firstName?: string | null;
-  lastName?: string | null;
   username: string;
   email: string;
   code: string;

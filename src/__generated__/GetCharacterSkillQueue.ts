@@ -15,7 +15,7 @@ export interface GetCharacterSkillQueue_character_skillQueue_skill {
 
 export interface GetCharacterSkillQueue_character_skillQueue {
   __typename: "SkillQueueItem";
-  skill: GetCharacterSkillQueue_character_skillQueue_skill;
+  skill: GetCharacterSkillQueue_character_skillQueue_skill | null;
   finishDate: any | null;
   finishedLevel: number;
   position: number;

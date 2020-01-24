@@ -18,11 +18,13 @@ export interface GetSkillGroupSkills_character_skillGroup_skills {
 
 export interface GetSkillGroupSkills_character_skillGroup {
   __typename: "SkillGroup";
+  id: string;
   skills: GetSkillGroupSkills_character_skillGroup_skills[];
 }
 
 export interface GetSkillGroupSkills_character {
   __typename: "Character";
+  id: string;
   skillGroup: GetSkillGroupSkills_character_skillGroup | null;
 }
 

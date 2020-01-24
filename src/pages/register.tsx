@@ -1,18 +1,21 @@
-import React, { FormEventHandler, useEffect, useState } from 'react';
-import { makeStyles, Theme } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
 import { createStyles } from '@material-ui/styles';
+import { GraphQLError } from 'graphql';
+import { IUser } from '../auth/auth0Verify';
+import { makeStyles, Theme } from '@material-ui/core';
+import { Register as RegisterResult, RegisterVariables } from '../__generated__/Register';
+import { useMutation } from '@apollo/react-hooks';
+import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Maybe from 'graphql/tsutils/Maybe';
+import React, { useEffect, useState } from 'react';
+import registerMutation from '../queries/register.graphql';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import registerMutation from '../queries/register.graphql';
-import { useMutation } from '@apollo/react-hooks';
-import { Register as RegisterResult, RegisterVariables } from '../__generated__/Register';
+import useValidator from '../hooks/useValidator';
 import withApollo from '../lib/withApollo';
-import { GraphQLError } from 'graphql';
-import { useRouter } from 'next/router';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import { IUser } from '../auth/auth0Verify';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -50,12 +53,9 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface RegisterState {
-  code: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  username: string;
+interface IFormData {
+  code: Maybe<string>;
+  username: Maybe<string>;
 }
 
 interface IRegisterProps {
@@ -64,23 +64,27 @@ interface IRegisterProps {
 
 const Register: React.FC<IRegisterProps> = ({ user }) => {
   const classes = useStyles({});
+  const [isComplete, setIsComplete] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
 
-  const [register, { loading, error }] = useMutation<RegisterResult, RegisterVariables>(registerMutation, {
+  const [registerSubmit, { loading, error }] = useMutation<RegisterResult, RegisterVariables>(registerMutation, {
     onCompleted: () => {
+      setIsComplete(true);
+      enqueueSnackbar(`Registered successfully`, { variant: 'success', autoHideDuration: 5000 });
       router.push('/auth/login');
     },
   });
 
-  const [validationErrors, setValidationErrors] = useState<Partial<RegisterState>>({});
-
-  const [values, setValues] = useState<RegisterState>({
+  const { register, handleSubmit, errors, setError, setValue, values } = useValidator<IFormData>({
     code: '',
-    email: user ? user.email : '',
-    firstName: '',
-    lastName: '',
     username: '',
   });
+
+  useEffect(() => {
+    register('username', { required: true });
+    register('code', { required: true });
+  }, []);
 
   useEffect(() => {
     if (error) {
@@ -90,21 +94,38 @@ const Register: React.FC<IRegisterProps> = ({ user }) => {
 
         if (extensions && extensions.code === 'BAD_USER_INPUT') {
           const { validationErrors } = extensions.exception;
-          setValidationErrors(validationErrors);
+          Object.keys(validationErrors).forEach(key => {
+            switch (key) {
+              case 'code':
+              case 'username':
+                setError(key, { message: validationErrors[key] });
+                break;
+            }
+          });
         }
       });
     }
   }, [error]);
 
-  const handleChange = (name: keyof RegisterState) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValues({ ...values, [name]: event.target.value });
+  const handleChange = (name: keyof IFormData) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(name, event.target.value || null);
   };
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setValidationErrors({});
-    register({ variables: { input: values } });
+  const handleFormSubmit = (data: IFormData) => {
+    if (user && user.email) {
+      registerSubmit({
+        variables: {
+          input: {
+            username: data.username!,
+            code: data.code!,
+            email: user.email,
+          },
+        },
+      });
+    }
   };
+
+  const isValid = !!values.code && !!values.username && Object.keys(errors).length === 0;
 
   return (
     <div className={classes.root}>
@@ -120,60 +141,42 @@ const Register: React.FC<IRegisterProps> = ({ user }) => {
           </Grid>
         )}
         <Grid item>
-          <form autoComplete="off" className={classes.form} onSubmit={handleSubmit}>
+          <form autoComplete="off" className={classes.form} onSubmit={handleSubmit(handleFormSubmit)}>
             <TextField
               id="username"
               required
               disabled={loading}
-              error={!!validationErrors['username']}
-              helperText={validationErrors['username']}
+              error={!!errors.username}
+              helperText={errors.username ? errors.username.message : null}
               label="Username"
               className={classes.textField}
-              value={values.username}
               onChange={handleChange('username')}
               margin="normal"
             />
             <TextField
               id="email"
-              label="Email"
-              className={classes.textField}
-              value={values.email}
+              label="Email Address"
+              disabled={loading || isComplete}
+              required
               InputProps={{
                 readOnly: true,
               }}
-              margin="normal"
-            />
-            <TextField
-              id="fname"
-              label="First Name"
-              disabled={loading}
+              value={user ? user.email : ''}
               className={classes.textField}
-              value={values.firstName}
-              onChange={handleChange('firstName')}
-              margin="normal"
-            />
-            <TextField
-              id="lname"
-              label="Last Name"
-              disabled={loading}
-              className={classes.textField}
-              value={values.lastName}
-              onChange={handleChange('lastName')}
               margin="normal"
             />
             <TextField
               id="code"
               required
-              disabled={loading}
-              error={!!validationErrors['code']}
-              helperText={validationErrors['code']}
+              disabled={loading || isComplete}
+              error={!!errors.code}
+              helperText={errors.code ? errors.code.message : null}
               label="Invitation Code"
               className={classes.textField}
-              value={values.code}
               onChange={handleChange('code')}
               margin="normal"
             />
-            <Button className={classes.button} variant="contained" color="primary" type="submit" disabled={loading}>
+            <Button className={classes.button} variant="contained" color="primary" type="submit" disabled={loading || !isValid || isComplete}>
               Submit
             </Button>
           </form>
