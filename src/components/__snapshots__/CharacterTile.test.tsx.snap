@@ -22,7 +22,7 @@ exports[`CharacterTile renders without errors 1`] = `
           B
         </ForwardRef(WithStyles)>
       }
-      subheader="Born: 2008-09-14 1:19 PM"
+      subheader="Born: 2008-09-14 5:19 PM"
       title="Bartholome"
     />
     <WithStyles(ForwardRef(CardContent))>
