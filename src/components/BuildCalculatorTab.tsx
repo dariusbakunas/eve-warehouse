@@ -70,22 +70,14 @@ interface ITotals {
   productionCount: Maybe<number>;
 }
 
-const STRUCTURE_RIG_BONUSES: { [key: number]: { [key: string]: number } } = {
-  0: { lowSec: 0, highSec: 0, nullSec: 0 },
-  1: { lowSec: 3.8, highSec: 2, nullSec: 4.2 },
-  2: { lowSec: 4.56, highSec: 2.4, nullSec: 5.04 },
-};
-
 const BuildCalculatorTab: React.FC = () => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [blueprint, setBlueprint] = useApplicationState<Maybe<InvItem>>('BuildCalculatorTab:blueprint', null);
   const [me, setMe] = useState<number>(10);
+  const [meRig, setMeRig] = useState<Maybe<number>>(-4.2);
   const [te, setTe] = useState<number>(20);
-  const [sec, setSec] = useState<string>('nullSec');
   const [runs, setRuns] = useState<Maybe<number>>(1);
-  const [rig, setRig] = useState<number>(0);
-  const [facility, setFacility] = useState<string>('complex');
 
   const [checkWarehouseItems, { loading: warehouseItemsLoading, data: warehouseItemsResponse }] = useLazyQuery<
     CheckWarehouseItems,
@@ -153,14 +145,12 @@ const BuildCalculatorTab: React.FC = () => {
         buildInfo: { materials },
       } = buildInfoResponse;
 
+      const structureBonus = meRig ? -meRig : 0;
       const actualMe = isReaction ? 0 : me;
-
-      const structureRigBonus = STRUCTURE_RIG_BONUSES[rig][sec];
-      const facilityBonus = facility === 'complex' ? 1 : 0;
 
       return materials.map(material => {
         let jobQuantity = null;
-        const unitQuantity = material.quantity * (1 - actualMe * 0.01) * (1 - structureRigBonus * 0.01) * (1 - facilityBonus * 0.01);
+        const unitQuantity = material.quantity * (1 - actualMe * 0.01) * (1 - structureBonus * 0.01);
 
         if (runs) {
           jobQuantity = Math.max(runs, Math.ceil(unitQuantity * runs));
@@ -184,7 +174,7 @@ const BuildCalculatorTab: React.FC = () => {
     } else {
       return [];
     }
-  }, [warehouseItems, buildInfoResponse, runs, me, te, sec, rig, facility]);
+  }, [warehouseItems, buildInfoResponse, runs, me, te, meRig]);
 
   const totals = useMemo<ITotals>(() => {
     const result: ITotals = {
@@ -223,16 +213,14 @@ const BuildCalculatorTab: React.FC = () => {
     setTe(event.target.value as number);
   };
 
-  const handleSecChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setSec(event.target.value as string);
-  };
+  const handleMeRigChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const value = event.target.value ? +(event.target.value as number) : null;
 
-  const handleFacilityChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setFacility(event.target.value as string);
-  };
-
-  const handleRigChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setRig(event.target.value as number);
+    if (value && value <= 0) {
+      setMeRig(event.target.value as number);
+    } else {
+      setMeRig(null);
+    }
   };
 
   const handleRunsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -258,26 +246,30 @@ const BuildCalculatorTab: React.FC = () => {
           value={blueprint}
           onSelect={handleSelectItem}
         />
-        <FormControl className={classes.formControl} disabled={isReaction}>
-          <InputLabel id="me-select-label">ME</InputLabel>
-          <Select labelId="me-select-label" id="me-select" value={me} onChange={handleMeChange}>
-            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
-              <MenuItem key={num} value={num}>
-                -{num}%
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl className={classes.formControl} disabled={isReaction}>
-          <InputLabel id="te-select-label">TE</InputLabel>
-          <Select labelId="te-select-label" id="te-select" value={te} onChange={handleTeChange}>
-            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(num => (
-              <MenuItem key={num} value={num}>
-                -{num}%
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        {!isReaction && (
+          <FormControl className={classes.formControl} disabled={isReaction}>
+            <InputLabel id="me-select-label">ME</InputLabel>
+            <Select labelId="me-select-label" id="me-select" value={me} onChange={handleMeChange}>
+              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
+                <MenuItem key={num} value={num}>
+                  -{num}%
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
+        {!isReaction && (
+          <FormControl className={classes.formControl}>
+            <InputLabel id="te-select-label">TE</InputLabel>
+            <Select labelId="te-select-label" id="te-select" value={te} onChange={handleTeChange}>
+              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(num => (
+                <MenuItem key={num} value={num}>
+                  -{num}%
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
         <FormControl className={classes.formControl}>
           <TextField
             id="num-runs"
@@ -291,27 +283,17 @@ const BuildCalculatorTab: React.FC = () => {
           />
         </FormControl>
         <FormControl className={classes.formControl}>
-          <InputLabel id="facility-select-label">Facility</InputLabel>
-          <Select labelId="facility-select-label" id="facility-select" value={facility} onChange={handleFacilityChange}>
-            <MenuItem value={'other'}>Other</MenuItem>
-            <MenuItem value={'complex'}>Engineering Complex</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl className={classes.formControl}>
-          <InputLabel id="sec-select-label">Security</InputLabel>
-          <Select labelId="sec-select-label" id="sec-select" value={sec} onChange={handleSecChange}>
-            <MenuItem value={'highSec'}>High Sec</MenuItem>
-            <MenuItem value={'lowSec'}>Low Sec</MenuItem>
-            <MenuItem value={'nullSec'}>Null Sec</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl className={classes.formControl}>
-          <InputLabel id="rig-select-label">ME Rig</InputLabel>
-          <Select labelId="rig-select-label" id="rig-select" value={rig} onChange={handleRigChange}>
-            <MenuItem value={0}>No Rig</MenuItem>
-            <MenuItem value={1}>T1 Rig</MenuItem>
-            <MenuItem value={2}>T2 Rig</MenuItem>
-          </Select>
+          <TextField
+            id="me-rig"
+            label="ME Rig Bonus"
+            type="number"
+            value={meRig || ''}
+            onChange={handleMeRigChange}
+            inputProps={{
+              min: -10,
+              max: 0,
+            }}
+          />
         </FormControl>
       </div>
       <DataTable<IMaterialRow, {}>

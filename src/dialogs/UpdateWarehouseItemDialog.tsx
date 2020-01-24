@@ -55,6 +55,11 @@ const UpdateWarehouseItemDialog: React.FC<IDialogProps> = ({ item, open, onCance
   const classes = useStyles();
 
   useEffect(() => {
+    setValue('qty', item.quantity);
+    setValue('unitCost', item.unitCost);
+  }, [item]);
+
+  useEffect(() => {
     register('qty', { required: true, min: 1 });
     register('unitCost', { required: true, min: 0 });
   }, []);
