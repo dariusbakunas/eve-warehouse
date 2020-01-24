@@ -32,7 +32,9 @@ const styles = (theme: Theme) => ({
       minHeight: '100vh',
     },
   },
-  appBarSpacer: theme.mixins.toolbar,
+  appBarSpacer: {
+    ...theme.mixins.toolbar,
+  },
   content: {
     flexGrow: 1,
   },

@@ -1,24 +1,26 @@
-import React, { ReactNode, useContext } from 'react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import clsx from 'clsx';
-import Drawer from '@material-ui/core/Drawer';
 import { useRouter } from 'next/router';
-import LayoutContext, { ILayoutContext } from '../context/LayoutContext';
+import CharactersIcon from '../icons/CharactersIcon';
+import clsx from 'clsx';
+import DashboardIcon from '@material-ui/icons/Dashboard';
 import Divider from '@material-ui/core/Divider';
+import Drawer from '@material-ui/core/Drawer';
+import IndustryIcon from '../icons/IndustryIcon';
+import LayoutContext, { ILayoutContext } from '../context/LayoutContext';
+import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import DashboardIcon from '@material-ui/icons/Dashboard';
 import ListItemText from '@material-ui/core/ListItemText';
-import CharactersIcon from '../icons/CharactersIcon';
+import LogsIcon from '../icons/LogsIcon';
+import React, { ReactNode, useContext } from 'react';
 import SkillsIcon from '../icons/SkillsIcon';
 import WalletIcon from '../icons/WalletIcon';
-import List from '@material-ui/core/List';
-import LogsIcon from '../icons/LogsIcon';
 import WarehouseIcon from '../icons/WarehouseIcon';
-import IndustryIcon from '../icons/IndustryIcon';
 
-const useStyles = makeStyles<Theme, { drawerWidth: number }>(theme => ({
-  appBarSpacer: theme.mixins.toolbar,
+const useStyles = makeStyles<Theme, { drawerWidth: number }, string>(theme => ({
+  appBarSpacer: {
+    ...theme.mixins.toolbar,
+  },
   drawer: {
     flexShrink: 0,
     whiteSpace: 'nowrap',
