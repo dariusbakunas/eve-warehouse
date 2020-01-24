@@ -285,7 +285,7 @@ const BuildCalculatorTab: React.FC = () => {
         <FormControl className={classes.formControl}>
           <TextField
             id="me-rig"
-            label="ME Rig Bonus"
+            label="ME Rig Bonus, %"
             type="number"
             value={meRig || ''}
             onChange={handleMeRigChange}
