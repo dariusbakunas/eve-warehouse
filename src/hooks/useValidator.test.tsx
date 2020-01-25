@@ -1,4 +1,4 @@
-import { shallow } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 import { useEffect } from 'react';
 import Maybe from 'graphql/tsutils/Maybe';
 import React from 'react';
@@ -10,7 +10,11 @@ interface IFormData {
   passwordProp: Maybe<string>;
 }
 
-const TestForm: React.FC<{ onSubmit?: (data: IFormData) => void }> = ({ onSubmit }) => {
+interface ITestFormProps {
+  onSubmit?: (data: IFormData) => void;
+}
+
+const TestForm: React.FC<ITestFormProps> = ({ onSubmit }) => {
   const { register, handleSubmit, errors, setValue, values } = useValidator<IFormData>();
 
   useEffect(() => {
@@ -32,58 +36,43 @@ const TestForm: React.FC<{ onSubmit?: (data: IFormData) => void }> = ({ onSubmit
   );
 };
 
+let useEffectSpy: jest.SpyInstance;
+let wrapper: ShallowWrapper<ITestFormProps, {}, React.Component>;
+
 describe('useValidator', () => {
-  it('validates required field', () => {
-    const useEffectSpy = jest.spyOn(React, 'useEffect');
+  beforeEach(() => {
     const submitMock = jest.fn();
+    useEffectSpy = jest.spyOn(React, 'useEffect');
     useEffectSpy.mockImplementationOnce(f => f());
-    const wrapper = shallow(<TestForm onSubmit={submitMock} />);
+    wrapper = shallow(<TestForm onSubmit={submitMock} />);
+  });
+
+  it('validates required field', () => {
     wrapper.find('#numInput').simulate('change', { target: { value: '' } });
     expect(wrapper.find('#numError').text()).toEqual('This field is required');
   });
 
   it('validates min field', () => {
-    const useEffectSpy = jest.spyOn(React, 'useEffect');
-    const submitMock = jest.fn();
-    useEffectSpy.mockImplementationOnce(f => f());
-    const wrapper = shallow(<TestForm onSubmit={submitMock} />);
     wrapper.find('#numInput').simulate('change', { target: { value: 4 } });
     expect(wrapper.find('#numError').text()).toEqual('Must be at least 5');
   });
 
   it('validates max field', () => {
-    const useEffectSpy = jest.spyOn(React, 'useEffect');
-    const submitMock = jest.fn();
-    useEffectSpy.mockImplementationOnce(f => f());
-    const wrapper = shallow(<TestForm onSubmit={submitMock} />);
     wrapper.find('#numInput').simulate('change', { target: { value: 12 } });
     expect(wrapper.find('#numError').text()).toEqual('Must not exceed 10');
   });
 
   it('validates email field', () => {
-    const useEffectSpy = jest.spyOn(React, 'useEffect');
-    const submitMock = jest.fn();
-    useEffectSpy.mockImplementationOnce(f => f());
-    const wrapper = shallow(<TestForm onSubmit={submitMock} />);
     wrapper.find('#emailInput').simulate('change', { target: { value: 'test' } });
     expect(wrapper.find('#emailError').text()).toEqual('Invalid email');
   });
 
   it('validates password field', () => {
-    const useEffectSpy = jest.spyOn(React, 'useEffect');
-    const submitMock = jest.fn();
-    useEffectSpy.mockImplementationOnce(f => f());
-    const wrapper = shallow(<TestForm onSubmit={submitMock} />);
     wrapper.find('#passwordInput').simulate('change', { target: { value: 'simpleP@ssword' } });
     expect(wrapper.find('#passwordError').text()).toEqual('The password must contain at least one number.');
   });
 
   it('resets error once validation passes', () => {
-    const useEffectSpy = jest.spyOn(React, 'useEffect');
-    const submitMock = jest.fn();
-    useEffectSpy.mockImplementationOnce(f => f());
-    useEffectSpy.mockImplementationOnce(f => f());
-    const wrapper = shallow(<TestForm onSubmit={submitMock} />);
     wrapper.find('#numInput').simulate('change', { target: { value: 4 } });
     expect(wrapper.find('#numError').text()).toEqual('Must be at least 5');
     wrapper.find('#numInput').simulate('change', { target: { value: 6 } });
