@@ -67,10 +67,10 @@ const useValidator = <T extends {}>(defaults: Partial<T> = {}) => {
         if (values[rule.match] !== value) {
           if (!errors[rule.match]) {
             const matchRule = rules[rule.match];
-            const message = matchRule && matchRule.messages?.['match'] ? matchRule.messages['match'] : 'No match';
+            const message = matchRule && matchRule.messages && matchRule.messages['match'] ? matchRule.messages['match'] : 'No match';
             setError(rule.match, { message });
           }
-          errorMessage = rule.messages?.['match'] || 'No match';
+          errorMessage = rule.messages && rule.messages['match'] ? rule.messages['match'] : 'No match';
         } else {
           // if match rule is validated, remove errors for both matching fields
           setErrors(prevErrors => {
@@ -86,11 +86,11 @@ const useValidator = <T extends {}>(defaults: Partial<T> = {}) => {
       }
 
       if (rule.required && value == null) {
-        errorMessage = rule.messages?.['required'] || `This field is required`;
+        errorMessage = rule.messages && rule.messages['required'] ? rule.messages['required'] : `This field is required`;
       } else if (rule.min != null && +value < rule.min) {
-        errorMessage = rule.messages?.['min'] || `Must be at least ${rule.min}`;
+        errorMessage = rule.messages && rule.messages['min'] ? rule.messages['min'] : `Must be at least ${rule.min}`;
       } else if (rule.max != null && +value > rule.max) {
-        errorMessage = rule.messages?.['max'] || `Must not exceed ${rule.max}`;
+        errorMessage = rule.messages && rule.messages['max'] ? rule.messages['max'] : `Must not exceed ${rule.max}`;
       } else if (rule.password) {
         const { errors } = owasp.test(`${value}`);
         if (errors && errors.length) {
@@ -99,7 +99,7 @@ const useValidator = <T extends {}>(defaults: Partial<T> = {}) => {
       } else if (rule.email) {
         const isValid = emailValidator.validate(`${value}`);
         if (!isValid) {
-          errorMessage = rule.messages?.['email'] || `Invalid email`;
+          errorMessage = rule.messages && rule.messages['email'] ? rule.messages['email'] : `Invalid email`;
         }
       }
 
@@ -118,12 +118,14 @@ const useValidator = <T extends {}>(defaults: Partial<T> = {}) => {
     }
   };
 
-  const handleSubmit = (callback: (data: T) => void) => {
+  const handleSubmit = (callback?: (data: T) => void) => {
     return (e: React.BaseSyntheticEvent<object, any, any>) => {
       e.preventDefault();
       e.stopPropagation();
       if (Object.keys(errors).length === 0) {
-        callback({ ...values } as T); // TODO: find safer way to do this
+        if (callback) {
+          callback({ ...values } as T); // TODO: find safer way to do this
+        }
       }
     };
   };

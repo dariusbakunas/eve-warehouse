@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CharacterTile renders without errors 1`] = `
+exports[`CharacterTile match snapshot 1`] = `
 <Fragment>
   <WithStyles(ForwardRef(Card))
     className="makeStyles-card-1"

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon",
     "gcp-build": "yarn build",
+    "test:watch": "TZ=UTC jest --watchAll",
     "test": "TZ=UTC jest",
     "build": "next build ./src && tsc --project tsconfig.server.json",
     "start": "NODE_ENV=production node .next/production-server/src/server/index.js",
@@ -104,7 +105,7 @@
     "apollo": "^2.21.3",
     "apollo-storybook-react": "^0.2.4",
     "awesome-typescript-loader": "^5.2.1",
-    "babel-jest": "^25.1.0",
+    "babel-jest": "24.9.0",
     "babel-loader": "^8.0.6",
     "coveralls": "^3.0.7",
     "cross-env": "^6.0.3",

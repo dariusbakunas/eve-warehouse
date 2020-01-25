@@ -4,7 +4,7 @@ import CharacterTile from './CharacterTile';
 import React from 'react';
 
 describe('CharacterTile', () => {
-  it('renders without errors', () => {
+  it('match snapshot', () => {
     const character: Character = {
       __typename: 'Character',
       id: '1704528d-6ef0-4590-9108-02a900cfd075_128',
