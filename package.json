@@ -103,6 +103,7 @@
     "@typescript-eslint/eslint-plugin": "^2.17.0",
     "@typescript-eslint/parser": "^2.17.0",
     "apollo": "^2.21.3",
+    "apollo-link-schema": "^1.2.4",
     "apollo-storybook-react": "^0.2.4",
     "awesome-typescript-loader": "^5.2.1",
     "babel-jest": "24.9.0",
