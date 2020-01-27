@@ -1,5 +1,5 @@
 import { AddWarehouse, AddWarehouseVariables } from '../__generated__/AddWarehouse';
-import { GetWarehouses } from '../__generated__/GetWarehouses';
+import { GetWarehouses, GetWarehouses_warehouses as Warehouse } from '../__generated__/GetWarehouses';
 import { makeStyles, Theme } from '@material-ui/core';
 import { RemoveWarehouse, RemoveWarehouseVariables } from '../__generated__/RemoveWarehouse';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -28,8 +28,14 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
-    flexBasis: '33.33%',
-    flexShrink: 0,
+    //flexBasis: '33.33%',
+    flexGrow: 1,
+  },
+  secondaryHeading: {
+    //color: theme.palette.text.secondary,
+    fontWeight: theme.typography.fontWeightLight,
+    fontSize: theme.typography.pxToRem(15),
+    marginRight: theme.spacing(2),
   },
   paper: {
     width: 'calc(100vw - 120px)',
@@ -68,10 +74,19 @@ const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
         });
 
         if (queryResponse) {
+          const newWarehouse: Warehouse = {
+            ...data.addWarehouse,
+            summary: {
+              __typename: 'WarehouseSummary',
+              totalCost: 0,
+              totalVolume: 0,
+            },
+          };
+
           cache.writeQuery({
             query: getWarehousesQuery,
             data: {
-              warehouses: queryResponse.warehouses.concat([data.addWarehouse]),
+              warehouses: queryResponse.warehouses.concat([newWarehouse]),
             },
           });
         }
@@ -139,6 +154,12 @@ const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
               id={`panel-${warehouse.id}-header`}
             >
               <Typography className={classes.heading}>{warehouse.name}</Typography>
+              <Typography className={classes.secondaryHeading}>{`Cost: ${warehouse.summary.totalCost.toLocaleString(undefined, {
+                maximumFractionDigits: 2,
+              })} ISK`}</Typography>
+              <Typography className={classes.secondaryHeading}>{`Volume: ${warehouse.summary.totalVolume.toLocaleString(undefined, {
+                maximumFractionDigits: 2,
+              })} m³`}</Typography>
             </ExpansionPanelSummary>
             <WarehouseTile warehouse={warehouse} onRemoveWarehouse={handleRemoveWarehouse} />
           </ExpansionPanel>

@@ -9,6 +9,7 @@ query GetWarehouseItems($id: ID!) {
           buy
           sell
         }
+        volume
       }
       quantity
       unitCost

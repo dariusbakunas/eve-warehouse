@@ -1,6 +1,6 @@
-import { addMockFunctionsToSchema, IMocks, IResolvers, makeExecutableSchema } from 'graphql-tools';
 import { GraphQLSchema } from 'graphql';
 import { InMemoryCache } from 'apollo-boost';
+import { makeExecutableSchema } from 'graphql-tools';
 import { SchemaLink } from 'apollo-link-schema';
 import ApolloClient from 'apollo-client';
 import auth0Verify from './auth0Verify';

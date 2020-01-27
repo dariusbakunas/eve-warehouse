@@ -17,6 +17,7 @@ export interface GetWarehouseItems_warehouse_items_item {
   id: string;
   name: string;
   jitaPrice: GetWarehouseItems_warehouse_items_item_jitaPrice | null;
+  volume: number;
 }
 
 export interface GetWarehouseItems_warehouse_items {

@@ -206,15 +206,6 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
     }
   };
 
-  const totalIsk = useMemo(() => {
-    if (data && data.warehouse) {
-      return data.warehouse.items.reduce<number>((acc, item) => {
-        acc += item.quantity * item.unitCost;
-        return acc;
-      }, 0);
-    }
-  }, [data]);
-
   const handleRemoveWarehouse = (id: string, name: string) => {
     if (onRemoveWarehouse) {
       onRemoveWarehouse(id, name);
@@ -246,25 +237,16 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
       <ExpansionPanelDetails>
         <div className={classes.root}>
           {loading && <LinearProgress />}
-          {!numSelected && (
-            <Toolbar className={classes.filterToolbar}>
-              <Typography className={classes.title} color="inherit" variant="overline">
-                Total: {totalIsk ? `${totalIsk.toLocaleString(undefined, { minimumFractionDigits: 2 })} ISK` : 'N/A'}
-              </Typography>
-            </Toolbar>
-          )}
-          {!!numSelected && (
-            <Toolbar className={classes.selectToolbar}>
-              <Typography className={classes.title} color="inherit" variant="subtitle1">
-                {numSelected} selected
-              </Typography>
-              <Tooltip title="Remove">
-                <IconButton aria-label="remove selected items from warehouse" onClick={handleRemoveItems}>
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
-            </Toolbar>
-          )}
+          <Toolbar className={classes.selectToolbar} style={{ visibility: numSelected > 0 ? 'visible' : 'hidden'}}>
+            <Typography className={classes.title} color="inherit" variant="subtitle1">
+              {numSelected} selected
+            </Typography>
+            <Tooltip title="Remove">
+              <IconButton aria-label="remove selected items from warehouse" onClick={handleRemoveItems}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          </Toolbar>
           {data && data.warehouse && (
             <DataTable<WarehouseItem, {}>
               idField={row => row.item.id}
@@ -281,18 +263,23 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
                   },
                 },
                 { field: row => row.quantity.toLocaleString(), title: 'Quantity', align: 'right' },
-                { field: row => row.unitCost.toLocaleString(undefined, { maximumFractionDigits: 2 }), title: 'Unit Cost', align: 'right' },
+                { field: row => row.unitCost.toLocaleString(undefined, { maximumFractionDigits: 2 }), title: 'Unit Cost, ISK', align: 'right' },
+                {
+                  field: row => (row.quantity * row.item.volume).toLocaleString(),
+                  title: 'Volume, m³',
+                  align: 'right',
+                },
                 {
                   field: row =>
                     row.item.jitaPrice && row.item.jitaPrice.buy
                       ? row.item.jitaPrice.buy.toLocaleString(undefined, { maximumFractionDigits: 2 })
                       : 'N/A',
-                  title: 'Jita Cost',
+                  title: 'Jita Cost, ISK',
                   align: 'right',
                 },
                 {
-                  field: row => (row.unitCost * row.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 }),
-                  title: 'Total',
+                  field: row => (row.unitCost * row.quantity).toLocaleString(undefined, { maximumFractionDigits: 2 }),
+                  title: 'Total, ISK',
                   align: 'right',
                 },
               ]}

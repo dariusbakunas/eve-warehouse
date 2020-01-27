@@ -1,5 +1,5 @@
 # source: http://localhost:4000/graphql
-# timestamp: Fri Jan 24 2020 13:21:19 GMT-0500 (Eastern Standard Time)
+# timestamp: Sun Jan 26 2020 16:39:30 GMT-0500 (Eastern Standard Time)
 
 type Alliance {
   id: ID!
@@ -182,6 +182,8 @@ type InvGroup {
 type InvItem {
   id: ID!
   name: String!
+  mass: Float!
+  volume(packaged: Boolean = true): Float!
   invGroup: InvGroup!
   marketPrice(systemId: ID!): ItemMarketPrice
 }
@@ -451,6 +453,7 @@ type Warehouse {
   id: ID!
   name: String!
   items: [WarehouseItem!]!
+  summary: WarehouseSummary!
 }
 
 type WarehouseItem {
@@ -464,4 +467,9 @@ input WarehouseItemInput {
   id: ID!
   quantity: Int!
   unitCost: Float!
+}
+
+type WarehouseSummary {
+  totalCost: Float!
+  totalVolume: Float!
 }
