@@ -237,16 +237,18 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
       <ExpansionPanelDetails>
         <div className={classes.root}>
           {loading && <LinearProgress />}
-          <Toolbar className={classes.selectToolbar} style={{ visibility: numSelected > 0 ? 'visible' : 'hidden'}}>
-            <Typography className={classes.title} color="inherit" variant="subtitle1">
-              {numSelected} selected
-            </Typography>
-            <Tooltip title="Remove">
-              <IconButton aria-label="remove selected items from warehouse" onClick={handleRemoveItems}>
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
-          </Toolbar>
+          {!!numSelected && (
+            <Toolbar className={classes.selectToolbar}>
+              <Typography className={classes.title} color="inherit" variant="subtitle1">
+                {numSelected} selected
+              </Typography>
+              <Tooltip title="Remove">
+                <IconButton aria-label="remove selected items from warehouse" onClick={handleRemoveItems}>
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            </Toolbar>
+          )}
           {data && data.warehouse && (
             <DataTable<WarehouseItem, {}>
               idField={row => row.item.id}

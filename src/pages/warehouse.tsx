@@ -11,6 +11,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import getWarehousesQuery from '../queries/getWarehouses.graphql';
+import Grid from '@material-ui/core/Grid';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import React, { useState } from 'react';
 import removeWarehouseMutation from '../queries/removeWarehouse.graphql';
@@ -28,8 +29,6 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
-    //flexBasis: '33.33%',
-    flexGrow: 1,
   },
   secondaryHeading: {
     //color: theme.palette.text.secondary,
@@ -153,13 +152,21 @@ const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
               aria-controls={`panel-${warehouse.id}-content`}
               id={`panel-${warehouse.id}-header`}
             >
-              <Typography className={classes.heading}>{warehouse.name}</Typography>
-              <Typography className={classes.secondaryHeading}>{`Cost: ${warehouse.summary.totalCost.toLocaleString(undefined, {
-                maximumFractionDigits: 2,
-              })} ISK`}</Typography>
-              <Typography className={classes.secondaryHeading}>{`Volume: ${warehouse.summary.totalVolume.toLocaleString(undefined, {
-                maximumFractionDigits: 2,
-              })} m³`}</Typography>
+              <Grid container spacing={3}>
+                <Grid item xs={8}>
+                  <Typography className={classes.heading}>{warehouse.name}</Typography>
+                </Grid>
+                <Grid item xs={2}>
+                  <Typography className={classes.secondaryHeading}>{`Cost: ${warehouse.summary.totalCost.toLocaleString(undefined, {
+                    maximumFractionDigits: 2,
+                  })} ISK`}</Typography>
+                </Grid>
+                <Grid item xs={2}>
+                  <Typography className={classes.secondaryHeading}>{`Volume: ${warehouse.summary.totalVolume.toLocaleString(undefined, {
+                    maximumFractionDigits: 2,
+                  })} m³`}</Typography>
+                </Grid>
+              </Grid>
             </ExpansionPanelSummary>
             <WarehouseTile warehouse={warehouse} onRemoveWarehouse={handleRemoveWarehouse} />
           </ExpansionPanel>
