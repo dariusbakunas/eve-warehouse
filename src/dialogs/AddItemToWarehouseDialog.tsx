@@ -32,18 +32,21 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export interface IDialogProps {
+  warehouseId: number;
+  warehouseName: string;
   open: boolean;
   onCancel: () => void;
   onSubmit: (data: IFormData) => void;
 }
 
 export interface IFormData {
+  warehouseId: number;
   item: Maybe<InvItem>;
   qty: Maybe<number>;
   unitCost: Maybe<number>;
 }
 
-const AddItemToWarehouseDialog: React.FC<IDialogProps> = ({ open, onCancel, onSubmit }) => {
+const AddItemToWarehouseDialog: React.FC<IDialogProps> = ({ open, onCancel, onSubmit, warehouseName, warehouseId }) => {
   const { register, handleSubmit, errors, setValue, values } = useValidator<IFormData>();
   const classes = useStyles();
 
@@ -60,6 +63,7 @@ const AddItemToWarehouseDialog: React.FC<IDialogProps> = ({ open, onCancel, onSu
   const handleAddClick = (data: IFormData) => {
     if (data.item && data.qty != null && data.unitCost != null) {
       onSubmit({
+        warehouseId: warehouseId,
         item: data.item,
         qty: data.qty,
         unitCost: data.unitCost,
@@ -73,7 +77,7 @@ const AddItemToWarehouseDialog: React.FC<IDialogProps> = ({ open, onCancel, onSu
 
   return (
     <Dialog open={open} fullWidth={true} maxWidth="md">
-      <DialogTitle onClose={handleCancel}>Add item to warehouse</DialogTitle>
+      <DialogTitle onClose={handleCancel}>{`Add item to "${warehouseName}" warehouse`}</DialogTitle>
       <DialogContent dividers className={classes.root}>
         <InvItemAutocomplete error={!!errors.item} onSelect={handleSelectItem} className={classes.itemField} value={values['item']} />
         <TextField

@@ -1,6 +1,10 @@
 query GetWarehouseItems($id: ID!) {
   warehouse(id: $id) {
     id
+    summary {
+      totalCost
+      totalVolume
+    }
     items {
       item {
         id

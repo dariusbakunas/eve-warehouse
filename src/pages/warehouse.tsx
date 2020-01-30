@@ -1,22 +1,37 @@
+import { AddItemsToWarehouse, AddItemsToWarehouseVariables } from '../__generated__/AddItemsToWarehouse';
 import { AddWarehouse, AddWarehouseVariables } from '../__generated__/AddWarehouse';
+import { alphaSort } from '../utils/sorting';
+import {
+  GetWarehouseItems,
+  GetWarehouseItemsVariables,
+  GetWarehouseItems_warehouse_items as WarehouseItem,
+} from '../__generated__/GetWarehouseItems';
 import { GetWarehouses, GetWarehouses_warehouses as Warehouse } from '../__generated__/GetWarehouses';
 import { makeStyles, Theme } from '@material-ui/core';
 import { RemoveWarehouse, RemoveWarehouseVariables } from '../__generated__/RemoveWarehouse';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useSnackbar } from 'notistack';
+import AddIcon from '@material-ui/icons/AddCircle';
+import addItemsToWarehouseMutation from '../queries/addItemsToWarehouse.graphql';
+import AddItemToWarehouseDialog, { IFormData as IAddItemFormData } from '../dialogs/AddItemToWarehouseDialog';
 import addWarehouseMutation from '../queries/addWarehouse.graphql';
 import Button from '@material-ui/core/Button';
 import ConfirmDialog from '../dialogs/ConfirmDialog';
+import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import getWarehouseItemsQuery from '../queries/getWarehouseItems.graphql';
 import getWarehousesQuery from '../queries/getWarehouses.graphql';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import React, { useState } from 'react';
 import removeWarehouseMutation from '../queries/removeWarehouse.graphql';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import useConfirmDialog from '../hooks/useConfirmDialog';
+import useDialog from '../hooks/useDialog';
 import WarehouseDialog from '../dialogs/WarehouseDialog';
 import WarehouseTile from '../components/WarehouseTile';
 import withApollo from '../lib/withApollo';
@@ -29,6 +44,9 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
+  },
+  deleteButton: {
+    color: theme.palette.error.main,
   },
   secondaryHeading: {
     //color: theme.palette.text.secondary,
@@ -53,6 +71,12 @@ const useStyles = makeStyles<Theme>(theme => ({
 const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const {
+    open: openAddItemToWarehouseDialog,
+    close: closeAddItemToWarehouseDialog,
+    isOpen: addItemToWarehouseDialogIsOpen,
+    dialogProps: addItemToWarehouseDialogProps,
+  } = useDialog<{ warehouseId: number; warehouseName: string }>();
   const [expanded, setExpanded] = React.useState<string | false>(false);
   const { confirmDialogProps, showAlert } = useConfirmDialog();
   const [isWarehouseDialogOpen, setWarehouseDialogOpen] = useState(false);
@@ -66,13 +90,13 @@ const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
     onCompleted: data => {
       enqueueSnackbar(`Warehouse '${data.addWarehouse.name}' added successfully`, { variant: 'success', autoHideDuration: 5000 });
     },
-    update(cache, { data }) {
+    update(store, { data }) {
       if (data) {
-        const queryResponse = cache.readQuery<GetWarehouses>({
+        const cache = store.readQuery<GetWarehouses>({
           query: getWarehousesQuery,
         });
 
-        if (queryResponse) {
+        if (cache) {
           const newWarehouse: Warehouse = {
             ...data.addWarehouse,
             summary: {
@@ -82,10 +106,10 @@ const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
             },
           };
 
-          cache.writeQuery({
+          store.writeQuery({
             query: getWarehousesQuery,
             data: {
-              warehouses: queryResponse.warehouses.concat([newWarehouse]),
+              warehouses: cache.warehouses.concat([newWarehouse]),
             },
           });
         }
@@ -102,6 +126,39 @@ const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
       enqueueSnackbar(`Warehouse removed successfully`, { variant: 'success', autoHideDuration: 5000 });
     },
   });
+
+  const [addItemsToWarehouse, { loading: addingItemsToWarehouseLoading }] = useMutation<AddItemsToWarehouse, AddItemsToWarehouseVariables>(
+    addItemsToWarehouseMutation,
+    {
+      onError: error => {
+        enqueueSnackbar(`Failed to add items: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
+      },
+      update: (store, { data }) => {
+        if (data && data.addItemsToWarehouse) {
+          const warehouseId = data.addItemsToWarehouse[0].warehouse.id;
+
+          const cache = store.readQuery<GetWarehouseItems, GetWarehouseItemsVariables>({
+            query: getWarehouseItemsQuery,
+            variables: { id: data.addItemsToWarehouse[0].warehouse.id },
+          });
+
+          if (cache && cache.warehouse && cache.warehouse.items) {
+            cache.warehouse.items = cache.warehouse.items.concat(data.addItemsToWarehouse).sort(alphaSort<WarehouseItem>(item => item.item.name));
+
+            store.writeQuery<GetWarehouseItems, GetWarehouseItemsVariables>({
+              query: getWarehouseItemsQuery,
+              data: cache,
+              variables: { id: warehouseId },
+            });
+          }
+        }
+      },
+      onCompleted: () => {
+        enqueueSnackbar(`Items added successfully`, { variant: 'success', autoHideDuration: 5000 });
+        refetchWarehouses();
+      },
+    }
+  );
 
   const handleWarehouseDialogCancel = () => {
     setWarehouseDialogOpen(false);
@@ -121,7 +178,8 @@ const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
     setExpanded(isExpanded ? panel : false);
   };
 
-  const handleRemoveWarehouse = (id: string, name: string) => {
+  const handleRemoveWarehouse = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string, name: string) => {
+    event.stopPropagation();
     showAlert(`Remove warehouse '${name}'?`, `Warehouse '${name}' will be removed`, async confirm => {
       if (confirm) {
         removeWarehouse({
@@ -133,7 +191,35 @@ const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
     });
   };
 
-  const loading = warehousesLoading || warehouseAddLoading || warehouseRemoveLoading;
+  const handleAddItemToWarehouseDialogCancel = () => {
+    closeAddItemToWarehouseDialog();
+  };
+
+  const handleAddItemToWarehouseDialogSubmit = (data: IAddItemFormData) => {
+    closeAddItemToWarehouseDialog();
+
+    if (data.item && data.qty && data.unitCost) {
+      addItemsToWarehouse({
+        variables: {
+          id: `${data.warehouseId}`,
+          input: [
+            {
+              id: data.item.id,
+              quantity: data.qty,
+              unitCost: data.unitCost,
+            },
+          ],
+        },
+      });
+    }
+  };
+
+  const handleAddItemToWarehouse = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, warehouseId: number, warehouseName: string) => {
+    event.stopPropagation();
+    openAddItemToWarehouseDialog({ warehouseId, warehouseName });
+  };
+
+  const loading = warehousesLoading || warehouseAddLoading || warehouseRemoveLoading || addingItemsToWarehouseLoading;
 
   return (
     <div className={classes.root}>
@@ -152,28 +238,52 @@ const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
               aria-controls={`panel-${warehouse.id}-content`}
               id={`panel-${warehouse.id}-header`}
             >
-              <Grid container spacing={3}>
-                <Grid item xs={8}>
+              <Grid container spacing={0} alignItems="center">
+                <Grid item xs={true}>
                   <Typography className={classes.heading}>{warehouse.name}</Typography>
                 </Grid>
-                <Grid item xs={2}>
-                  <Typography className={classes.secondaryHeading}>{`Cost: ${warehouse.summary.totalCost.toLocaleString(undefined, {
+                <Grid item xs>
+                  <Typography className={classes.secondaryHeading} noWrap>{`Cost: ${warehouse.summary.totalCost.toLocaleString(undefined, {
                     maximumFractionDigits: 2,
                   })} ISK`}</Typography>
                 </Grid>
-                <Grid item xs={2}>
-                  <Typography className={classes.secondaryHeading}>{`Volume: ${warehouse.summary.totalVolume.toLocaleString(undefined, {
+                <Grid item xs>
+                  <Typography className={classes.secondaryHeading} noWrap>{`Volume: ${warehouse.summary.totalVolume.toLocaleString(undefined, {
                     maximumFractionDigits: 2,
                   })} m³`}</Typography>
                 </Grid>
+                <Grid item xs={false}>
+                  <Tooltip title="Add Item">
+                    <IconButton aria-label="Add item" onClick={e => handleAddItemToWarehouse(e, +warehouse.id, warehouse.name)}>
+                      <AddIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Remove Warehouse">
+                    <IconButton
+                      className={classes.deleteButton}
+                      aria-label="Remove warehouse"
+                      onClick={e => handleRemoveWarehouse(e, warehouse.id, warehouse.name)}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
               </Grid>
             </ExpansionPanelSummary>
-            <WarehouseTile warehouse={warehouse} onRemoveWarehouse={handleRemoveWarehouse} />
+            <WarehouseTile warehouse={warehouse} onRemoveItems={() => refetchWarehouses()} onItemUpdate={() => refetchWarehouses()} />
           </ExpansionPanel>
         ))}
       <Button color="primary" onClick={() => setWarehouseDialogOpen(true)} disabled={loading}>
         Add Warehouse
       </Button>
+      {addItemToWarehouseDialogIsOpen && addItemToWarehouseDialogProps && (
+        <AddItemToWarehouseDialog
+          open={addItemToWarehouseDialogIsOpen}
+          onCancel={handleAddItemToWarehouseDialogCancel}
+          onSubmit={handleAddItemToWarehouseDialogSubmit}
+          {...addItemToWarehouseDialogProps}
+        />
+      )}
       <ConfirmDialog {...confirmDialogProps} />
       <WarehouseDialog open={isWarehouseDialogOpen} onCancel={handleWarehouseDialogCancel} onSubmit={handleWarehouseDialogSubmit} />
     </div>

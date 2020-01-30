@@ -11,15 +11,10 @@ import { UpdateItemsInWarehouse, UpdateItemsInWarehouseVariables } from '../__ge
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useSnackbar } from 'notistack';
 import { GetWarehouses_warehouses as Warehouse } from '../__generated__/GetWarehouses';
-import AddIcon from '@material-ui/icons/Add';
-import addItemsToWarehouseMutation from '../queries/addItemsToWarehouse.graphql';
-import AddItemToWarehouseDialog, { IFormData as IAddItemFormData } from '../dialogs/AddItemToWarehouseDialog';
-import Button from '@material-ui/core/Button';
 import commonStyles from '../config/commonStyles';
 import ConfirmDialog from '../dialogs/ConfirmDialog';
 import DataTable from './DataTable';
 import DeleteIcon from '@material-ui/icons/Delete';
-import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import getWarehouseItemsQuery from '../queries/getWarehouseItems.graphql';
 import IconButton from '@material-ui/core/IconButton';
@@ -59,21 +54,20 @@ const useStyles = makeStyles<Theme>(theme => ({
 }));
 
 interface IWarehouseTileProps {
-  onRemoveWarehouse?: (id: string, name: string) => void;
   warehouse: Warehouse;
+  onItemUpdate?: (data: UpdateItemsInWarehouse) => void;
+  onRemoveItems?: (ids: string[]) => void;
 }
 
-const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, warehouse }) => {
+const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onItemUpdate, onRemoveItems, warehouse }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
-  const [addItemToWarehouseDialogOpen, setAddItemToWarehouseDialogOpen] = useState(false);
   const [updateItemDialogOpen, setUpdateItemDialogOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState<Maybe<WarehouseItem>>(null);
   const { confirmDialogProps, showAlert } = useConfirmDialog();
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const { loading: itemsLoading, data, refetch: refetchItems } = useQuery<GetWarehouseItems, GetWarehouseItemsVariables>(getWarehouseItemsQuery, {
-    fetchPolicy: 'no-cache',
     variables: {
       id: warehouse.id,
     },
@@ -85,27 +79,30 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
       onError: error => {
         enqueueSnackbar(`Failed to remove items: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
       },
+      update: (store, { data }) => {
+        if (data && data.removeItemsFromWarehouse) {
+          const cache = store.readQuery<GetWarehouseItems, GetWarehouseItemsVariables>({
+            query: getWarehouseItemsQuery,
+            variables: { id: warehouse.id },
+          });
+          const removedIds = new Set(data.removeItemsFromWarehouse);
+
+          if (cache && cache.warehouse && cache.warehouse.items) {
+            cache.warehouse.items = cache.warehouse.items.filter(item => !removedIds.has(item.item.id));
+            store.writeQuery<GetWarehouseItems, GetWarehouseItemsVariables>({
+              query: getWarehouseItemsQuery,
+              data: cache,
+              variables: { id: warehouse.id },
+            });
+          }
+        }
+      },
       onCompleted: data => {
         enqueueSnackbar(`Items removed successfully`, { variant: 'success', autoHideDuration: 5000 });
-        refetchItems({
-          id: warehouse.id,
-        });
+        if (onRemoveItems) {
+          onRemoveItems(data.removeItemsFromWarehouse);
+        }
         setSelected(new Set());
-      },
-    }
-  );
-
-  const [addItemsToWarehouse, { loading: addingItemsToWarehouseLoading }] = useMutation<AddItemsToWarehouse, AddItemsToWarehouseVariables>(
-    addItemsToWarehouseMutation,
-    {
-      onError: error => {
-        enqueueSnackbar(`Failed to add items: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
-      },
-      onCompleted: () => {
-        enqueueSnackbar(`Items added successfully`, { variant: 'success', autoHideDuration: 5000 });
-        refetchItems({
-          id: warehouse.id,
-        });
       },
     }
   );
@@ -116,8 +113,13 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
       onError: error => {
         enqueueSnackbar(`Failed to update items: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
       },
-      onCompleted: () => {
+      onCompleted: data => {
         enqueueSnackbar(`Items updated successfully`, { variant: 'success', autoHideDuration: 5000 });
+
+        if (onItemUpdate) {
+          onItemUpdate(data);
+        }
+
         refetchItems({
           id: warehouse.id,
         });
@@ -160,33 +162,6 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
     });
   };
 
-  const handleAddItemToWarehouseDialogCancel = () => {
-    setAddItemToWarehouseDialogOpen(false);
-  };
-
-  const handleAddItemToWarehouseDialogSubmit = (data: IAddItemFormData) => {
-    setAddItemToWarehouseDialogOpen(false);
-
-    if (data.item && data.qty && data.unitCost) {
-      addItemsToWarehouse({
-        variables: {
-          id: warehouse.id,
-          input: [
-            {
-              id: data.item.id,
-              quantity: data.qty,
-              unitCost: data.unitCost,
-            },
-          ],
-        },
-      });
-    }
-  };
-
-  const handleAddItem = () => {
-    setAddItemToWarehouseDialogOpen(true);
-  };
-
   const handleUpdateItemSubmit = (data: IUpdateItemFormData) => {
     setUpdateItemDialogOpen(false);
 
@@ -203,12 +178,6 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
           ],
         },
       });
-    }
-  };
-
-  const handleRemoveWarehouse = (id: string, name: string) => {
-    if (onRemoveWarehouse) {
-      onRemoveWarehouse(id, name);
     }
   };
 
@@ -230,7 +199,7 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
     setUpdateItemDialogOpen(true);
   };
 
-  const loading = itemsLoading || removeItemsLoading || addingItemsToWarehouseLoading || updatingItemsInWarehouseLoading;
+  const loading = itemsLoading || removeItemsLoading || updatingItemsInWarehouseLoading;
 
   return (
     <React.Fragment>
@@ -244,7 +213,7 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
               </Typography>
               <Tooltip title="Remove">
                 <IconButton aria-label="remove selected items from warehouse" onClick={handleRemoveItems}>
-                  <DeleteIcon />
+                  <DeleteIcon fontSize="small" />
                 </IconButton>
               </Tooltip>
             </Toolbar>
@@ -298,20 +267,7 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onRemoveWarehouse, wareh
           )}
         </div>
       </ExpansionPanelDetails>
-      <ExpansionPanelActions>
-        <Button variant="contained" color="primary" onClick={handleAddItem} startIcon={<AddIcon />} disabled={loading}>
-          Add Item
-        </Button>
-        <Button variant="contained" onClick={() => handleRemoveWarehouse(warehouse.id, warehouse.name)} startIcon={<DeleteIcon />} disabled={loading}>
-          Remove Warehouse
-        </Button>
-      </ExpansionPanelActions>
       <ConfirmDialog {...confirmDialogProps} />
-      <AddItemToWarehouseDialog
-        open={addItemToWarehouseDialogOpen}
-        onCancel={handleAddItemToWarehouseDialogCancel}
-        onSubmit={handleAddItemToWarehouseDialogSubmit}
-      />
       {currentItem && (
         <UpdateWarehouseItemDialog
           item={currentItem}
