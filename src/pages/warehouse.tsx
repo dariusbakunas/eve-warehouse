@@ -42,6 +42,9 @@ const useStyles = makeStyles<Theme>(theme => ({
     padding: theme.spacing(2),
     width: '100%',
   },
+  panelSummary: {
+    margin: 0,
+  },
   heading: {
     fontSize: theme.typography.pxToRem(15),
   },
@@ -234,6 +237,9 @@ const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
             TransitionProps={{ unmountOnExit: true, timeout: 0 }}
           >
             <ExpansionPanelSummary
+              classes={{
+                content: classes.panelSummary,
+              }}
               expandIcon={<ExpandMoreIcon />}
               aria-controls={`panel-${warehouse.id}-content`}
               id={`panel-${warehouse.id}-header`}

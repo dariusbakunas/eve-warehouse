@@ -234,7 +234,13 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onItemUpdate, onRemoveIt
                   },
                 },
                 { field: row => row.quantity.toLocaleString(), title: 'Quantity', align: 'right' },
-                { field: row => row.unitCost.toLocaleString(undefined, { maximumFractionDigits: 2 }), title: 'Unit Cost, ISK', align: 'right' },
+                {
+                  field: row => row.unitCost.toLocaleString(undefined, { maximumFractionDigits: 2 }),
+                  title: 'Unit Cost, ISK',
+                  align: 'right',
+                  cellClassName: row =>
+                    row.item.jitaPrice && row.item.jitaPrice.buy ? (row.unitCost < row.item.jitaPrice.buy ? classes.positive : classes.negative) : '',
+                },
                 {
                   field: row => (row.quantity * row.item.volume).toLocaleString(),
                   title: 'Volume, m³',
