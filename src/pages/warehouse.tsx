@@ -1,11 +1,5 @@
 import { AddItemsToWarehouse, AddItemsToWarehouseVariables } from '../__generated__/AddItemsToWarehouse';
 import { AddWarehouse, AddWarehouseVariables } from '../__generated__/AddWarehouse';
-import { alphaSort } from '../utils/sorting';
-import {
-  GetWarehouseItems,
-  GetWarehouseItemsVariables,
-  GetWarehouseItems_warehouse_items as WarehouseItem,
-} from '../__generated__/GetWarehouseItems';
 import { GetWarehouses, GetWarehouses_warehouses as Warehouse } from '../__generated__/GetWarehouses';
 import { makeStyles, Theme } from '@material-ui/core';
 import { RemoveWarehouse, RemoveWarehouseVariables } from '../__generated__/RemoveWarehouse';
@@ -36,6 +30,7 @@ import WarehouseDialog from '../dialogs/WarehouseDialog';
 import WarehouseTile from '../components/WarehouseTile';
 import withApollo from '../lib/withApollo';
 import withWidth, { WithWidthProps } from '@material-ui/core/withWidth';
+import { addItemsToWarehouseUpdate } from '../cache/addItemsToWarehouseUpdate';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -136,26 +131,7 @@ const WarehousePage: React.FC<WithWidthProps> = ({ width }) => {
       onError: error => {
         enqueueSnackbar(`Failed to add items: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
       },
-      update: (store, { data }) => {
-        if (data && data.addItemsToWarehouse) {
-          const warehouseId = data.addItemsToWarehouse[0].warehouse.id;
-
-          const cache = store.readQuery<GetWarehouseItems, GetWarehouseItemsVariables>({
-            query: getWarehouseItemsQuery,
-            variables: { id: data.addItemsToWarehouse[0].warehouse.id },
-          });
-
-          if (cache && cache.warehouse && cache.warehouse.items) {
-            cache.warehouse.items = cache.warehouse.items.concat(data.addItemsToWarehouse).sort(alphaSort<WarehouseItem>(item => item.item.name));
-
-            store.writeQuery<GetWarehouseItems, GetWarehouseItemsVariables>({
-              query: getWarehouseItemsQuery,
-              data: cache,
-              variables: { id: warehouseId },
-            });
-          }
-        }
-      },
+      update: addItemsToWarehouseUpdate,
       onCompleted: () => {
         enqueueSnackbar(`Items added successfully`, { variant: 'success', autoHideDuration: 5000 });
         refetchWarehouses();

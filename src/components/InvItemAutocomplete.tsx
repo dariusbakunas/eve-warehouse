@@ -83,7 +83,6 @@ const InvItemAutocomplete: React.FC<IAutocompleteProps> = ({ className, category
       }}
       onChange={handleItemSelect}
       onInputChange={handleInputChange}
-      value={value}
       renderInput={params => (
         <TextField
           {...params}

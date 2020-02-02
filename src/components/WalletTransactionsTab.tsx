@@ -1,4 +1,5 @@
 import { AddItemsToWarehouse, AddItemsToWarehouseVariables } from '../__generated__/AddItemsToWarehouse';
+import { addItemsToWarehouseUpdate } from '../cache/addItemsToWarehouseUpdate';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { getItemImageUrl } from '../utils/getItemImageUrl';
 import { GetTransactionIds, GetTransactionIdsVariables } from '../__generated__/GetTransactionIds';
@@ -7,6 +8,7 @@ import {
   GetTransactionsVariables,
   GetTransactions_walletTransactions_transactions as WalletTransaction,
 } from '../__generated__/GetTransactions';
+import { GetWarehouses } from '../__generated__/GetWarehouses';
 import { Order, OrderType, WalletTransactionOrderBy, WarehouseItemInput } from '../__generated__/globalTypes';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
 import { useSnackbar } from 'notistack';
@@ -18,6 +20,7 @@ import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import DataTable from './DataTable';
 import getTransactionIdsQuery from '../queries/getTransactionIds.graphql';
 import getTransactionsQuery from '../queries/getTransactions.graphql';
+import getWarehousesQuery from '../queries/getWarehouses.graphql';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Maybe from 'graphql/tsutils/Maybe';
@@ -88,6 +91,10 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [addToWarehouseDialogOpen, setAddToWarehouseDialogOpen] = useState(false);
 
+  const { refetch: refetchWarehouses, loading: warehousesLoading } = useQuery<GetWarehouses>(getWarehousesQuery, {
+    fetchPolicy: 'network-only',
+  });
+
   const [getTransactionIds, { loading: idsLoading, data: transactionIds }] = useLazyQuery<GetTransactionIds, GetTransactionIdsVariables>(
     getTransactionIdsQuery,
     {
@@ -131,16 +138,18 @@ const WalletTransactionsTab: React.FC<IWalletTransactionsTab> = ({
   const [addItemsToWarehouse, { loading: addingItemsToWarehouseLoading }] = useMutation<AddItemsToWarehouse, AddItemsToWarehouseVariables>(
     addItemsToWarehouseMutation,
     {
+      update: addItemsToWarehouseUpdate,
       onError: error => {
         enqueueSnackbar(`Failed to add items: ${error.message}`, { variant: 'error', autoHideDuration: 5000 });
       },
       onCompleted: () => {
+        refetchWarehouses();
         enqueueSnackbar(`Items added successfully`, { variant: 'success', autoHideDuration: 5000 });
       },
     }
   );
 
-  const loading = transactionsLoading || idsLoading || addingItemsToWarehouseLoading;
+  const loading = transactionsLoading || idsLoading || addingItemsToWarehouseLoading || warehousesLoading;
 
   const handleSort = (column: WalletTransactionOrderBy) => {
     onPageChange(0);

@@ -1,4 +1,3 @@
-import { AddItemsToWarehouse, AddItemsToWarehouseVariables } from '../__generated__/AddItemsToWarehouse';
 import { getItemImageUrl } from '../utils/getItemImageUrl';
 import {
   GetWarehouseItems,
@@ -20,7 +19,7 @@ import getWarehouseItemsQuery from '../queries/getWarehouseItems.graphql';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Maybe from 'graphql/tsutils/Maybe';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import removeItemsFromWarehouseMutation from '../queries/removeItemsFromWarehouse.graphql';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
