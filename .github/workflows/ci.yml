@@ -25,7 +25,9 @@ jobs:
     - name: Build
       run: yarn build
     - name: Test
-      env:
-        COVERALLS_REPO_TOKEN: "${{ secrets.COVERALLS_REPO_TOKEN }}"
-        COVERALLS_GIT_BRANCH: "${{ github.ref }}"
-      run: yarn coveralls
+      run: yarn test
+    - name: Coveralls GitHub Action
+      uses: coverallsapp/github-action@v1.0.1
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
