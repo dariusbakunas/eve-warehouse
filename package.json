@@ -7,7 +7,7 @@
     "dev": "nodemon",
     "gcp-build": "yarn build",
     "test:watch": "TZ=UTC jest --watchAll",
-    "test": "TZ=UTC jest",
+    "test": "TZ=UTC jest --coverage",
     "build": "next build ./src && tsc --project tsconfig.server.json",
     "start": "NODE_ENV=production node .next/production-server/src/server/index.js",
     "storybook": "start-storybook -p 6006 -c .storybook",
