@@ -3,6 +3,7 @@
 Eve Online web application for character monitoring, industry
 
 ![CI](https://github.com/dariusbakunas/eve-app/workflows/CI/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/dariusbakunas/eve-app/badge.svg)](https://coveralls.io/github/dariusbakunas/eve-app)
 
 See also: 
 
