@@ -13,7 +13,8 @@
     "storybook": "start-storybook -p 6006 -c .storybook",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
     "schema:update": "graphql get-schema",
-    "schema:types": "apollo client:codegen --target=typescript --config=apollo.config.js --outputFlat src/__generated__"
+    "schema:types": "apollo client:codegen --target=typescript --config=apollo.config.js --outputFlat src/__generated__",
+    "postinstall": "yarn schema:types"
   },
   "repository": {
     "type": "git",
