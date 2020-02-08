@@ -7,11 +7,11 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    steps:
+    steps:    
     - uses: actions/checkout@v2
-    - name: Run a one-line script
-      run: echo Hello, world!
-    - name: Run a multi-line script
-      run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
+    - name: Setup Node.js for use with actions
+      uses: actions/setup-node@v1.1.0
+    - name: Install dependencies
+      run: yarn
+    - name: Build
+      run: yarn build
