@@ -7,7 +7,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    steps:    
+    steps:
     - uses: actions/checkout@v2
     - name: Setup Node.js for use with actions
       uses: actions/setup-node@v1.1.0
@@ -16,4 +16,7 @@ jobs:
     - name: Build
       run: yarn build
     - name: Test
+      env:
+        COVERALLS_REPO_TOKEN: "${{ secrets.COVERALLS_REPO_TOKEN }}"
+        COVERALLS_GIT_BRANCH: "${{ github.ref }}"
       run: yarn coveralls
