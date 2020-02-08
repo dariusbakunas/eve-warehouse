@@ -2,6 +2,8 @@
 
 Eve Online web application for character monitoring, industry
 
+![CI](https://github.com/dariusbakunas/eve-app/workflows/CI/badge.svg)
+
 See also: 
 
 * [Eve GraphQL API](https://github.com/dariusbakunas/eve-api)

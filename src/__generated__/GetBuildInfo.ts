@@ -6,10 +6,17 @@
 // GraphQL query operation: GetBuildInfo
 // ====================================================
 
+export interface GetBuildInfo_buildInfo_materials_item_jitaPrice {
+  __typename: "ItemMarketPrice";
+  buy: number | null;
+  sell: number | null;
+}
+
 export interface GetBuildInfo_buildInfo_materials_item {
   __typename: "InvItem";
   id: string;
   name: string;
+  jitaPrice: GetBuildInfo_buildInfo_materials_item_jitaPrice | null;
 }
 
 export interface GetBuildInfo_buildInfo_materials {

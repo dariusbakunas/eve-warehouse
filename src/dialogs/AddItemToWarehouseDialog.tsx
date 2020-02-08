@@ -79,7 +79,7 @@ const AddItemToWarehouseDialog: React.FC<IDialogProps> = ({ open, onCancel, onSu
     <Dialog open={open} fullWidth={true} maxWidth="md">
       <DialogTitle onClose={handleCancel}>{`Add item to "${warehouseName}" warehouse`}</DialogTitle>
       <DialogContent dividers className={classes.root}>
-        <InvItemAutocomplete error={!!errors.item} onSelect={handleSelectItem} className={classes.itemField} value={values['item']} />
+        <InvItemAutocomplete error={!!errors.item} onSelect={handleSelectItem} className={classes.itemField} />
         <TextField
           className={classes.qtyField}
           label="Qty"

@@ -15,7 +15,7 @@ import InvItemAutocomplete, { InvItem } from './InvItemAutocomplete';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Maybe from 'graphql/tsutils/Maybe';
 import MenuItem from '@material-ui/core/MenuItem';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 
@@ -61,11 +61,13 @@ interface IMaterialRow {
   unitQuantity: number;
   jobQuantity: Maybe<number>;
   jobDiff: Maybe<number>;
+  jitaCost: Maybe<number>;
   warehouseCost: Maybe<number>;
   warehouseQuantity: number;
 }
 
 interface ITotals {
+  jitaCost: Maybe<number>;
   warehouseCost: Maybe<number>;
   productionCount: Maybe<number>;
 }
@@ -159,6 +161,8 @@ const BuildCalculatorTab: React.FC = () => {
         const warehouseItem = warehouseItems[material.item.id];
         const warehouseQuantity = warehouseItem ? warehouseItem.quantity : 0;
         const warehouseCost = warehouseItem && jobQuantity ? warehouseItem.unitCost * jobQuantity : null;
+        const jitaCost =
+          material.item && material.item.jitaPrice && material.item.jitaPrice.buy && jobQuantity ? material.item.jitaPrice.buy * jobQuantity : null;
         const jobDiff = jobQuantity && jobQuantity > warehouseQuantity ? warehouseQuantity - jobQuantity : null;
 
         return {
@@ -169,6 +173,7 @@ const BuildCalculatorTab: React.FC = () => {
           warehouseQuantity,
           warehouseCost,
           jobDiff,
+          jitaCost,
         };
       });
     } else {
@@ -178,25 +183,39 @@ const BuildCalculatorTab: React.FC = () => {
 
   const totals = useMemo<ITotals>(() => {
     const result: ITotals = {
+      jitaCost: null,
       warehouseCost: null,
       productionCount: null,
     };
 
     if (runs && buildInfoResponse && buildInfoResponse.buildInfo) {
-      const aggregate = rows.reduce<{ warehouseCostAvailable: boolean; totalWarehouseCost: number }>(
+      const aggregate = rows.reduce<{
+        totalWarehouseCost: number;
+        totalJitaCost: number;
+      }>(
         (acc, row) => {
-          if (row.warehouseCost && acc.warehouseCostAvailable) {
+          if (row.warehouseCost && acc.totalWarehouseCost >= 0) {
             acc.totalWarehouseCost += row.warehouseCost;
           } else {
-            acc.warehouseCostAvailable = false;
+            acc.totalWarehouseCost = -1;
+          }
+
+          if (row.jitaCost && acc.totalJitaCost >= 0) {
+            acc.totalJitaCost += row.jitaCost;
+          } else {
+            acc.totalJitaCost = -1;
           }
           return acc;
         },
-        { warehouseCostAvailable: true, totalWarehouseCost: 0 }
+        { totalWarehouseCost: 0, totalJitaCost: 0 }
       );
 
-      if (aggregate.warehouseCostAvailable) {
+      if (aggregate.totalWarehouseCost >= 0) {
         result.warehouseCost = aggregate.totalWarehouseCost / runs / buildInfoResponse.buildInfo.quantity;
+      }
+
+      if (aggregate.totalJitaCost >= 0) {
+        result.jitaCost = aggregate.totalJitaCost / runs / buildInfoResponse.buildInfo.quantity;
       }
 
       result.productionCount = buildInfoResponse.buildInfo.quantity * runs;
@@ -243,7 +262,7 @@ const BuildCalculatorTab: React.FC = () => {
           className={classes.blueprintSelector}
           categoryIds={['9']}
           label="Select Blueprint or Reaction"
-          value={blueprint}
+          defaultValue={blueprint}
           onSelect={handleSelectItem}
         />
         {!isReaction && (
@@ -317,6 +336,11 @@ const BuildCalculatorTab: React.FC = () => {
           },
           { field: row => row.warehouseQuantity.toLocaleString(), title: 'Warehouse Quantity', align: 'right' },
           {
+            field: row => (row.jitaCost && row.jitaCost ? row.jitaCost.toLocaleString(undefined, { maximumFractionDigits: 2 }) : 'N/A'),
+            title: 'Jita Cost, ISK',
+            align: 'right',
+          },
+          {
             field: row => (row.warehouseCost ? row.warehouseCost.toLocaleString(undefined, { maximumFractionDigits: 2 }) : 'N/A'),
             title: 'Warehouse Cost',
             align: 'right',
@@ -335,6 +359,12 @@ const BuildCalculatorTab: React.FC = () => {
             {totals.warehouseCost
               ? `${totals.warehouseCost.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 0 })} ISK`
               : 'N/A'}
+          </span>
+        </div>
+        <div>
+          <span className={classes.totalsLabel}>Jita Cost:</span>
+          <span>
+            {totals.jitaCost ? `${totals.jitaCost.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 0 })} ISK` : 'N/A'}
           </span>
         </div>
       </div>
