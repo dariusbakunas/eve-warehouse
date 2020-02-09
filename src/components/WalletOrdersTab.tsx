@@ -5,7 +5,7 @@ import {
   GetMarketOrders,
   GetMarketOrdersVariables,
   GetMarketOrders_characterMarketOrders_orders as MarketOrder,
-} from '../__generated__/getMarketOrders';
+} from '../__generated__/GetMarketOrders';
 import { useQuery } from '@apollo/react-hooks';
 import { useSnackbar } from 'notistack';
 import Chip from '@material-ui/core/Chip';
