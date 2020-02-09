@@ -1,12 +1,15 @@
 name: CI
 
-on: [push]
-
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Get yarn cache
@@ -21,7 +24,10 @@ jobs:
     - name: Setup Node.js for use with actions
       uses: actions/setup-node@v1.1.0
     - name: Install dependencies
-      run: yarn
+      run: |
+        yarn
+        pwd
+        ls
     - name: Build
       run: yarn build
     - name: Test
