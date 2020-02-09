@@ -49,4 +49,4 @@ jobs:
         service_account_key: ${{ secrets.GCP_SA_KEY }}
     - name: Publish image
       run: |
-        docker push gcr.io/$GKE_PROJECT/$IMAGE:$GITHUB_SHA
+        docker push gcr.io/$GC_PROJECT_ID/$IMAGE:$GITHUB_SHA
