@@ -47,6 +47,8 @@ jobs:
         version: '278.0.0'
         service_account_email: ${{ secrets.GCP_SA_EMAIL }}
         service_account_key: ${{ secrets.GCP_SA_KEY }}
+    - run: |
+        gcloud auth configure-docker
     - name: Publish image
       run: |
         docker push gcr.io/$GC_PROJECT_ID/$IMAGE:$GITHUB_SHA
