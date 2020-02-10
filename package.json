@@ -13,7 +13,7 @@
     "storybook": "start-storybook -p 6006 -c .storybook",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
     "schema:update": "graphql get-schema",
-    "schema:types": "apollo client:codegen --target=typescript --config=apollo.config.js --outputFlat ./src/__generated__",
+    "schema:types": "./node_modules/.bin/apollo client:codegen --target=typescript --config=apollo.config.js --outputFlat ./src/__generated__",
     "postinstall": "yarn schema:types"
   },
   "repository": {
@@ -121,6 +121,7 @@
     "eslint-plugin-sort-imports-es6-autofix": "^0.5.0",
     "faker": "^4.1.0",
     "graphql-tools": "^4.0.6",
+    "husky": "^4.2.1",
     "jest": "24.9.0",
     "nodemon": "^2.0.2",
     "prettier": "^1.19.1",
