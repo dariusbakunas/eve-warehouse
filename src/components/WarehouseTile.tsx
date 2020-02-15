@@ -275,7 +275,9 @@ const WarehouseTile: React.FC<IWarehouseTileProps> = ({ onItemUpdate, onRemoveIt
       <ConfirmDialog {...confirmDialogProps} />
       {currentItem && (
         <UpdateWarehouseItemDialog
-          item={currentItem}
+          itemName={currentItem.item.name}
+          quantity={currentItem.quantity}
+          unitCost={currentItem.unitCost}
           open={updateItemDialogOpen}
           onCancel={() => setUpdateItemDialogOpen(false)}
           onSubmit={handleUpdateItemSubmit}

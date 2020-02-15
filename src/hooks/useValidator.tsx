@@ -120,8 +120,11 @@ const useValidator = <T extends {}>(defaults: Partial<T> = {}) => {
 
   const handleSubmit = (callback?: (data: T) => void) => {
     return (e: React.BaseSyntheticEvent<object, any, any>) => {
-      e.preventDefault();
-      e.stopPropagation();
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
       if (Object.keys(errors).length === 0) {
         if (callback) {
           callback({ ...values } as T); // TODO: find safer way to do this

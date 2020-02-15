@@ -1,5 +1,4 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import { GetWarehouseItems_warehouse_items as WarehouseItem } from '../__generated__/GetWarehouseItems';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '../components/DialogActions';
@@ -36,10 +35,12 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export interface IDialogProps {
-  item: WarehouseItem;
+  itemName: string;
+  quantity: number;
+  unitCost: number;
   open: boolean;
-  onCancel: () => void;
-  onSubmit: (data: IFormData) => void;
+  onCancel?: () => void;
+  onSubmit?: (data: IFormData) => void;
 }
 
 export interface IFormData {
@@ -47,17 +48,17 @@ export interface IFormData {
   unitCost: Maybe<number>;
 }
 
-const UpdateWarehouseItemDialog: React.FC<IDialogProps> = ({ item, open, onCancel, onSubmit }) => {
+const UpdateWarehouseItemDialog: React.FC<IDialogProps> = ({ itemName, open, onCancel, onSubmit, quantity, unitCost }) => {
   const { register, handleSubmit, errors, setValue } = useValidator<IFormData>({
-    qty: item.quantity,
-    unitCost: item.unitCost,
+    qty: quantity,
+    unitCost: unitCost,
   });
   const classes = useStyles();
 
   useEffect(() => {
-    setValue('qty', item.quantity);
-    setValue('unitCost', item.unitCost);
-  }, [item]);
+    setValue('qty', quantity);
+    setValue('unitCost', unitCost);
+  }, [open, quantity, unitCost]);
 
   useEffect(() => {
     register('qty', { required: true, min: 1 });
@@ -65,11 +66,13 @@ const UpdateWarehouseItemDialog: React.FC<IDialogProps> = ({ item, open, onCance
   }, []);
 
   const handleCancel = () => {
-    onCancel();
+    if (onCancel) {
+      onCancel();
+    }
   };
 
   const handleApplyClick = (data: IFormData) => {
-    if (data.qty != null && data.unitCost != null) {
+    if (data.qty != null && data.unitCost != null && onSubmit) {
       onSubmit({
         qty: data.qty, // TODO: check why this is converted to string on submition
         unitCost: data.unitCost,
@@ -79,7 +82,7 @@ const UpdateWarehouseItemDialog: React.FC<IDialogProps> = ({ item, open, onCance
 
   return (
     <Dialog open={open} fullWidth={true}>
-      <DialogTitle onClose={handleCancel}>Update {item.item.name}</DialogTitle>
+      <DialogTitle onClose={handleCancel}>Update {itemName}</DialogTitle>
       <DialogContent dividers className={classes.root}>
         <TextField
           className={classes.qtyField}
@@ -93,7 +96,7 @@ const UpdateWarehouseItemDialog: React.FC<IDialogProps> = ({ item, open, onCance
           InputProps={{
             inputComponent: QtyNumberFormat as any,
           }}
-          defaultValue={item.quantity}
+          defaultValue={quantity}
           onChange={event => setValue('qty', event.target.value ? +event.target.value : null)}
         />
         <TextField
@@ -108,7 +111,7 @@ const UpdateWarehouseItemDialog: React.FC<IDialogProps> = ({ item, open, onCance
           InputProps={{
             inputComponent: IskNumberFormat as any,
           }}
-          defaultValue={item.unitCost}
+          defaultValue={unitCost}
           onChange={event => setValue('unitCost', event.target.value ? +event.target.value : null)}
         />
       </DialogContent>
