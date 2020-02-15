@@ -23,7 +23,7 @@ describe('UpdateWarehouseItemDialog', () => {
     wrapper.find(Button).simulate('click');
     expect(submit).toHaveBeenCalledWith({
       qty: 123456,
-      unitCost: 321.56
+      unitCost: 321.56,
     });
   });
 });
