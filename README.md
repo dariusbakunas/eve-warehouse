@@ -4,6 +4,7 @@ Eve Online web application for character monitoring, industry
 
 ![CI](https://github.com/dariusbakunas/eve-app/workflows/CI/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/dariusbakunas/eve-app/badge.svg)](https://coveralls.io/github/dariusbakunas/eve-app)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7a565a1fb0894b8e8654a1078f163c94)](https://www.codacy.com/manual/dariusbakunas/eve-app?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dariusbakunas/eve-app&amp;utm_campaign=Badge_Grade)
 
 See also: 
 
