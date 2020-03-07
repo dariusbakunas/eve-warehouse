@@ -36,12 +36,15 @@ const useStyles = makeStyles((theme: Theme) =>
       borderStyle: 'solid',
     }),
     trained: {
-      backgroundColor: '#474748',
-      borderColor: '#474748',
+      backgroundColor: theme.palette.info.dark,
+      borderColor: theme.palette.info.dark,
     },
     queued: {
-      backgroundColor: '#369bd5',
-      borderColor: '#369bd5',
+      backgroundColor: theme.palette.info.light,
+      borderColor: theme.palette.info.light,
+    },
+    empty: {
+      borderColor: theme.palette.info.light,
     },
   })
 );
@@ -100,7 +103,7 @@ const SkillProgress: React.FC<ISkillProgressProps> = ({ trainedLevel, queuedLeve
         const isTrained = trainedLevel && trainedLevel > n;
         const isQueued = !isTrained && queuedLevel && queuedLevel > n;
 
-        const className = clsx(classes.slot, { [classes.trained]: isTrained }, { [classes.queued]: isQueued });
+        const className = clsx(classes.slot, { [classes.trained]: isTrained }, { [classes.queued]: isQueued }, { [classes.empty]: !isTrained && !isQueued });
         return <span key={n} className={className} />;
       })}
     </div>

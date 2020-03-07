@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'space-around',
       maxHeight: '400px',
       padding: theme.spacing(2),
-      backgroundColor: '#dedede',
+      backgroundColor: theme.palette.background.default,
     },
     skillQueueContainer: {
       maxHeight: '400px',
