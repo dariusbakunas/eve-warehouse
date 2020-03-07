@@ -7,6 +7,10 @@ query GetMarketOrders($page: PageInput, $filter: CharacterMarketOrderFilter, $or
       item {
         id
         name
+        marketPrice {
+          buy
+          sell
+        }
       }
       issued
       character {

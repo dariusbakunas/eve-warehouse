@@ -9,6 +9,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Toolbar from '@material-ui/core/Toolbar';
 import useTabs from '../hooks/useTabs';
 import withApollo from '../lib/withApollo';
+import IndustryJobsTab from '../components/IndustryJobsTab';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,7 +45,9 @@ const Industry: React.FC = () => {
       <TabPanel {...tabPanelProps(0)}>
         <BlueprintsTab />
       </TabPanel>
-      <TabPanel {...tabPanelProps(1)}>Jobs</TabPanel>
+      <TabPanel {...tabPanelProps(1)}>
+        <IndustryJobsTab />
+      </TabPanel>
       <TabPanel {...tabPanelProps(2)}>
         <BuildCalculatorTab />
       </TabPanel>

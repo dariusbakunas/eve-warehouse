@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import IdleTimer from 'react-idle-timer';
 import layoutConfig from '../config/layoutConfig';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import theme from '../config/theme';
 
 const useStyles = makeStyles<Theme>(theme => ({
@@ -28,27 +28,15 @@ const Root: React.FC<IProps> = ({ children, user }) => {
   const idleTimer = useRef(null);
   const [opened, setOpened] = useState(false);
 
-  const onActive = () => {};
-
-  const onIdle = () => {
+  const onIdle = useCallback(() => {
     router.push('/auth/logout');
-  };
-
-  const onAction = () => {};
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
-      {user && typeof document !== 'undefined' && (
-        <IdleTimer
-          ref={idleTimer}
-          element={document}
-          onActive={onActive}
-          onIdle={onIdle}
-          onAction={onAction}
-          debounce={250}
-          timeout={1000 * 60 * 15}
-        />
-      )}
+      {/*{user && typeof document !== 'undefined' && (*/}
+      {/*  <IdleTimer ref={idleTimer} element={document} onIdle={onIdle} debounce={250} timeout={1000 * 60 * 15} />*/}
+      {/*)}*/}
       <LayoutProvider
         value={{
           ...layoutConfig,

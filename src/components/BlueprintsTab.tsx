@@ -5,6 +5,7 @@ import DataTable from './DataTable';
 import getBlueprintsQuery from '../queries/getBlueprints.graphql';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import React, { useState } from 'react';
+import { getItemImageUrl } from '../utils/getItemImageUrl';
 
 const BlueprintsTab: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -54,8 +55,7 @@ const BlueprintsTab: React.FC = () => {
             orderBy: BlueprintsOrderBy.name,
             icon: {
               label: row => (row.isCopy ? 'BC' : 'BP'),
-              imageUrl: row =>
-                row.isCopy ? `https://images.evetech.net/types/${row.item.id}/bpc` : `https://images.evetech.net/types/${row.item.id}/bp`,
+              imageUrl: row => getItemImageUrl(row.item.id, row.item.name, row.isCopy),
             },
           },
           { field: row => row.item.invGroup.name, title: 'Group', orderBy: BlueprintsOrderBy.groupName },

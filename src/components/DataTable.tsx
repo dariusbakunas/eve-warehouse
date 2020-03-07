@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type colFn<Data extends {}> = (row: Data) => Maybe<string | number>;
 type idFn<Data extends {}> = (row: Data) => string;
-type imageUrlFn<Data extends {}> = (row: Data) => string;
+type imageUrlFn<Data extends {}> = (row: Data) => string | null;
 type classFn<Data extends {}> = (row: Data) => Maybe<string>;
 
 interface IColumn<Data extends {}, OrderBy extends {}> {
@@ -57,7 +57,7 @@ interface IColumn<Data extends {}, OrderBy extends {}> {
   orderBy?: OrderBy;
   icon?: {
     label?: string | colFn<Data>;
-    imageUrl?: string | imageUrlFn<Data>;
+    imageUrl?: string | imageUrlFn<Data> | null;
   };
   title: string;
 }
@@ -143,11 +143,15 @@ const DataTable = <Data extends {}, OrderBy extends {}>({
                   value: `${entry[column.field]}`,
                 };
 
-          if (column.icon) {
-            result.cellIcon = {
-              label: typeof column.icon.label === 'function' ? `${column.icon.label(entry)}` : column.icon.label,
-              imageUrl: typeof column.icon.imageUrl === 'function' ? column.icon.imageUrl(entry) : column.icon.imageUrl,
-            };
+          if (column.icon && column.icon.imageUrl) {
+            const imageUrl = typeof column.icon.imageUrl === 'function' ? column.icon.imageUrl(entry) : column.icon.imageUrl;
+
+            if (imageUrl) {
+              result.cellIcon = {
+                label: typeof column.icon.label === 'function' ? `${column.icon.label(entry)}` : column.icon.label,
+                imageUrl,
+              };
+            }
           }
 
           if (column.cellClassName) {
