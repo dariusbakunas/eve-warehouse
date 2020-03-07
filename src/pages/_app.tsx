@@ -82,12 +82,12 @@ class EveApp extends App<IProps, IState> {
     return (
       <React.Fragment>
         <Head>
-          <title>Eve APP</title>
+          <title>Eve Warehouse</title>
         </Head>
         <Root user={pageProps.user}>
           {!!pageProps.user && pageProps.user.status === 'ACTIVE' && (
             <React.Fragment>
-              <Header isAuthenticated={true} title="EVE APP" onLogoutClick={() => this.handleNavigate('/auth/logout')} user={pageProps.user} />
+              <Header isAuthenticated={true} title="EVE WAREHOUSE" onLogoutClick={() => this.handleNavigate('/auth/logout')} user={pageProps.user} />
               <SideMenu />
             </React.Fragment>
           )}

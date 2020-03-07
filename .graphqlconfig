@@ -1,6 +1,6 @@
 {
   "projects": {
-    "eve-app": {
+    "eve-warehouse": {
         "schemaPath": "src/__generated__/schema.graphql",
         "extensions": {
           "endpoints": {
