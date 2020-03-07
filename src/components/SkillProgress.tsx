@@ -103,7 +103,12 @@ const SkillProgress: React.FC<ISkillProgressProps> = ({ trainedLevel, queuedLeve
         const isTrained = trainedLevel && trainedLevel > n;
         const isQueued = !isTrained && queuedLevel && queuedLevel > n;
 
-        const className = clsx(classes.slot, { [classes.trained]: isTrained }, { [classes.queued]: isQueued }, { [classes.empty]: !isTrained && !isQueued });
+        const className = clsx(
+          classes.slot,
+          { [classes.trained]: isTrained },
+          { [classes.queued]: isQueued },
+          { [classes.empty]: !isTrained && !isQueued }
+        );
         return <span key={n} className={className} />;
       })}
     </div>
