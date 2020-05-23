@@ -19,7 +19,13 @@ export const getAuthRoutes = (auth0Domain: string, auth0ClientId: string, auth0A
     res.setHeader("Content-Type", "application/json");
     // @ts-ignore
     const user = await getCurrentUser(req);
-    res.json(user);
+
+    if (!user) {
+      res.status(401);
+      res.json({ error: "You must login first" });
+    } else {
+      res.json(user);
+    }
   });
 
   /**

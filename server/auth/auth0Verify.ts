@@ -45,11 +45,11 @@ export const auth0Verify: StrategyInternal.VerifyFunction = async (
 ) => {
   const apolloClient = createApolloClient(accessToken);
 
-  try {
-    if (!profile.emails || !profile.emails.length) {
-      throw new Error("Auth0: profile.emails missing");
-    }
+  if (!profile.emails || !profile.emails.length) {
+    return done(new Error("Auth0: profile.emails missing"));
+  }
 
+  try {
     logger.debug(`auth0Verify: getUser(${profile.emails[0].value})`);
     const response = await getUser(apolloClient, profile.emails[0].value);
     const {
