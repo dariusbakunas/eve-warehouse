@@ -10,7 +10,7 @@ import morgan from 'morgan';
 import next from 'next';
 import passport from 'passport';
 import pJson from '../../package.json';
-import proxy, { Config } from 'http-proxy-middleware';
+import { createProxyMiddleware, Options } from 'http-proxy-middleware';
 import session from 'cookie-session';
 
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
@@ -58,7 +58,7 @@ export interface IClientEnv {
     }
   });
 
-  const apiProxyConfig: Config = {
+  const apiProxyConfig: Options = {
     changeOrigin: true,
     onError: (err, req, res) => {
       res.writeHead(500, {
@@ -175,7 +175,7 @@ export interface IClientEnv {
   server.use(passport.initialize());
   server.use(passport.session());
 
-  server.use('/api', proxy(apiProxyConfig));
+  server.use('/api', createProxyMiddleware(apiProxyConfig));
 
   server.use(express.json());
   server.use(express.urlencoded());

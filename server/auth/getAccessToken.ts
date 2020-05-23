@@ -1,9 +1,9 @@
-import fetch from 'isomorphic-fetch';
+import fetch from "node-fetch";
 
 export const getAccessToken = async (refreshToken: string) => {
   const form: { [key: string]: string } = {
     // eslint-disable-next-line @typescript-eslint/camelcase
-    grant_type: 'refresh_token',
+    grant_type: "refresh_token",
     // eslint-disable-next-line @typescript-eslint/camelcase
     client_id: process.env.AUTH0_CLIENT_ID!,
     // eslint-disable-next-line @typescript-eslint/camelcase
@@ -13,15 +13,15 @@ export const getAccessToken = async (refreshToken: string) => {
   };
 
   const searchParams = Object.keys(form)
-    .map(key => {
-      return encodeURIComponent(key) + '=' + encodeURIComponent(form[key]);
+    .map((key) => {
+      return encodeURIComponent(key) + "=" + encodeURIComponent(form[key]);
     })
-    .join('&');
+    .join("&");
 
   const response = await fetch(`https://${process.env.AUTH0_DOMAIN}/oauth/token`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
     },
     body: searchParams,
   });

@@ -1,9 +1,9 @@
+import '../app.scss';
+import '../index.scss';
 import { IClientEnv } from '../server';
 import { IUser } from '../auth/auth0Verify';
 import { Request } from 'express';
-import { Theme } from '@material-ui/core';
 import { WithApolloProps } from 'next-with-apollo';
-import { withStyles } from '@material-ui/styles';
 import App, { AppContext } from 'next/app';
 import getClientEnv from '../auth/getClientEnv';
 import getCurrentUser from '../auth/getCurrentUser';
@@ -13,32 +13,11 @@ import React from 'react';
 import Root from '../components/Root';
 import Router from 'next/router';
 import SideMenu from '../components/SideMenu';
-import theme from '../config/theme';
 
 export interface IPageProps {
   user?: IUser;
   env?: IClientEnv;
 }
-
-const styles = (theme: Theme) => ({
-  '@global': {
-    html: {
-      height: '100vh',
-    },
-    body: {
-      minHeight: '100vh',
-    },
-    '#__next': {
-      minHeight: '100vh',
-    },
-  },
-  appBarSpacer: {
-    ...theme.mixins.toolbar,
-  },
-  content: {
-    flexGrow: 1,
-  },
-});
 
 interface IState {
   sideMenuOpen: boolean;
@@ -91,8 +70,8 @@ class EveApp extends App<IProps, IState> {
               <SideMenu />
             </React.Fragment>
           )}
-          <main className={classes.content}>
-            {pageProps.user && pageProps.user.status === 'ACTIVE' && <div className={classes.appBarSpacer} />}
+          <main>
+            {/*{pageProps.user && pageProps.user.status === 'ACTIVE' && <div className={classes.appBarSpacer} />}*/}
             <Component {...pageProps} />
           </main>
         </Root>
@@ -101,4 +80,4 @@ class EveApp extends App<IProps, IState> {
   }
 }
 
-export default withStyles(styles(theme))(EveApp);
+export default EveApp;

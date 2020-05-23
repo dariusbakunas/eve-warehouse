@@ -49,3 +49,4 @@ yarn-error.log*
 src/.next
 .next
 src/__generated__/*.ts
+old/
