@@ -9,7 +9,3 @@ $carbon--theme: $carbon--theme--g90;
 @include carbon--theme();
 
 @import "~carbon-components/scss/globals/scss/styles";
-@import "~carbon-components/scss/components/ui-shell/header";
-@import "~carbon-components/scss/components/button/button";
-@import "~carbon-components/scss/components/tile/tile";
-@import "~carbon-components/scss/components/notification/toast-notification";

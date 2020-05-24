@@ -1,15 +1,36 @@
 import { Avatar } from "../Avatar/Avatar";
 import { GetCharacters_characters as Character } from "../../__generated__/GetCharacters";
-import { Tile } from "carbon-components-react";
+import { OverflowMenu, Tile } from "carbon-components-react";
 import moment from "moment";
-import React from "react";
+import OverflowMenuItem from "carbon-components-react/lib/components/OverflowMenuItem";
+import React, { useCallback } from "react";
 
 interface ICharacterTile {
   character: Character;
+  onUpdate?: (character: Character) => void;
+  onRemove?: (character: Character) => void;
 }
 
-export const CharacterTile: React.FC<ICharacterTile> = ({ character }) => {
+export const CharacterTile: React.FC<ICharacterTile> = ({ character, onUpdate, onRemove }) => {
   const { id, name, birthday, corporation, totalSp, securityStatus } = character;
+
+  const handleUpdate = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      if (onUpdate) {
+        onUpdate(character);
+      }
+    },
+    [character, onUpdate]
+  );
+
+  const handleRemove = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      if (onRemove) {
+        onRemove(character);
+      }
+    },
+    [character, onRemove]
+  );
 
   return (
     <Tile className="character-tile-component">
@@ -21,7 +42,12 @@ export const CharacterTile: React.FC<ICharacterTile> = ({ character }) => {
           <h5>{name}</h5>
           <span className="dob">{`Born: ${moment(birthday).format("YYYY-MM-DD LT")}`}</span>
         </div>
-        <div className="character-tile-header-action"></div>
+        <div className="character-tile-header-action">
+          <OverflowMenu ariaLabel="Character Menu" direction="bottom" iconDescription="" flipped={true}>
+            <OverflowMenuItem itemText="Update Scopes" primaryFocus onClick={handleUpdate} />
+            <OverflowMenuItem itemText="Remove" isDelete={true} onClick={handleRemove} />
+          </OverflowMenu>
+        </div>
       </div>
       <div className="character-tile-content">
         {corporation.alliance && (
