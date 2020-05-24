@@ -1,0 +1,22 @@
+.character-tile-component {
+  .character-tile-header {
+    display: flex;
+    align-items: center;
+
+    .character-tile-header-avatar {
+      flex: 0 0 auto;
+      margin-right: $spacing-04;
+    }
+
+    .character-tile-header-content {
+      flex: 1 1 auto;
+      line-height: 1.25rem;
+      span {
+        display: block;
+        &.dob {
+          font-size: small;
+        }
+      }
+    }
+  }
+}

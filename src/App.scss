@@ -2,7 +2,13 @@
 @import "~carbon-components/scss/globals/scss/layout";
 @import "~carbon-components/scss/globals/scss/spacing";
 
+@import "./components/Avatar/Avatar";
 @import "./components/Notifications/NotificationContainer";
+@import "./components/CharacterTile/CharacterTile";
 
 @import "./pages/Login/Login";
 @import "./pages/Characters/Characters";
+
+.secondary-text {
+  color: $text-02;
+}

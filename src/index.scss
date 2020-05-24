@@ -1,4 +1,10 @@
+$feature-flags: (
+        grid-columns-16: true,
+);
+
 @import "~carbon-components/scss/globals/scss/typography";
+@import "~carbon-components/scss/globals/grid/grid";
 @import "~carbon-components/scss/components/ui-shell/header";
 @import "~carbon-components/scss/components/button/button";
+@import "~carbon-components/scss/components/tile/tile";
 @import "~carbon-components/scss/components/notification/toast-notification";
