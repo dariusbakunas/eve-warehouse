@@ -4,10 +4,12 @@ import { INotification, INotificationOptions, INotificationOrigin } from ".";
 import { NotificationContainer } from "./NotificationContainer";
 import { NotificationContext } from "./NotificationContext";
 import { ToastNotification } from "carbon-components-react";
+import moment from "moment";
 import React, { useCallback, useMemo, useState } from "react";
 
 const DEFAULTS: DeepRequired<INotificationOptions> = {
   kind: "info",
+  timeout: 5000,
   origin: {
     vertical: "top",
     horizontal: "right",
@@ -25,11 +27,13 @@ const getOriginKey = (origin: INotificationOrigin) => {
 export const NotificationProvider: React.FC<INotificationProvider> = ({ children, root }) => {
   const [notifications, setNotifications] = useState<INotification[]>([]);
 
-  const enqueueNotification = useCallback((message: string, options?: INotificationOptions) => {
+  const enqueueNotification = useCallback((title: string, message?: string, options?: INotificationOptions) => {
     const id = new Date().getTime() + Math.random();
 
     const notification: INotification = {
       id,
+      caption: moment().format("hh:mm:ss A"),
+      title,
       message,
       options: Object.assign({}, DEFAULTS, options),
     };
@@ -65,16 +69,17 @@ export const NotificationProvider: React.FC<INotificationProvider> = ({ children
     <NotificationContainer key={origin} origin={notifications[0].options.origin}>
       {notifications.map((notification) => (
         <ToastNotification
+          className="notification"
           onCloseButtonClick={() => handleRemoveNotification(notification.id)}
-          timeout={5000}
+          timeout={notification.options.timeout}
           key={notification.id}
           kind={notification.options.kind}
           hideCloseButton={false}
           notificationType="toast"
           role="alert"
-          caption={notification.message}
-          subtitle="Subtitle"
-          title="Title"
+          caption={notification.caption}
+          subtitle={notification.message}
+          title={notification.title}
         />
       ))}
     </NotificationContainer>

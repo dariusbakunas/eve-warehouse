@@ -31,7 +31,7 @@
     "helmet": "^3.22.0",
     "http-proxy-middleware": "^1.0.3",
     "isomorphic-fetch": "^2.2.1",
-    "moment": "^2.25.1",
+    "moment": "2.24.0",
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.0",
     "passport": "^0.4.1",

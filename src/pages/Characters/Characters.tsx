@@ -8,7 +8,7 @@ export const Characters: React.FC = () => {
   return (
     <div className="characters">
       characters
-      <Button onClick={() => enqueueNotification("test message", { kind: "warning" })}>Test</Button>
+      <Button onClick={() => enqueueNotification("test message", null, { kind: "warning" })}>Test</Button>
     </div>
   );
 };

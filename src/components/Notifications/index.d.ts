@@ -10,10 +10,13 @@ export interface INotificationOrigin {
 export interface INotificationOptions {
   origin?: INotificationOrigin;
   kind?: INotificationKind;
+  timeout?: number;
 }
 
 export interface INotification {
   id: number;
-  message: string;
+  caption: string;
+  title: string;
+  message?: string;
   options: DeepRequired<INotificationOptions>;
 }
