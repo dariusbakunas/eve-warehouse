@@ -29,7 +29,7 @@ export const Characters: React.FC = () => {
         {rows.map((row, index) => (
           <div key={index} className="bx--row">
             {row.map((character) => (
-              <div className="bx--col bx--col-max-4 bx--col-xlg-4 bx--col-lg-4 bx--col-md-4 bx--col-sm-4" key={character.id}>
+              <div className="bx--col bx--col-max-4 bx--col-xlg-4 bx--col-lg-8 bx--col-md-4 bx--col-sm-4" key={character.id}>
                 <CharacterTile character={character} />
               </div>
             ))}

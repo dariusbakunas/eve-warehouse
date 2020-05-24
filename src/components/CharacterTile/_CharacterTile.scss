@@ -1,4 +1,13 @@
 .character-tile-component {
+  height: 12rem;
+  line-height: 1.125rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 0 1px 1px 0px rgba(0,0,0,0.14), 0 1px 3px 0px rgba(0,0,0,0.12);
+
+  @media only screen and (max-width: 672px) {
+    border-radius: 0;
+  }
+
   .character-tile-header {
     display: flex;
     align-items: center;
@@ -10,7 +19,6 @@
 
     .character-tile-header-content {
       flex: 1 1 auto;
-      line-height: 1.25rem;
       span {
         display: block;
         &.dob {
@@ -18,5 +26,9 @@
         }
       }
     }
+  }
+
+  .character-tile-content {
+    margin-top: $spacing-07;
   }
 }
