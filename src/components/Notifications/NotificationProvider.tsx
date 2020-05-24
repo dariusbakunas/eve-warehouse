@@ -52,10 +52,21 @@ export const NotificationProvider: React.FC<INotificationProvider> = ({ children
     }, {});
   }, [notifications]);
 
+  const handleRemoveNotification = useCallback(
+    (key: number) => {
+      setNotifications((prevNotifications) => {
+        return prevNotifications.filter((notification) => notification.id !== key);
+      });
+    },
+    [notifications]
+  );
+
   const notificationContainer = Object.entries(notificationsByOrigin).map(([origin, notifications]) => (
     <NotificationContainer key={origin} origin={notifications[0].options.origin}>
       {notifications.map((notification) => (
         <ToastNotification
+          onCloseButtonClick={() => handleRemoveNotification(notification.id)}
+          timeout={5000}
           key={notification.id}
           kind={notification.options.kind}
           hideCloseButton={false}
