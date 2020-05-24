@@ -2,4 +2,7 @@
 @import "~carbon-components/scss/globals/scss/layout";
 @import "~carbon-components/scss/globals/scss/spacing";
 
+@import "./components/Notifications/NotificationContainer";
+
 @import "./pages/Login/Login";
+@import "./pages/Characters/Characters";

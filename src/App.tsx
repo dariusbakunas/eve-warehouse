@@ -1,3 +1,4 @@
+import { Characters } from "./pages/Characters";
 import { getCurrentUser } from "./api";
 import { Header, HeaderGlobalAction, HeaderGlobalBar, HeaderName } from "carbon-components-react";
 import { IUser } from "./api/types";
@@ -45,6 +46,7 @@ function App() {
       )}
       {error && <Redirect to={{ pathname: "/login" }} />}
       <Switch>
+        <Route path="/characters" component={Characters} />
         <Route path="/login" exact component={Login} />
       </Switch>
     </div>

@@ -1,6 +1,7 @@
 import "./App.scss";
 import "./index.scss";
 import { ApolloProvider } from "@apollo/react-hooks";
+import { NotificationProvider } from "./components/Notifications/NotificationProvider";
 import { BrowserRouter as Router } from "react-router-dom";
 import ApolloClient, { InMemoryCache } from "apollo-boost";
 import App from "./App";
@@ -16,7 +17,9 @@ ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
       <Router>
-        <App />
+        <NotificationProvider>
+          <App />
+        </NotificationProvider>
       </Router>
     </ApolloProvider>
   </React.StrictMode>,
