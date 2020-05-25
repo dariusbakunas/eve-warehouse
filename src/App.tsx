@@ -1,15 +1,18 @@
 import { Characters } from "./pages/Characters";
-import { getCurrentUser } from "./api";
+import { getAppConfig, getCurrentUser } from "./api";
 import { Header, HeaderGlobalAction, HeaderGlobalBar, HeaderName } from "carbon-components-react";
 import { IUser } from "./api/types";
 import { Login } from "./pages/Login";
 import { Logout20 } from "@carbon/icons-react";
 import { Redirect, Route, Switch } from "react-router-dom";
+import { setAppConfig } from "./redux/actions";
+import { useDispatch } from "react-redux";
 import React, { useCallback, useEffect, useState } from "react";
 
 const DEV = process.env.NODE_ENV === "development";
 
 function App() {
+  const dispatch = useDispatch();
   const [user, setUser] = useState<IUser>();
   const [error, setError] = useState<Error>();
 
@@ -18,16 +21,26 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const getUser = async () => {
+    const loadInitialData = async () => {
       try {
-        const user = await getCurrentUser();
+        const [appConfig, user] = await Promise.all([getAppConfig(), getCurrentUser()]);
+
+        dispatch(
+          setAppConfig({
+            eveClientId: appConfig.EVE_CLIENT_ID,
+            eveLoginUrl: appConfig.EVE_LOGIN_URL,
+            eveApiHost: appConfig.EVE_API_HOST,
+            eveCharacterRedirectUrl: appConfig.EVE_CHARACTER_REDIRECT_URL,
+          })
+        );
+
         setUser(user);
       } catch (e) {
         setError(e);
       }
     };
 
-    getUser();
+    loadInitialData();
   }, []);
 
   return (

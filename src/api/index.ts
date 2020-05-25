@@ -1,4 +1,5 @@
 import { ApiError } from "./apiError";
+import { IClientEnv } from "../../server";
 import { IUser } from "./types";
 
 const parseBody = <T>(response: Response): Promise<T | string> => {
@@ -26,12 +27,20 @@ const errorFromResponse = async (response: Response) => {
   return error;
 };
 
-export const getCurrentUser: () => Promise<IUser> = async () => {
-  const response = await fetch("/auth/user");
+const get = async (url: string) => {
+  const response = await fetch(url);
 
   if (response.status >= 200 && response.status < 300) {
     return response.json();
   } else {
     throw await errorFromResponse(response);
   }
+};
+
+export const getCurrentUser: () => Promise<IUser> = async () => {
+  return get("/auth/user");
+};
+
+export const getAppConfig: () => Promise<IClientEnv> = async () => {
+  return get("/env");
 };
