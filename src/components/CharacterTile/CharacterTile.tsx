@@ -14,23 +14,17 @@ interface ICharacterTile {
 export const CharacterTile: React.FC<ICharacterTile> = ({ character, onUpdate, onRemove }) => {
   const { id, name, birthday, corporation, totalSp, securityStatus } = character;
 
-  const handleUpdate = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>) => {
-      if (onUpdate) {
-        onUpdate(character);
-      }
-    },
-    [character, onUpdate]
-  );
+  const handleUpdate = useCallback(() => {
+    if (onUpdate) {
+      onUpdate(character);
+    }
+  }, [character, onUpdate]);
 
-  const handleRemove = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>) => {
-      if (onRemove) {
-        onRemove(character);
-      }
-    },
-    [character, onRemove]
-  );
+  const handleRemove = useCallback(() => {
+    if (onRemove) {
+      onRemove(character);
+    }
+  }, [character, onRemove]);
 
   return (
     <Tile className="character-tile-component">

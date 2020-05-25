@@ -48,7 +48,7 @@ export const CharacterScopesDialog: React.FC<ICharacterScopesDialog> = ({ charac
         onSubmit(Array.from(currentSelection));
       }
     },
-    [character, currentSelection]
+    [character, currentSelection, onSubmit]
   );
 
   const handleChange = useCallback(
