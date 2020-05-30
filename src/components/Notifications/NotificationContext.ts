@@ -3,7 +3,7 @@ import { Maybe } from "../../utilityTypes";
 import React from "react";
 
 export interface INotificationContext {
-  enqueueNotification: (title: string, message: Maybe<string>, options?: INotificationOptions) => string;
+  enqueueNotification: (title: string, message?: Maybe<string>, options?: INotificationOptions) => string;
   closeNotification: (key?: string) => void;
 }
 
