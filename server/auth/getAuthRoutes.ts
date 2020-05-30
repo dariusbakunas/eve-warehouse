@@ -41,6 +41,7 @@ export const getAuthRoutes = (auth0Domain: string, auth0ClientId: string, auth0A
 
     passport.authenticate("auth0", (err?: any, user?: any) => {
       logger.debug(`passport.authenticate, user: ${user ? JSON.stringify(user) : null}`);
+
       if (err) {
         logger.error(err);
         return next(err);

@@ -59,7 +59,6 @@ export const auth0Verify: StrategyInternal.VerifyFunction = async (
 
     if (errors) {
       logger.error(errors);
-      console.log(errors);
     }
 
     // @ts-ignore

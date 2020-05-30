@@ -28,7 +28,9 @@ const errorFromResponse = async (response: Response) => {
 };
 
 const get = async (url: string) => {
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    cache: "no-cache",
+  });
 
   if (response.status >= 200 && response.status < 300) {
     return response.json();

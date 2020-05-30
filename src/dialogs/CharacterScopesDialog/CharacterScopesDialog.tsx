@@ -81,6 +81,7 @@ export const CharacterScopesDialog: React.FC<ICharacterScopesDialog> = ({ charac
       modalHeading={character ? `Update ${character.name}` : "Add new character"}
       open={open}
       hasForm={true}
+      primaryButtonDisabled={currentSelection.size === 0}
       primaryButtonText="Submit"
       secondaryButtonText="Cancel"
       onRequestClose={onClose}

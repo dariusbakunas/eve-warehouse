@@ -1,12 +1,7 @@
 .login-page {
-  div {
+  &> div {
+    padding: $spacing-05;
     position: relative;
-
-    .version {
-      position: absolute;
-      top: -1rem;
-      left: 0;
-    }
   }
 
   button {
@@ -14,7 +9,6 @@
   }
 
   color: $white-0;
-  text-transform: uppercase;
   height: 100vh;
   background-image: url('./background.jpg');
   background-repeat: no-repeat;

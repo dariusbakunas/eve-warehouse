@@ -12,8 +12,7 @@ export const Login: React.FC = () => {
   return (
     <div className="login-page">
       <div>
-        <h1>Eve Warehouse</h1>
-        <div className="version">v{pJson.version}</div>
+        <h1>EVE Warehouse</h1>
         <Button onClick={handleLoginClick} size="small">
           LOGIN
         </Button>
