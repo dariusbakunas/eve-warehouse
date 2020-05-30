@@ -3,7 +3,7 @@ import { GetCharacters_characters as Character } from "../../__generated__/GetCh
 import { OverflowMenu, Tile } from "carbon-components-react";
 import moment from "moment";
 import OverflowMenuItem from "carbon-components-react/lib/components/OverflowMenuItem";
-import React, { useCallback } from "react";
+import React, { memo, useCallback } from "react";
 
 interface ICharacterTile {
   character: Character;
@@ -64,3 +64,5 @@ export const CharacterTile: React.FC<ICharacterTile> = ({ character, onUpdate, o
     </Tile>
   );
 };
+
+export default memo(CharacterTile);

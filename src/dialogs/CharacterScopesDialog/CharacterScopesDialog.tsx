@@ -2,19 +2,19 @@ import { GetCharacters_characters as Character } from "../../__generated__/GetCh
 import { Checkbox, Form, FormGroup, Modal } from "carbon-components-react";
 import { createPortal } from "react-dom";
 import { EveScopes } from "../../constants";
+import { Maybe } from "../../utilityTypes";
 import _ from "lodash";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 interface ICharacterScopesDialog {
   onClose?: () => void;
   onSubmit?: (scopes: string[]) => void;
-  character: Character;
+  character?: Maybe<Character>;
   open: boolean;
 }
 
 export const CharacterScopesDialog: React.FC<ICharacterScopesDialog> = ({ character, open, onClose, onSubmit }) => {
-  const { scopes, name } = character;
-  const [currentSelection, setCurrentSelection] = useState<Set<string>>();
+  const [currentSelection, setCurrentSelection] = useState<Set<string>>(new Set());
 
   const formGroups = [
     {
@@ -48,7 +48,7 @@ export const CharacterScopesDialog: React.FC<ICharacterScopesDialog> = ({ charac
         onSubmit(Array.from(currentSelection));
       }
     },
-    [character, currentSelection, onSubmit]
+    [currentSelection, onSubmit]
   );
 
   const handleChange = useCallback(
@@ -67,15 +67,18 @@ export const CharacterScopesDialog: React.FC<ICharacterScopesDialog> = ({ charac
    * Run only once to initialize initial selection
    */
   useEffect(() => {
-    setCurrentSelection(new Set(scopes));
-  }, [scopes, setCurrentSelection]);
+    if (character) {
+      setCurrentSelection(new Set(character.scopes));
+    } else {
+      setCurrentSelection(new Set());
+    }
+  }, [character, setCurrentSelection]);
 
   return createPortal(
     <Modal
-      modalAriaLabel="Select character scopes"
+      modalAriaLabel={character ? `Update ${character.name}` : "Add new character"}
       iconDescription="Close"
-      modalHeading="Select character scopes"
-      modalLabel={`Update ${name}`}
+      modalHeading={character ? `Update ${character.name}` : "Add new character"}
       open={open}
       hasForm={true}
       primaryButtonText="Submit"
@@ -83,24 +86,22 @@ export const CharacterScopesDialog: React.FC<ICharacterScopesDialog> = ({ charac
       onRequestClose={onClose}
       onRequestSubmit={handleSubmit}
     >
-      {currentSelection && (
-        <Form onSubmit={handleSubmit}>
-          {formGroups.map((group) => (
-            <FormGroup legendText={group.name} key={group.name}>
-              {group.items.map((item) => (
-                <Checkbox
-                  id={item.id}
-                  checked={_.every(item.scopes, (scope) => currentSelection.has(scope))}
-                  key={item.id}
-                  indeterminate={false}
-                  labelText={item.functionality}
-                  onChange={handleChange}
-                />
-              ))}
-            </FormGroup>
-          ))}
-        </Form>
-      )}
+      <Form onSubmit={handleSubmit}>
+        {formGroups.map((group) => (
+          <FormGroup legendText={group.name} key={group.name}>
+            {group.items.map((item) => (
+              <Checkbox
+                id={item.id}
+                checked={_.every(item.scopes, (scope) => currentSelection.has(scope))}
+                key={item.id}
+                indeterminate={false}
+                labelText={item.functionality}
+                onChange={handleChange}
+              />
+            ))}
+          </FormGroup>
+        ))}
+      </Form>
     </Modal>,
     document.body
   );

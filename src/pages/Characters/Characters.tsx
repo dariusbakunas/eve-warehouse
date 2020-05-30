@@ -1,8 +1,8 @@
+import { AddCharacterVariables, AddCharacter as NewCharacterResponse } from "../../__generated__/AddCharacter";
+import { Button, Loading } from "carbon-components-react";
 import { GetCharacters_characters as Character, GetCharacters as CharactersResponse } from "../../__generated__/GetCharacters";
 import { CharacterScopesDialog } from "../../dialogs/CharacterScopesDialog/CharacterScopesDialog";
-import { CharacterTile } from "../../components/CharacterTile/CharacterTile";
 import { loader } from "graphql.macro";
-import { Loading } from "carbon-components-react";
 import { Maybe } from "../../utilityTypes";
 import { RootState } from "../../redux/reducers";
 import { UpdateCharacter, UpdateCharacterVariables } from "../../__generated__/UpdateCharacter";
@@ -11,10 +11,12 @@ import { useMutation, useQuery } from "@apollo/react-hooks";
 import { useNotification } from "../../components/Notifications/useNotifications";
 import { useSelector } from "react-redux";
 import _ from "lodash";
+import CharacterTile from "../../components/CharacterTile/CharacterTile";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 const getCharactersQuery = loader("../../queries/getCharacters.graphql");
 const updateCharacterMutation = loader("../../queries/updateCharacter.graphql");
+const addCharacterMutation = loader("../../queries/addCharacter.graphql");
 
 export const Characters: React.FC = () => {
   const appConfig = useSelector<RootState, RootState["appConfig"]>((state) => state.appConfig);
@@ -36,6 +38,32 @@ export const Characters: React.FC = () => {
     },
   });
 
+  const [addCharacter, { loading: characterAddLoading }] = useMutation<NewCharacterResponse, AddCharacterVariables>(addCharacterMutation, {
+    onError: (error) => {
+      enqueueNotification(`Character update failed: ${error.message}`, null, { kind: "error" });
+    },
+    onCompleted: (data) => {
+      enqueueNotification(`Character '${data.addCharacter.name}' added successfully`, null, { kind: "success" });
+      history.push("/characters");
+    },
+    update(cache, { data }) {
+      if (data) {
+        const queryResponse = cache.readQuery<CharactersResponse>({
+          query: getCharactersQuery,
+        });
+
+        if (queryResponse) {
+          cache.writeQuery({
+            query: getCharactersQuery,
+            data: {
+              characters: queryResponse.characters.concat([data.addCharacter]),
+            },
+          });
+        }
+      }
+    },
+  });
+
   const rows = useMemo(() => {
     if (data) {
       return _.chunk(data.characters, 4);
@@ -44,9 +72,7 @@ export const Characters: React.FC = () => {
     }
   }, [data]);
 
-  const loading = charactersLoading;
-
-  const handleCharacterUpdate = useCallback(
+  const handleUpdateCharacter = useCallback(
     (character: Character) => {
       setCurrentCharacter(character);
       setUpdateScopesModalVisible(true);
@@ -54,31 +80,36 @@ export const Characters: React.FC = () => {
     [setUpdateScopesModalVisible]
   );
 
+  const handleAddCharacter = useCallback(() => {
+    setCurrentCharacter(null);
+    setUpdateScopesModalVisible(true);
+  }, [setUpdateScopesModalVisible]);
+
   const handleScopesDialogClose = useCallback(() => {
     setUpdateScopesModalVisible(false);
-    setCurrentCharacter(null);
   }, [setCurrentCharacter, setUpdateScopesModalVisible]);
 
   const handleScopesDialogSubmit = useCallback(
     (scopes: string[]) => {
-      const character = currentCharacter;
       setUpdateScopesModalVisible(false);
-      setCurrentCharacter(null);
-
-      if (!character) {
-        return;
-      }
 
       if (scopes && scopes.length) {
-        const state = btoa(JSON.stringify({ id: character.id }));
-        window.location.href = `${appConfig.eveLoginUrl}/oauth/authorize?response_type=code&redirect_uri=${
-          appConfig.eveCharacterRedirectUrl
-        }&client_id=${appConfig.eveClientId}&scope=${scopes.join(" ")}&state=${state}`;
+        let url = `${appConfig.eveLoginUrl}/oauth/authorize?response_type=code&redirect_uri=${appConfig.eveCharacterRedirectUrl}&client_id=${
+          appConfig.eveClientId
+        }&scope=${scopes.join(" ")}`;
+
+        if (currentCharacter) {
+          const state = btoa(JSON.stringify({ id: currentCharacter.id }));
+          url = `${url}&state=${state}`;
+          setCurrentCharacter(null);
+        }
+
+        window.location.href = url;
       } else {
-        console.warn(`skipping ${character.name} update, no scopes were selected`);
+        console.warn("no scopes were selected");
       }
     },
-    [currentCharacter]
+    [currentCharacter, appConfig]
   );
 
   useEffect(() => {
@@ -99,14 +130,21 @@ export const Characters: React.FC = () => {
             },
           });
         } catch (e) {
+          // this is only for json parsing errors, request errors handled by the hook
           enqueueNotification(`Character update failed: ${e.message}`, null, { kind: "error" });
           console.error(e);
         }
       } else {
-        // new character
+        addCharacter({
+          variables: {
+            code: code,
+          },
+        });
       }
     }
   }, [location]);
+
+  const loading = charactersLoading || characterAddLoading || characterUpdateLoading;
 
   return (
     <div className="characters">
@@ -116,20 +154,25 @@ export const Characters: React.FC = () => {
           <div key={index} className="bx--row">
             {row.map((character) => (
               <div className="bx--col bx--col-max-4 bx--col-xlg-4 bx--col-lg-8 bx--col-md-4 bx--col-sm-4" key={character.id}>
-                <CharacterTile character={character} onUpdate={handleCharacterUpdate} />
+                <CharacterTile character={character} onUpdate={handleUpdateCharacter} />
               </div>
             ))}
           </div>
         ))}
+        <div className="bx--row">
+          <div className="bx--col bx--col-max">
+            <Button className="new-character-btn" disabled={loading} onClick={handleAddCharacter}>
+              Add New Character
+            </Button>
+          </div>
+        </div>
       </div>
-      {currentCharacter && (
-        <CharacterScopesDialog
-          character={currentCharacter}
-          open={updateScopesModalVisible}
-          onClose={handleScopesDialogClose}
-          onSubmit={handleScopesDialogSubmit}
-        />
-      )}
+      <CharacterScopesDialog
+        character={currentCharacter}
+        open={updateScopesModalVisible}
+        onClose={handleScopesDialogClose}
+        onSubmit={handleScopesDialogSubmit}
+      />
     </div>
   );
 };
