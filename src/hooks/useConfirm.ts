@@ -1,6 +1,10 @@
 import { ModalProps } from "carbon-components-react";
 import React, { useCallback, useState } from "react";
 
+interface IAlertOptions {
+  danger?: boolean;
+}
+
 export const useConfirm = () => {
   const [dialogProps, setDialogProps] = useState<ModalProps>({
     modalAriaLabel: "Alert",
@@ -9,10 +13,11 @@ export const useConfirm = () => {
     primaryButtonText: "Yes",
     secondaryButtonText: "No",
     open: false,
+    size: "sm",
   });
 
   const showConfirmDialog = useCallback(
-    (heading: string, text: string, onClose: (confirm: boolean) => void) => {
+    (heading: string, text: string, onClose: (confirm: boolean) => void, options?: IAlertOptions) => {
       const handleClose = () => {
         setDialogProps((prevProps) => ({
           ...prevProps,
@@ -37,6 +42,7 @@ export const useConfirm = () => {
           onRequestClose: handleClose,
           onRequestSubmit: handleSubmit,
           children: text,
+          ...options,
         };
       });
     },

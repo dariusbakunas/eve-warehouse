@@ -4,6 +4,7 @@ import { GetCharacters_characters as Character, GetCharacters as CharactersRespo
 import { CharacterScopesDialog } from "../../dialogs/CharacterScopesDialog/CharacterScopesDialog";
 import { loader } from "graphql.macro";
 import { Maybe } from "../../utilityTypes";
+import { RemoveCharacter, RemoveCharacterVariables } from "../../__generated__/RemoveCharacter";
 import { RootState } from "../../redux/reducers";
 import { UpdateCharacter, UpdateCharacterVariables } from "../../__generated__/UpdateCharacter";
 import { useConfirm } from "../../hooks/useConfirm";
@@ -18,6 +19,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 const getCharactersQuery = loader("../../queries/getCharacters.graphql");
 const updateCharacterMutation = loader("../../queries/updateCharacter.graphql");
 const addCharacterMutation = loader("../../queries/addCharacter.graphql");
+const removeCharacterMutation = loader("../../queries/removeCharacter.graphql");
 
 export const Characters: React.FC = () => {
   const appConfig = useSelector<RootState, RootState["appConfig"]>((state) => state.appConfig);
@@ -66,6 +68,35 @@ export const Characters: React.FC = () => {
     },
   });
 
+  const [removeCharacter, { loading: characterRemovalLoading }] = useMutation<
+    RemoveCharacter,
+    RemoveCharacterVariables
+  >(removeCharacterMutation, {
+    onError: (error) => {
+      enqueueNotification(`Character removal failed: ${error.message}`, null, { kind: "error" });
+    },
+    onCompleted: (data) => {
+      enqueueNotification(`Character removed successfully`, null, { kind: "success" });
+      history.push("/characters");
+    },
+    update(cache, { data }) {
+      if (data) {
+        const queryResponse = cache.readQuery<CharactersResponse>({
+          query: getCharactersQuery,
+        });
+
+        if (queryResponse) {
+          cache.writeQuery({
+            query: getCharactersQuery,
+            data: {
+              characters: queryResponse.characters.filter((character) => character.id !== data.removeCharacter),
+            },
+          });
+        }
+      }
+    },
+  });
+
   const rows = useMemo(() => {
     if (data) {
       return _.chunk(data.characters, 4);
@@ -89,9 +120,14 @@ export const Characters: React.FC = () => {
         `Character '${character.name}' will be removed and future updates disabled. Are you sure?`,
         (confirm) => {
           if (confirm) {
-            console.log("remove");
+            removeCharacter({
+              variables: {
+                id: character.id,
+              },
+            });
           }
-        }
+        },
+        { danger: true }
       );
     },
     [showConfirmDialog]
@@ -161,7 +197,7 @@ export const Characters: React.FC = () => {
     }
   }, [location]);
 
-  const loading = charactersLoading || characterAddLoading || characterUpdateLoading;
+  const loading = charactersLoading || characterAddLoading || characterUpdateLoading || characterRemovalLoading;
 
   return (
     <div className="characters">
