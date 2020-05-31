@@ -8,7 +8,12 @@
 
 @import "./pages/Login/Login";
 @import "./pages/Characters/Characters";
+@import "./pages/Register/Register";
 
 .secondary-text {
   color: $text-02;
+}
+
+.bx--form-item {
+  margin-top: $spacing-04;
 }
