@@ -1,8 +1,19 @@
 import { Characters } from "./pages/Characters";
 import { getAppConfig, getCurrentUser } from "./api";
-import { Header, HeaderGlobalAction, HeaderGlobalBar, HeaderName, Loading } from "carbon-components-react";
+import {
+  Header,
+  HeaderGlobalAction,
+  HeaderGlobalBar,
+  HeaderMenu,
+  HeaderMenuButton,
+  HeaderMenuItem,
+  HeaderName,
+  HeaderNavigation,
+  Loading,
+} from "carbon-components-react";
 import { Login } from "./pages/Login";
 import { Logout20 } from "@carbon/icons-react";
+import { MainNavigation } from "./components/MainNavigation/MainNavigation";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { Register } from "./pages/Register";
 import { RootState } from "./redux/reducers";
@@ -10,17 +21,11 @@ import { setAppConfig, setUser } from "./redux/actions";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useCallback, useEffect, useState } from "react";
 
-const DEV = process.env.NODE_ENV === "development";
-
 function App() {
   const [loading, setLoading] = useState(false);
   const { user } = useSelector<RootState, RootState["auth"]>((state) => state.auth);
   const dispatch = useDispatch();
   const [error, setError] = useState<Error>();
-
-  const logout = useCallback(() => {
-    window.location.href = DEV ? "http://localhost:3001/auth/logout" : "/auth/logout";
-  }, []);
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -51,18 +56,7 @@ function App() {
   return (
     <div className="App">
       <Loading active={loading} />
-      {user && user.status === "ACTIVE" && (
-        <Header aria-label="Eve Warehouse">
-          <HeaderName href="#" prefix="EVE">
-            Warehouse
-          </HeaderName>
-          <HeaderGlobalBar>
-            <HeaderGlobalAction aria-label="Logout" onClick={logout}>
-              <Logout20 />
-            </HeaderGlobalAction>
-          </HeaderGlobalBar>
-        </Header>
-      )}
+      {user && user.status === "ACTIVE" && <MainNavigation />}
       {error && <Redirect to={{ pathname: "/login" }} />}
       {user && user.status === "GUEST" && <Redirect to={{ pathname: "/register" }} />}
       <Switch>
