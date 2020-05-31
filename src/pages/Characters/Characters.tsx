@@ -1,11 +1,12 @@
 import { AddCharacterVariables, AddCharacter as NewCharacterResponse } from "../../__generated__/AddCharacter";
-import { Button, Loading } from "carbon-components-react";
+import { Button, Loading, Modal } from "carbon-components-react";
 import { GetCharacters_characters as Character, GetCharacters as CharactersResponse } from "../../__generated__/GetCharacters";
 import { CharacterScopesDialog } from "../../dialogs/CharacterScopesDialog/CharacterScopesDialog";
 import { loader } from "graphql.macro";
 import { Maybe } from "../../utilityTypes";
 import { RootState } from "../../redux/reducers";
 import { UpdateCharacter, UpdateCharacterVariables } from "../../__generated__/UpdateCharacter";
+import { useConfirm } from "../../hooks/useConfirm";
 import { useHistory, useLocation } from "react-router-dom";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { useNotification } from "../../components/Notifications/useNotifications";
@@ -25,6 +26,7 @@ export const Characters: React.FC = () => {
   const { enqueueNotification } = useNotification();
   const history = useHistory();
   const location = useLocation();
+  const { showConfirmDialog, confirmDialogProps } = useConfirm();
 
   const { loading: charactersLoading, data, error } = useQuery<CharactersResponse>(getCharactersQuery);
 
@@ -78,6 +80,21 @@ export const Characters: React.FC = () => {
       setUpdateScopesModalVisible(true);
     },
     [setUpdateScopesModalVisible]
+  );
+
+  const handleRemoveCharacter = useCallback(
+    (character: Character) => {
+      showConfirmDialog(
+        `Remove '${character.name}?'`,
+        `Character '${character.name}' will be removed and future updates disabled. Are you sure?`,
+        (confirm) => {
+          if (confirm) {
+            console.log("remove");
+          }
+        }
+      );
+    },
+    [showConfirmDialog]
   );
 
   const handleAddCharacter = useCallback(() => {
@@ -154,7 +171,7 @@ export const Characters: React.FC = () => {
           <div key={index} className="bx--row">
             {row.map((character) => (
               <div className="bx--col bx--col-max-4 bx--col-xlg-4 bx--col-lg-8 bx--col-md-4 bx--col-sm-4" key={character.id}>
-                <CharacterTile character={character} onUpdate={handleUpdateCharacter} />
+                <CharacterTile character={character} onUpdate={handleUpdateCharacter} onRemove={handleRemoveCharacter} />
               </div>
             ))}
           </div>
@@ -173,6 +190,7 @@ export const Characters: React.FC = () => {
         onClose={handleScopesDialogClose}
         onSubmit={handleScopesDialogSubmit}
       />
+      <Modal {...confirmDialogProps} />
     </div>
   );
 };
