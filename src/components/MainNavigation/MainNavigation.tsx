@@ -42,7 +42,10 @@ export const MainNavigation: React.FC = () => {
       },
       {
         name: "Tools",
-        links: [{ name: "Warehouse", url: "/warehouse" }],
+        links: [
+          { name: "Wallet", url: "/wallet" },
+          { name: "Warehouse", url: "/warehouse" },
+        ],
       },
       {
         name: "Other",
@@ -93,7 +96,7 @@ export const MainNavigation: React.FC = () => {
             return (
               <HeaderMenu aria-label={menu.name} menuLinkName={menu.name} key={menu.name}>
                 {menu.links.map((link) => (
-                  <HeaderMenuItem href={link.url} key={link.name} element={Link}>
+                  <HeaderMenuItem href={link.url} key={link.name} element={Link} isCurrentPage={link.active}>
                     {link.name}
                   </HeaderMenuItem>
                 ))}
@@ -101,7 +104,7 @@ export const MainNavigation: React.FC = () => {
             );
           } else {
             return (
-              <HeaderMenuItem href={menu.url} key={menu.name} element={Link}>
+              <HeaderMenuItem href={menu.url} key={menu.name} element={Link} isCurrentPage={menu.active}>
                 {menu.name}
               </HeaderMenuItem>
             );

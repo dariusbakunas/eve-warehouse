@@ -1,25 +1,15 @@
+import { ApiLogs } from "./pages/ApiLogs";
 import { Characters } from "./pages/Characters";
 import { getAppConfig, getCurrentUser } from "./api";
-import {
-  Header,
-  HeaderGlobalAction,
-  HeaderGlobalBar,
-  HeaderMenu,
-  HeaderMenuButton,
-  HeaderMenuItem,
-  HeaderName,
-  HeaderNavigation,
-  Loading,
-} from "carbon-components-react";
+import { Loading } from "carbon-components-react";
 import { Login } from "./pages/Login";
-import { Logout20 } from "@carbon/icons-react";
 import { MainNavigation } from "./components/MainNavigation/MainNavigation";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { Register } from "./pages/Register";
 import { RootState } from "./redux/reducers";
 import { setAppConfig, setUser } from "./redux/actions";
 import { useDispatch, useSelector } from "react-redux";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -63,6 +53,7 @@ function App() {
         <Route path="/characters" component={Characters} />
         <Route path="/login" exact component={Login} />
         <Route path="/register" exact component={Register} />
+        <Route path="/api-logs" exact component={ApiLogs} />
       </Switch>
     </div>
   );
