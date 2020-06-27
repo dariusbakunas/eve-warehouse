@@ -30,7 +30,11 @@ export const Characters: React.FC = () => {
   const location = useLocation();
   const { showConfirmDialog, confirmDialogProps } = useConfirm();
 
-  const { loading: charactersLoading, data, error } = useQuery<CharactersResponse>(getCharactersQuery);
+  const { loading: charactersLoading, data } = useQuery<CharactersResponse>(getCharactersQuery, {
+    onError: (error) => {
+      enqueueNotification(`Character load failed: ${error.message}`, null, { kind: "error" });
+    },
+  });
 
   const [updateCharacter, { loading: characterUpdateLoading }] = useMutation<UpdateCharacter, UpdateCharacterVariables>(updateCharacterMutation, {
     onError: (error) => {
