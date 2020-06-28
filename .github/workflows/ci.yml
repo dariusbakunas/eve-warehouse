@@ -28,7 +28,6 @@ jobs:
       - name: Build
         run: |
           yarn
-          yarn schema:types
           yarn build
       #      - name: Test
       #        run: yarn test
