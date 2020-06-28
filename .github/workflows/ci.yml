@@ -32,10 +32,10 @@ jobs:
           yarn build
       #      - name: Test
       #        run: yarn test
-      - name: Coveralls GitHub Action
-        uses: coverallsapp/github-action@v1.0.1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      #      - name: Coveralls GitHub Action
+      #        uses: coverallsapp/github-action@v1.0.1
+      #        with:
+      #          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Docker image
         run: |
           docker build -t gcr.io/$GC_PROJECT_ID/$IMAGE:$GITHUB_SHA \
