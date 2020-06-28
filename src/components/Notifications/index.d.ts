@@ -1,10 +1,10 @@
-import { DeepRequired } from "ts-essentials";
+import { DeepRequired } from 'ts-essentials';
 
-export type INotificationKind = "error" | "info" | "success" | "warning";
+export type INotificationKind = 'error' | 'info' | 'success' | 'warning';
 
 export interface INotificationOrigin {
-  vertical: "top" | "bottom";
-  horizontal: "left" | "center" | "right";
+  vertical: 'top' | 'bottom';
+  horizontal: 'left' | 'center' | 'right';
 }
 
 export interface INotificationOptions {
@@ -17,6 +17,6 @@ export interface INotification {
   id: number;
   caption: string;
   title: string;
-  message?: string;
+  message?: string | null;
   options: DeepRequired<INotificationOptions>;
 }

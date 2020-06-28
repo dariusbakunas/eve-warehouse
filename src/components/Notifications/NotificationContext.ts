@@ -1,9 +1,9 @@
-import { INotificationOptions } from ".";
-import { Maybe } from "../../utilityTypes";
-import React from "react";
+import { INotificationOptions } from '.';
+import { Maybe } from '../../utilityTypes';
+import React from 'react';
 
 export interface INotificationContext {
-  enqueueNotification: (title: string, message?: Maybe<string>, options?: INotificationOptions) => string;
+  enqueueNotification: (title: string, message?: Maybe<string>, options?: INotificationOptions) => void;
   closeNotification: (key?: string) => void;
 }
 

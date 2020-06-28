@@ -27,7 +27,7 @@ const getOriginKey = (origin: INotificationOrigin) => {
 export const NotificationProvider: React.FC<INotificationProvider> = ({ children, root }) => {
   const [notifications, setNotifications] = useState<INotification[]>([]);
 
-  const enqueueNotification = useCallback((title: string, message?: string, options?: INotificationOptions) => {
+  const enqueueNotification = useCallback((title: string, message?: string | null, options?: INotificationOptions) => {
     const id = new Date().getTime() + Math.random();
 
     const notification: INotification = {
@@ -43,7 +43,7 @@ export const NotificationProvider: React.FC<INotificationProvider> = ({ children
     });
   }, []);
 
-  const closeNotification = useCallback((key: string) => {
+  const closeNotification = useCallback((key?: string) => {
     console.log(key);
   }, []);
 
