@@ -1,11 +1,18 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "noEmit": true,
+    "target": "es5",
+    "outDir": "build-server",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "noEmit": false,
     "module": "commonjs",
-    "resolveJsonModule": true
+    "isolatedModules": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "types": ["node"],
+    "typeRoots": ["node_modules/@types"]
   },
-  "include": [
-    "server"
-  ]
+  "include": ["./server"],
+  "exclude": ["./server/**/*.test.ts"]
 }

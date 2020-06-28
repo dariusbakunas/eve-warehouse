@@ -141,7 +141,7 @@ Sentry.init({
     res.end('Status: OK!');
   });
 
-  server.use(express.static(path.join(__dirname, 'client')));
+  server.use(express.static(path.join(__dirname, '..', 'client')));
 
   server.use(passport.initialize());
   server.use(passport.session());
@@ -163,7 +163,7 @@ Sentry.init({
   });
 
   server.get('*', function (req, res) {
-    res.sendFile(path.join(__dirname, 'client', 'index.html'));
+    res.sendFile(path.join(__dirname, '..', 'client', 'index.html'));
   });
 
   server.use(Sentry.Handlers.errorHandler());

@@ -1,4 +1,4 @@
-runtime: nodejs10
+runtime: nodejs12
 
 env_variables:
   APP_ENGINE: 'true'

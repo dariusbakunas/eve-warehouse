@@ -6,7 +6,6 @@
 .env
 .gce.json.enc
 .storybook
-.next/
 build/
 node_modules/
 docs/
