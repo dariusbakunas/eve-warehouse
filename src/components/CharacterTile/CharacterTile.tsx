@@ -1,9 +1,9 @@
-import { Avatar } from "../Avatar/Avatar";
-import { GetCharacters_characters as Character } from "../../__generated__/GetCharacters";
-import { OverflowMenu, Tile } from "carbon-components-react";
-import moment from "moment";
-import OverflowMenuItem from "carbon-components-react/lib/components/OverflowMenuItem";
-import React, { memo, useCallback } from "react";
+import { Avatar } from '../Avatar/Avatar';
+import { GetCharacters_characters as Character } from '../../__generated__/GetCharacters';
+import { OverflowMenu, Tile } from 'carbon-components-react';
+import moment from 'moment';
+import OverflowMenuItem from 'carbon-components-react/lib/components/OverflowMenuItem';
+import React, { memo, useCallback } from 'react';
 
 interface ICharacterTile {
   character: Character;
@@ -34,7 +34,7 @@ export const CharacterTile: React.FC<ICharacterTile> = ({ character, onUpdate, o
         </div>
         <div className="character-tile-header-content">
           <h5>{name}</h5>
-          <span className="dob">{`Born: ${moment(birthday).format("YYYY-MM-DD LT")}`}</span>
+          <span className="dob">{`Born: ${moment(birthday).format('YYYY-MM-DD LT')}`}</span>
         </div>
         <div className="character-tile-header-action">
           <OverflowMenu ariaLabel="Character Menu" direction="bottom" iconDescription="" flipped={true}>

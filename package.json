@@ -54,7 +54,7 @@
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "ts-essentials": "^7.0.0",
-    "typescript": "^3.8.3",
+    "typescript": "^3.9.5",
     "uid-safe": "^2.1.5",
     "winston": "^3.2.1"
   },
@@ -68,7 +68,9 @@
     "start:client": "react-scripts start",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "schema:types": "apollo client:codegen --target=typescript --config=apollo.config.js --outputFlat ./src/__generated__"
+    "schema:types": "apollo client:codegen --target=typescript --config=apollo.config.js --outputFlat ./src/__generated__",
+    "storybook": "start-storybook -p 9009 -s public",
+    "build-storybook": "build-storybook -s public"
   },
   "husky": {
     "hooks": {
@@ -91,6 +93,16 @@
     ]
   },
   "devDependencies": {
+    "@storybook/addon-a11y": "^5.3.19",
+    "@storybook/addon-actions": "^5.3.19",
+    "@storybook/addon-info": "^5.3.19",
+    "@storybook/addon-knobs": "^5.3.19",
+    "@storybook/addon-links": "^5.3.19",
+    "@storybook/addon-storysource": "^5.3.19",
+    "@storybook/addon-viewport": "^5.3.19",
+    "@storybook/addons": "^5.3.19",
+    "@storybook/preset-create-react-app": "^3.1.2",
+    "@storybook/react": "^5.3.19",
     "@types/carbon-components-react": "^7.10.2",
     "@types/carbon__icons-react": "^10.10.0",
     "@types/cookie-session": "^2.0.39",
@@ -125,6 +137,7 @@
     "nodemon": "^2.0.3",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
+    "ts-loader": "^7.0.5",
     "ts-node": "^8.10.1"
   }
 }
