@@ -1,12 +1,11 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "noEmit": false,
+    "noEmit": true,
     "module": "commonjs",
-    "outDir": ".next/production-server/",
     "resolveJsonModule": true
   },
   "include": [
-    "src/server/*.ts"
+    "server"
   ]
 }

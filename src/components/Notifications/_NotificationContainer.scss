@@ -1,0 +1,33 @@
+.notification-container {
+  box-sizing: border-box;
+  display: flex;
+  max-height: 100%;
+  max-width: 100%;
+  position: fixed;
+  flex-direction: column;
+  height: auto;
+  width: auto;
+  min-width: 280px;
+  z-index: 9000;
+
+  &.top {
+    top: 0;
+  }
+
+  &.bottom {
+    bottom: 0;
+  }
+
+  &.left {
+    left: 0;
+  }
+
+  &.right {
+    right: 0;
+  }
+
+  &.center {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

@@ -2,6 +2,7 @@ FROM node:10-alpine
 
 WORKDIR /usr/src/app
 
+COPY app.yaml .
 COPY package.json .
 COPY src/.next ./src/.next
 COPY public ./public
