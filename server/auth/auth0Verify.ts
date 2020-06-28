@@ -1,16 +1,15 @@
-import { createApolloClient } from "../lib/createApolloClient";
-import { GetUserByEmail, GetUserByEmailVariables } from "../../src/__generated__/GetUserByEmail";
-import { NormalizedCacheObject } from "apollo-cache-inmemory";
-import ApolloClient from "apollo-client";
-import gql from "graphql-tag";
-import logger from "../logger";
-import Maybe from "graphql/tsutils/Maybe";
-import StrategyInternal from "passport-auth0";
+import { createApolloClient } from '../lib/createApolloClient';
+import { GetUserByEmail, GetUserByEmailVariables } from '../../src/__generated__/GetUserByEmail';
+import { NormalizedCacheObject } from 'apollo-cache-inmemory';
+import ApolloClient from 'apollo-client';
+import gql from 'graphql-tag';
+import logger from '../logger';
+import StrategyInternal from 'passport-auth0';
 
 export interface IUser {
   email: string;
   picture?: string;
-  status: "ACTIVE" | "GUEST" | "INACTIVE" | "NOT_VERIFIED";
+  status: 'ACTIVE' | 'GUEST' | 'INACTIVE' | 'NOT_VERIFIED';
 }
 
 export interface ISessionUser extends IUser {
@@ -41,12 +40,12 @@ export const auth0Verify: StrategyInternal.VerifyFunction = async (
   refreshToken: string,
   extraParams,
   profile,
-  done: (error: Maybe<Error>, user?: ISessionUser) => void
+  done: (error: Error | null, user?: ISessionUser) => void
 ) => {
   const apolloClient = createApolloClient(accessToken);
 
   if (!profile.emails || !profile.emails.length) {
-    return done(new Error("Auth0: profile.emails missing"));
+    return done(new Error('Auth0: profile.emails missing'));
   }
 
   try {
@@ -72,7 +71,7 @@ export const auth0Verify: StrategyInternal.VerifyFunction = async (
       email: profile.emails[0].value,
       // @ts-ignore
       picture: profile.picture,
-      status: userByEmail ? userByEmail.status : "GUEST",
+      status: userByEmail ? userByEmail.status : 'GUEST',
     });
   } catch (e) {
     logger.error(e);

@@ -1,10 +1,10 @@
-import { GetCharacters_characters as Character } from "../../__generated__/GetCharacters";
-import { Checkbox, Form, FormGroup, Modal } from "carbon-components-react";
-import { createPortal } from "react-dom";
-import { EveScopes } from "../../constants";
-import { Maybe } from "../../utilityTypes";
-import _ from "lodash";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { GetCharacters_characters as Character } from '../../__generated__/GetCharacters';
+import { Checkbox, Form, FormGroup, Modal } from 'carbon-components-react';
+import { createPortal } from 'react-dom';
+import { EveScopes } from '../../constants';
+import { Maybe } from '../../utilityTypes';
+import _ from 'lodash';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 interface ICharacterScopesDialog {
   onClose?: () => void;
@@ -18,17 +18,17 @@ export const CharacterScopesDialog: React.FC<ICharacterScopesDialog> = ({ charac
 
   const formGroups = [
     {
-      name: "Industry",
+      name: 'Industry',
       items: [
-        { id: "chk-blueprints", functionality: "View owned blueprints", scopes: [EveScopes.READ_CHARACTER_BLUEPRINTS] },
-        { id: "chk-industry-jobs", functionality: "View industry jobs", scopes: [EveScopes.READ_CHARACTER_INDUSTRY_JOBS] },
+        { id: 'chk-blueprints', functionality: 'View owned blueprints', scopes: [EveScopes.READ_CHARACTER_BLUEPRINTS] },
+        { id: 'chk-industry-jobs', functionality: 'View industry jobs', scopes: [EveScopes.READ_CHARACTER_INDUSTRY_JOBS] },
       ],
     },
     {
-      name: "Wallet",
+      name: 'Wallet',
       items: [
-        { id: "chk-wallet-transactions", functionality: "View wallet transactions", scopes: [EveScopes.READ_CHARACTER_WALLET] },
-        { id: "chk-market-orders", functionality: "View market orders", scopes: [EveScopes.READ_CHARACTER_MARKET_ORDERS] },
+        { id: 'chk-wallet-transactions', functionality: 'View wallet transactions', scopes: [EveScopes.READ_CHARACTER_WALLET] },
+        { id: 'chk-market-orders', functionality: 'View market orders', scopes: [EveScopes.READ_CHARACTER_MARKET_ORDERS] },
       ],
     },
   ];
@@ -76,9 +76,9 @@ export const CharacterScopesDialog: React.FC<ICharacterScopesDialog> = ({ charac
 
   return createPortal(
     <Modal
-      modalAriaLabel={character ? `Update ${character.name}` : "Add new character"}
+      modalAriaLabel={character ? `Update ${character.name}` : 'Add new character'}
       iconDescription="Close"
-      modalHeading={character ? `Update ${character.name}` : "Add new character"}
+      modalHeading={character ? `Update ${character.name}` : 'Add new character'}
       open={open}
       hasForm={true}
       primaryButtonDisabled={currentSelection.size === 0}
