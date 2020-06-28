@@ -30,8 +30,8 @@ jobs:
           yarn
           yarn schema:types
           yarn build
-      - name: Test
-        run: yarn test
+      #      - name: Test
+      #        run: yarn test
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v1.0.1
         with:
