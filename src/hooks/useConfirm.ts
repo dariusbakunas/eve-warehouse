@@ -1,5 +1,5 @@
-import { ModalProps } from "carbon-components-react";
-import React, { useCallback, useState } from "react";
+import { ModalProps } from 'carbon-components-react';
+import { useCallback, useState } from 'react';
 
 interface IAlertOptions {
   danger?: boolean;
@@ -7,13 +7,13 @@ interface IAlertOptions {
 
 export const useConfirm = () => {
   const [dialogProps, setDialogProps] = useState<ModalProps>({
-    modalAriaLabel: "Alert",
-    iconDescription: "Close",
+    modalAriaLabel: 'Alert',
+    iconDescription: 'Close',
     hasForm: false,
-    primaryButtonText: "Yes",
-    secondaryButtonText: "No",
+    primaryButtonText: 'Yes',
+    secondaryButtonText: 'No',
     open: false,
-    size: "sm",
+    size: 'sm',
   });
 
   const showConfirmDialog = useCallback(

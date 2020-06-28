@@ -1,18 +1,18 @@
-import { createPortal } from "react-dom";
-import { DeepRequired } from "ts-essentials";
-import { INotification, INotificationOptions, INotificationOrigin } from ".";
-import { NotificationContainer } from "./NotificationContainer";
-import { NotificationContext } from "./NotificationContext";
-import { ToastNotification } from "carbon-components-react";
-import moment from "moment";
-import React, { useCallback, useMemo, useState } from "react";
+import { createPortal } from 'react-dom';
+import { DeepRequired } from 'ts-essentials';
+import { INotification, INotificationOptions, INotificationOrigin } from '.';
+import { NotificationContainer } from './NotificationContainer';
+import { NotificationContext } from './NotificationContext';
+import { ToastNotification } from 'carbon-components-react';
+import moment from 'moment';
+import React, { useCallback, useMemo, useState } from 'react';
 
 const DEFAULTS: DeepRequired<INotificationOptions> = {
-  kind: "info",
+  kind: 'info',
   timeout: 5000,
   origin: {
-    vertical: "top",
-    horizontal: "right",
+    vertical: 'top',
+    horizontal: 'right',
   },
 };
 
@@ -32,7 +32,7 @@ export const NotificationProvider: React.FC<INotificationProvider> = ({ children
 
     const notification: INotification = {
       id,
-      caption: moment().format("hh:mm:ss A"),
+      caption: moment().format('hh:mm:ss A'),
       title,
       message,
       options: Object.assign({}, DEFAULTS, options),
@@ -62,7 +62,7 @@ export const NotificationProvider: React.FC<INotificationProvider> = ({ children
         return prevNotifications.filter((notification) => notification.id !== key);
       });
     },
-    [notifications]
+    [setNotifications]
   );
 
   const notificationContainer = Object.entries(notificationsByOrigin).map(([origin, notifications]) => (

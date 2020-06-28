@@ -1,45 +1,45 @@
-import { Button, Form, FormGroup, Loading, TextInput } from "carbon-components-react";
-import { GraphQLError } from "graphql";
-import { loader } from "graphql.macro";
-import { Maybe } from "../../utilityTypes";
-import { Register as RegisterResult, RegisterVariables } from "../../__generated__/Register";
-import { RootState } from "../../redux/reducers";
-import { useMutation } from "@apollo/react-hooks";
-import { useNotification } from "../../components/Notifications/useNotifications";
-import { useSelector } from "react-redux";
-import React, { useCallback, useEffect } from "react";
-import useValidator from "../../hooks/useValidator";
+import { Button, Form, FormGroup, Loading, TextInput } from 'carbon-components-react';
+import { GraphQLError } from 'graphql';
+import { loader } from 'graphql.macro';
+import { Maybe } from '../../utilityTypes';
+import { Register as RegisterResult, RegisterVariables } from '../../__generated__/Register';
+import { RootState } from '../../redux/reducers';
+import { useMutation } from '@apollo/react-hooks';
+import { useNotification } from '../../components/Notifications/useNotifications';
+import { useSelector } from 'react-redux';
+import React, { useCallback, useEffect } from 'react';
+import useValidator from '../../hooks/useValidator';
 
-const DEV = process.env.NODE_ENV === "development";
+const DEV = process.env.NODE_ENV === 'development';
 
 interface IFormData {
   code: Maybe<string>;
   username: Maybe<string>;
 }
 
-const registerMutation = loader("../../queries/register.graphql");
+const registerMutation = loader('../../queries/register.graphql');
 
 export const Register: React.FC = () => {
-  const { user } = useSelector<RootState, RootState["auth"]>((state) => state.auth);
+  const { user } = useSelector<RootState, RootState['auth']>((state) => state.auth);
   const { enqueueNotification } = useNotification();
   const { register, handleSubmit, errors, setError, setValue } = useValidator<IFormData>({
-    code: "",
-    username: "",
+    code: '',
+    username: '',
   });
 
   const [registerSubmit, { loading: submitting, error }] = useMutation<RegisterResult, RegisterVariables>(registerMutation, {
     onError: () => null, // workaround to populate error
     onCompleted: () => {
       //setIsComplete(true);
-      enqueueNotification("Registered successfully", null, { kind: "success" });
-      window.location.href = DEV ? "http://localhost:3001/auth/login" : "/auth/login";
+      enqueueNotification('Registered successfully', null, { kind: 'success' });
+      window.location.href = DEV ? 'http://localhost:3001/auth/login' : '/auth/login';
     },
   });
 
   useEffect(() => {
-    register("username", { required: true });
-    register("code", { required: true });
-  }, []);
+    register('username', { required: true });
+    register('code', { required: true });
+  }, [register]);
 
   useEffect(() => {
     if (error) {
@@ -47,12 +47,12 @@ export const Register: React.FC = () => {
       graphQLErrors.forEach((graphQLError: GraphQLError) => {
         const { extensions } = graphQLError;
 
-        if (extensions && extensions.code === "BAD_USER_INPUT") {
+        if (extensions && extensions.code === 'BAD_USER_INPUT') {
           const { validationErrors } = extensions.exception;
           Object.keys(validationErrors).forEach((key) => {
             switch (key) {
-              case "code":
-              case "username":
+              case 'code':
+              case 'username':
                 setError(key, { message: validationErrors[key] });
                 break;
             }
@@ -60,7 +60,7 @@ export const Register: React.FC = () => {
         }
       });
     }
-  }, [error]);
+  }, [error, setError]);
 
   const handleChange = useCallback(
     (name: keyof IFormData) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,7 +83,7 @@ export const Register: React.FC = () => {
         });
       }
     },
-    [user]
+    [user, registerSubmit]
   );
 
   return (
@@ -99,14 +99,14 @@ export const Register: React.FC = () => {
               invalidText={errors.username ? errors.username.message : undefined}
               labelText="Username"
               placeholder="Username"
-              onChange={handleChange("username")}
+              onChange={handleChange('username')}
               required
             />
             <TextInput
               id="email"
               invalidText={errors.username ? errors.username.message : undefined}
               labelText="Email"
-              value={user ? user.email : ""}
+              value={user ? user.email : ''}
               readOnly
             />
             <TextInput
@@ -115,7 +115,7 @@ export const Register: React.FC = () => {
               invalid={!!errors.code}
               labelText="Code"
               placeholder="Invitation code"
-              onChange={handleChange("code")}
+              onChange={handleChange('code')}
               required
             />
           </FormGroup>
