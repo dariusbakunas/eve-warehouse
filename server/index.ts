@@ -1,17 +1,18 @@
-import * as Sentry from "@sentry/node";
-import { createProxyMiddleware, Options } from "http-proxy-middleware";
-import { Firestore } from "@google-cloud/firestore";
-import { getAccessToken } from "./auth/getAccessToken";
-import { getAuthRoutes } from "./auth/getAuthRoutes";
-import Auth0Strategy from "passport-auth0";
-import auth0Verify, { ISessionUser } from "./auth/auth0Verify";
-import express, { NextFunction, Request, Response } from "express";
-import helmet from "helmet";
-import morgan from "morgan";
-import passport from "passport";
-import path from "path";
-import pJson from "../package.json";
-import session from "cookie-session";
+import * as Sentry from '@sentry/node';
+import { applicationConfig } from './applicationConfig';
+import { createProxyMiddleware, Options } from 'http-proxy-middleware';
+import { getAccessToken } from './auth/getAccessToken';
+import { getAuthRoutes } from './auth/getAuthRoutes';
+import Auth0Strategy from 'passport-auth0';
+import auth0Verify, { ISessionUser } from './auth/auth0Verify';
+import express, { Request, Response } from 'express';
+import helmet from 'helmet';
+import logger from './logger';
+import morgan from 'morgan';
+import passport from 'passport';
+import path from 'path';
+import pJson from '../package.json';
+import session from 'cookie-session';
 
 export interface IClientEnv {
   EVE_API_HOST: string;
@@ -21,50 +22,27 @@ export interface IClientEnv {
 }
 
 const SERVER_PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
-const REQUIRED_ENV = ["AUTH0_AUDIENCE", "AUTH0_DOMAIN", "AUTH0_CLIENT_ID"];
-const IS_DEV = process.env.NODE_ENV !== "production";
-const API_CLIENT_ENV: IClientEnv = {
-  EVE_API_HOST: process.env.EVE_API_HOST!,
-  EVE_LOGIN_URL: process.env.EVE_LOGIN_URL!,
-  EVE_CLIENT_ID: process.env.EVE_CLIENT_ID!,
-  EVE_CHARACTER_REDIRECT_URL: process.env.EVE_CHARACTER_REDIRECT_URL!,
-};
-
-REQUIRED_ENV.forEach((env) => {
-  if (!process.env[env]) {
-    throw new Error(`process.env.${env} is required`);
-  }
-});
+const IS_DEV = process.env.NODE_ENV !== 'production';
 
 Sentry.init({
-  dsn: "https://45c7dca4f55f43c38bec427d60cb08a1@sentry.io/1816311",
+  dsn: 'https://45c7dca4f55f43c38bec427d60cb08a1@sentry.io/1816311',
   release: `${pJson.name}@${pJson.version}`,
 });
 
 (async function () {
-  if (process.env.APP_ENGINE === "true") {
-    const firestore = new Firestore();
-    const ref = firestore.collection("configs").doc("eve-mate-app");
-    const doc = await ref.get();
-
-    if (!doc.exists) {
-      throw new Error("Unable to load app engine configs");
-    } else {
-      const configs = doc.data();
-
-      if (configs) {
-        Object.keys(configs).forEach((key) => {
-          process.env[key] = configs[key];
-        });
-      }
-    }
+  try {
+    await applicationConfig.load();
+  } catch (e) {
+    logger.error(e);
   }
+
+  const { config } = applicationConfig;
 
   const apiProxyConfig: Options = {
     changeOrigin: true,
     onError: (err, req, res) => {
       res.writeHead(500, {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       });
 
       res.end(JSON.stringify({ message: err.message }));
@@ -72,10 +50,10 @@ Sentry.init({
     onProxyReq: async (proxyReq, req: Request & { user: ISessionUser; session: any }) => {
       if (req.session && req.user) {
         const { accessToken } = req.user;
-        proxyReq.setHeader("authorization", `Bearer ${accessToken}`);
+        proxyReq.setHeader('authorization', `Bearer ${accessToken}`);
       }
     },
-    target: process.env.EVE_API_HOST,
+    target: config.eveApiHost,
   };
 
   const server = express();
@@ -83,13 +61,13 @@ Sentry.init({
   server.use(Sentry.Handlers.requestHandler());
 
   server.use(
-    morgan("short", {
+    morgan('short', {
       skip: (req: Request, res: Response) => {
         return (
-          req.url === "/health-check" ||
-          req.url === "/favicon.ico" ||
-          req.originalUrl === "/.well-known/apollo/server-health" ||
-          req.originalUrl === "/favicon.ico" ||
+          req.url === '/health-check' ||
+          req.url === '/favicon.ico' ||
+          req.originalUrl === '/.well-known/apollo/server-health' ||
+          req.originalUrl === '/favicon.ico' ||
           res.statusCode < 400
         );
       },
@@ -98,13 +76,13 @@ Sentry.init({
   );
 
   server.use(
-    morgan("short", {
+    morgan('short', {
       skip: (req: Request, res: Response) => {
         return (
-          req.url === "/health-check" ||
-          req.url === "/favicon.ico" ||
-          req.originalUrl === "/.well-known/apollo/server-health" ||
-          req.originalUrl === "/favicon.ico" ||
+          req.url === '/health-check' ||
+          req.url === '/favicon.ico' ||
+          req.originalUrl === '/.well-known/apollo/server-health' ||
+          req.originalUrl === '/favicon.ico' ||
           res.statusCode >= 400
         );
       },
@@ -113,8 +91,8 @@ Sentry.init({
   );
 
   const sessionConfig = {
-    name: "eve-app",
-    secret: process.env.COOKIE_SECRET,
+    name: 'eve-app',
+    secret: config.cookieSecret,
     cookie: {
       maxAge: 900 * 1000, // 15 minutes in milliseconds
       secure: !IS_DEV,
@@ -126,10 +104,10 @@ Sentry.init({
 
   const auth0Strategy = new Auth0Strategy(
     {
-      domain: process.env.AUTH0_DOMAIN!,
-      clientID: process.env.AUTH0_CLIENT_ID!,
-      clientSecret: process.env.AUTH0_CLIENT_SECRET!,
-      callbackURL: process.env.AUTH0_CALLBACK_URL!,
+      domain: config.auth0Domain,
+      clientID: config.auth0ClientId,
+      clientSecret: config.auth0ClientSecret,
+      callbackURL: config.auth0CallbackUrl,
     },
     auth0Verify
   );
@@ -158,27 +136,34 @@ Sentry.init({
     return done(null, user);
   });
 
-  server.get("/health-check", (req, res) => {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("Status: OK!");
+  server.get('/health-check', (req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Status: OK!');
   });
 
-  server.use(express.static(path.join(__dirname, "client")));
+  server.use(express.static(path.join(__dirname, 'client')));
 
   server.use(passport.initialize());
   server.use(passport.session());
-  server.use("/api", createProxyMiddleware(apiProxyConfig));
+  server.use('/api', createProxyMiddleware(apiProxyConfig));
 
   server.use(express.json());
   server.use(express.urlencoded());
 
-  server.use("/auth", getAuthRoutes(process.env.AUTH0_DOMAIN!, process.env.AUTH0_CLIENT_ID!, process.env.AUTH0_AUDIENCE!, process.env.BASE_URL));
-  server.use("/env", (req, res) => {
-    res.json(API_CLIENT_ENV);
+  server.use('/auth', getAuthRoutes(config.auth0Domain, config.auth0ClientId, config.auth0Audience, config.baseUrl));
+  server.use('/env', (req, res) => {
+    const clientEnv: IClientEnv = {
+      EVE_API_HOST: config.eveApiHost,
+      EVE_LOGIN_URL: config.eveLoginUrl,
+      EVE_CLIENT_ID: config.eveClientId,
+      EVE_CHARACTER_REDIRECT_URL: config.eveCharacterRedirectUrl,
+    };
+
+    res.json(clientEnv);
   });
 
-  server.get("*", function (req, res) {
-    res.sendFile(path.join(__dirname, "client", "index.html"));
+  server.get('*', function (req, res) {
+    res.sendFile(path.join(__dirname, 'client', 'index.html'));
   });
 
   server.use(Sentry.Handlers.errorHandler());
