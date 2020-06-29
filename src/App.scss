@@ -1,15 +1,16 @@
-@import "~carbon-components/scss/globals/scss/colors";
-@import "~carbon-components/scss/globals/scss/layout";
-@import "~carbon-components/scss/globals/scss/spacing";
+@import '~carbon-components/scss/globals/scss/colors';
+@import '~carbon-components/scss/globals/scss/layout';
+@import '~carbon-components/scss/globals/scss/spacing';
 
-@import "./components/Avatar/Avatar";
-@import "./components/Notifications/NotificationContainer";
-@import "./components/CharacterTile/CharacterTile";
+@import './components/Avatar/Avatar';
+@import './components/Notifications/NotificationContainer';
+@import './components/CharacterTile/CharacterTile';
+@import './components/DataTable/DataTable';
 
-@import "./pages/Login/Login";
-@import "./pages/Characters/Characters";
-@import "./pages/Register/Register";
-@import "./pages/ApiLogs/ApiLogs";
+@import './pages/Login/Login';
+@import './pages/Characters/Characters';
+@import './pages/Register/Register';
+@import './pages/ApiLogs/ApiLogs';
 
 .secondary-text {
   color: $text-02;
