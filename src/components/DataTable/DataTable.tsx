@@ -13,7 +13,7 @@ import { DataTableHeader, DataTableProps, DataTableRow } from 'carbon-components
 import React, { PropsWithChildren } from 'react';
 
 export interface IDataTableHeader<K extends string = string> extends DataTableHeader<K> {
-  customRender?: (cell: DataTableCell<any, DataTableHeader<K>>) => React.ReactNode;
+  customRender?: (cell: DataTableCell<any, DataTableHeader<string>>) => React.ReactNode;
 }
 
 interface IDataTableProps<R extends DataTableRow, H extends IDataTableHeader> {
