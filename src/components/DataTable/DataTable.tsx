@@ -8,6 +8,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableToolbar,
+  TableToolbarContent,
+  TableToolbarSearch,
 } from 'carbon-components-react';
 import { DataTableHeader, DataTableProps, DataTableRow } from 'carbon-components-react/lib/components/DataTable/DataTable';
 import React, { PropsWithChildren } from 'react';
@@ -17,6 +20,7 @@ export interface IDataTableHeader<K extends string = string> extends DataTableHe
 }
 
 interface IDataTableProps<R extends DataTableRow, H extends IDataTableHeader> {
+  withSearch?: boolean;
   description?: React.ReactNode;
   columns: DataTableProps<R, H>['headers'];
   rows: DataTableProps<R, H>['rows'];
@@ -28,14 +32,22 @@ export const DataTable = <R extends DataTableRow = DataTableRow, H extends IData
   columns,
   rows,
   title,
+  withSearch,
 }: PropsWithChildren<IDataTableProps<R, H>>): React.ReactElement<PropsWithChildren<IDataTableProps<R, H>>> => {
+  const withToolbar = withSearch;
+
   return (
     <CarbonTable
       headers={columns}
       rows={rows}
-      render={({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => {
+      render={({ rows, headers, getHeaderProps, getRowProps, getTableProps, onInputChange }) => {
         return (
           <TableContainer title={title} description={description}>
+            {withToolbar && (
+              <TableToolbar>
+                <TableToolbarContent>{withSearch && <TableToolbarSearch onChange={onInputChange} />}</TableToolbarContent>
+              </TableToolbar>
+            )}
             <Table {...getTableProps()}>
               <TableHead>
                 <TableRow>

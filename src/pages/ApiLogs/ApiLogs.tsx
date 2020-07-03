@@ -21,8 +21,7 @@ interface ILogRow extends DataTableRow {
 
 export const ApiLogs: React.FC = () => {
   const { enqueueNotification } = useNotification();
-  const { loading: characterNamesLoading, data: characterNamesData } = useQuery<GetCharacterNames>(getCharacterNamesQuery);
-
+  const { loading: characterNamesLoading } = useQuery<GetCharacterNames>(getCharacterNamesQuery);
   const { data, loading: logsLoading } = useQuery<GetProcessingLogs, GetProcessingLogsVariables>(getProcessingLogsQuery, {
     // variables: {
     //   filter: {
@@ -54,9 +53,10 @@ export const ApiLogs: React.FC = () => {
   const loading = characterNamesLoading || logsLoading;
 
   return (
-    <div className="api-logs">
+    <div className="page-container api-logs">
       {loading && <Loading description="Active loading indicator" withOverlay={true} />}
       <DataTable<ILogRow, IDataTableHeader<keyof ILogRow>>
+        title="API Logs"
         columns={[
           { header: 'Date', key: 'date' },
           { header: 'Character', key: 'character' },
@@ -69,6 +69,7 @@ export const ApiLogs: React.FC = () => {
           { header: 'Message', key: 'message' },
         ]}
         rows={tableData}
+        withSearch={true}
       />
     </div>
   );

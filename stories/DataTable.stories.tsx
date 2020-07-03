@@ -100,6 +100,7 @@ export const Default = () => {
 
   return (
     <DataTable<IRow, IDataTableHeader<keyof IRow>>
+      withSearch={true}
       columns={columns}
       rows={sampleData}
       title="Sample Table"
