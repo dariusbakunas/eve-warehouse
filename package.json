@@ -71,7 +71,8 @@
     "schema:types": "apollo client:codegen --target=typescript --config=apollo.config.js --outputFlat ./src/__generated__",
     "schema:update": "apollo client:download-schema --endpoint=http://localhost:4000/graphql src/__generated__/schema.graphql",
     "storybook": "start-storybook -p 9009 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "analyse": "source-map-explorer build-server/client/static/js/*.js"
   },
   "husky": {
     "hooks": {
@@ -138,6 +139,7 @@
     "nodemon": "^2.0.3",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
+    "source-map-explorer": "^2.4.2",
     "ts-loader": "^7.0.5",
     "ts-node": "^8.10.1"
   }

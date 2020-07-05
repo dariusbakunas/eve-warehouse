@@ -11,13 +11,13 @@ import {
   SideNavItems,
   SideNavMenu,
   SideNavMenuItem,
-} from "carbon-components-react";
-import { Link } from "../Link/Link";
-import { Logout20 } from "@carbon/icons-react";
-import { useLocation } from "react-router-dom";
-import React, { useCallback, useMemo, useState } from "react";
+} from 'carbon-components-react';
+import { Link } from '../Link/Link';
+import { Logout20 } from '@carbon/icons-react';
+import { useLocation } from 'react-router-dom';
+import React, { useCallback, useMemo, useState } from 'react';
 
-const DEV = process.env.NODE_ENV === "development";
+const DEV = process.env.NODE_ENV === 'development';
 
 interface INavigationItem {
   name: string;
@@ -37,19 +37,19 @@ export const MainNavigation: React.FC = () => {
   const navigationItems: INavigationItem[] = useMemo(() => {
     const items = [
       {
-        name: "Characters",
-        url: "/characters",
+        name: 'Characters',
+        url: '/characters',
       },
       {
-        name: "Tools",
+        name: 'Tools',
         links: [
-          { name: "Wallet", url: "/wallet" },
-          { name: "Warehouse", url: "/warehouse" },
+          { name: 'Wallet', url: '/wallet' },
+          { name: 'Warehouse', url: '/warehouse' },
         ],
       },
       {
-        name: "Other",
-        links: [{ name: "API Logs", url: "/api-logs" }],
+        name: 'Other',
+        links: [{ name: 'API Logs', url: '/api-logs' }],
       },
     ];
 
@@ -77,7 +77,7 @@ export const MainNavigation: React.FC = () => {
   }, [location]);
 
   const logout = useCallback(() => {
-    window.location.href = DEV ? "http://localhost:3001/auth/logout" : "/auth/logout";
+    window.location.href = DEV ? 'http://localhost:3001/auth/logout' : '/auth/logout';
   }, []);
 
   const handleMenuButtonClick = () => {
