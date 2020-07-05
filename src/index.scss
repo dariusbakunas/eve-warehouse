@@ -1,11 +1,39 @@
+$css--font-face: true;
+$css--helpers: true;
+$css--body: true;
+$css--use-layer: true;
+$css--reset: true;
+$css--default-type: true;
+$css--plex: true;
+
 $feature-flags: (
-        grid-columns-16: true,
+  grid-columns-16: true,
 );
 
-@import "~carbon-components/scss/globals/scss/theme";
-@import "~carbon-components/scss/globals/scss/theme-tokens";
+@import '~carbon-components/scss/globals/scss/theme';
+@import '~carbon-components/scss/globals/scss/theme-tokens';
 
 $carbon--theme: $carbon--theme--g90;
 @include carbon--theme();
 
-@import "~carbon-components/scss/globals/scss/styles";
+@import '~carbon-components/scss/globals/scss/_css--reset.scss';
+@import '~carbon-components/scss/globals/scss/_css--font-face.scss';
+@import '~carbon-components/scss/globals/scss/_css--helpers.scss';
+@import '~carbon-components/scss/globals/scss/_css--body.scss';
+
+@import '~carbon-components/scss/globals/grid/_grid.scss';
+
+@import '~carbon-components/scss/components/button/button';
+@import '~carbon-components/scss/components/loading/loading';
+@import '~carbon-components/scss/components/modal/modal';
+@import '~carbon-components/scss/components/tile/tile';
+@import '~carbon-components/scss/components/checkbox/checkbox';
+@import '~carbon-components/scss/components/dropdown/dropdown';
+@import '~carbon-components/scss/components/list/list';
+@import '~carbon-components/scss/components/multi-select/multi-select';
+@import '~carbon-components/scss/components/notification/toast-notification';
+@import '~carbon-components/scss/components/form/form';
+@import '~carbon-components/scss/components/list-box/list-box';
+@import '~carbon-components/scss/components/data-table/data-table';
+@import '~carbon-components/scss/components/overflow-menu/overflow-menu';
+@import '~carbon-components/scss/components/ui-shell/ui-shell';
