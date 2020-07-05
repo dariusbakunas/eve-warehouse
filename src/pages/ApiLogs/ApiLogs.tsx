@@ -1,14 +1,14 @@
 import { GetCharacterNames_characters as Character, GetCharacterNames } from '../../__generated__/GetCharacterNames';
-import { Checkbox, DataTableRow, Loading, MultiSelect } from 'carbon-components-react';
+import { Checkbox, DataTableRow, Loading } from 'carbon-components-react';
 import { DataTable, IDataTableHeader } from '../../components/DataTable/DataTable';
 import { GetProcessingLogs, GetProcessingLogsVariables } from '../../__generated__/GetProcessingLogs';
 import { loader } from 'graphql.macro';
+import { OverflowMultiselect } from '../../components/OverflowMultiselect/OverflowMultiselect';
+import { SettingsAdjust32 } from '@carbon/icons-react';
 import { useNotification } from '../../components/Notifications/useNotifications';
 import { useQuery } from '@apollo/react-hooks';
 import moment from 'moment';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { OverflowMultiselect } from '../../components/OverflowMultiselect/OverflowMultiselect';
-import { SettingsAdjust32 } from '@carbon/icons-react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 const getCharacterNamesQuery = loader('../../queries/getCharacterNames.graphql');
 const getProcessingLogsQuery = loader('../../queries/getProcessingLogs.graphql');

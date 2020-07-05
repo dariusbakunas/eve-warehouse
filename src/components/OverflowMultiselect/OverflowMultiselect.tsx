@@ -82,7 +82,7 @@ export const OverflowMultiselect = <Item extends ListBoxBaseItemType>({
 
   useEffect(() => {
     onChange({ selectedItems });
-  }, [selectedItems]);
+  }, [selectedItems, onChange]);
 
   const downshiftStateReducer = (state: DownshiftState<Item>, changes: StateChangeOptions<Item>) => {
     switch (changes.type) {
@@ -119,7 +119,7 @@ export const OverflowMultiselect = <Item extends ListBoxBaseItemType>({
         >
           {({ getRootProps, isOpen, itemToString, highlightedIndex, getItemProps }) => {
             const className = clsx('bx--multi-select', {
-              ['bx--multi-select--selected']: selectedItems.length > 0,
+              'bx--multi-select--selected': selectedItems.length > 0,
             });
 
             return (
