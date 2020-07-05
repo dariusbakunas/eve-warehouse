@@ -7,5 +7,6 @@ COPY package.json .
 COPY build-server ./build-server
 COPY node_modules ./node_modules
 
-EXPOSE 3001
+ENV PORT 8080
+EXPOSE 8080
 CMD [ "npm", "run", "start" ]
