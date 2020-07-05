@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { action } from '@storybook/addon-actions';
 import { DataTable, IDataTableHeader } from '../src/components/DataTable/DataTable';
 import { DataTableRow } from 'carbon-components-react';
 import { withKnobs } from '@storybook/addon-knobs';

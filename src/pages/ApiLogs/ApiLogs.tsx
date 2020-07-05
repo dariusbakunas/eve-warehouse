@@ -1,12 +1,14 @@
-import { Checkbox, DataTableRow, Loading } from 'carbon-components-react';
+import { GetCharacterNames_characters as Character, GetCharacterNames } from '../../__generated__/GetCharacterNames';
+import { Checkbox, DataTableRow, Loading, MultiSelect } from 'carbon-components-react';
 import { DataTable, IDataTableHeader } from '../../components/DataTable/DataTable';
-import { GetCharacterNames } from '../../__generated__/GetCharacterNames';
 import { GetProcessingLogs, GetProcessingLogsVariables } from '../../__generated__/GetProcessingLogs';
 import { loader } from 'graphql.macro';
 import { useNotification } from '../../components/Notifications/useNotifications';
 import { useQuery } from '@apollo/react-hooks';
 import moment from 'moment';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { OverflowMultiselect } from '../../components/OverflowMultiselect/OverflowMultiselect';
+import { SettingsAdjust32 } from '@carbon/icons-react';
 
 const getCharacterNamesQuery = loader('../../queries/getCharacterNames.graphql');
 const getProcessingLogsQuery = loader('../../queries/getProcessingLogs.graphql');
@@ -21,13 +23,14 @@ interface ILogRow extends DataTableRow {
 
 export const ApiLogs: React.FC = () => {
   const { enqueueNotification } = useNotification();
-  const { loading: characterNamesLoading } = useQuery<GetCharacterNames>(getCharacterNamesQuery);
+  const [selectedCharacters, setSelectedCharacters] = useState<string[]>([]);
+  const { loading: characterNamesLoading, data: characterResponse } = useQuery<GetCharacterNames>(getCharacterNamesQuery);
   const { data, loading: logsLoading } = useQuery<GetProcessingLogs, GetProcessingLogsVariables>(getProcessingLogsQuery, {
-    // variables: {
-    //   filter: {
-    //     characterId: characterFilter ? characterFilter.id : null,
-    //   },
-    // },
+    variables: {
+      filter: {
+        characterIds: selectedCharacters,
+      },
+    },
     onError: (error) => {
       enqueueNotification(`Logs failed to load: ${error.message}`, null, { kind: 'error' });
     },
@@ -50,7 +53,26 @@ export const ApiLogs: React.FC = () => {
     });
   }, [data]);
 
+  const handleCharacterFilterChange = useCallback(({ selectedItems }: { selectedItems: Character[] }) => {
+    setSelectedCharacters(selectedItems.map((character) => character.id));
+  }, []);
+
   const loading = characterNamesLoading || logsLoading;
+
+  const toolbarItems = (
+    <React.Fragment>
+      <OverflowMultiselect<Character>
+        className="bx--toolbar-action"
+        flipped={true}
+        id="character-filter"
+        initialSelectedItems={[]}
+        itemToString={(character) => character?.name || ''}
+        items={characterResponse ? characterResponse.characters : []}
+        onChange={handleCharacterFilterChange}
+        renderIcon={SettingsAdjust32}
+      />
+    </React.Fragment>
+  );
 
   return (
     <div className="page-container api-logs">
@@ -69,6 +91,7 @@ export const ApiLogs: React.FC = () => {
           { header: 'Message', key: 'message' },
         ]}
         rows={tableData}
+        toolbarItems={toolbarItems}
         withSearch={true}
       />
     </div>

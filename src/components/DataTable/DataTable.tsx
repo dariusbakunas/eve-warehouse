@@ -13,7 +13,7 @@ import {
   TableToolbarSearch,
 } from 'carbon-components-react';
 import { DataTableHeader, DataTableProps, DataTableRow } from 'carbon-components-react/lib/components/DataTable/DataTable';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, ReactNode } from 'react';
 
 export interface IDataTableHeader<K extends string = string> extends DataTableHeader<K> {
   customRender?: (cell: DataTableCell<any, DataTableHeader<string>>) => React.ReactNode;
@@ -25,6 +25,7 @@ interface IDataTableProps<R extends DataTableRow, H extends IDataTableHeader> {
   columns: DataTableProps<R, H>['headers'];
   rows: DataTableProps<R, H>['rows'];
   title?: React.ReactNode;
+  toolbarItems?: ReactNode;
 }
 
 export const DataTable = <R extends DataTableRow = DataTableRow, H extends IDataTableHeader = IDataTableHeader>({
@@ -33,8 +34,9 @@ export const DataTable = <R extends DataTableRow = DataTableRow, H extends IData
   rows,
   title,
   withSearch,
+  toolbarItems,
 }: PropsWithChildren<IDataTableProps<R, H>>): React.ReactElement<PropsWithChildren<IDataTableProps<R, H>>> => {
-  const withToolbar = withSearch;
+  const withToolbar = !!(withSearch || toolbarItems);
 
   return (
     <CarbonTable
@@ -45,7 +47,10 @@ export const DataTable = <R extends DataTableRow = DataTableRow, H extends IData
           <TableContainer title={title} description={description}>
             {withToolbar && (
               <TableToolbar>
-                <TableToolbarContent>{withSearch && <TableToolbarSearch onChange={onInputChange} />}</TableToolbarContent>
+                <TableToolbarContent>
+                  {withSearch && <TableToolbarSearch onChange={onInputChange} />}
+                  {toolbarItems}
+                </TableToolbarContent>
               </TableToolbar>
             )}
             <Table {...getTableProps()}>
