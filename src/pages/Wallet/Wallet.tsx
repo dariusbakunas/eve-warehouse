@@ -1,5 +1,6 @@
 import { Route, useHistory, useLocation } from 'react-router';
 import { Tab, Tabs } from 'carbon-components-react';
+import { Transactions } from './Transactions';
 import React, { useCallback, useEffect, useMemo } from 'react';
 
 enum WalletRoutes {
@@ -46,14 +47,15 @@ export const Wallet: React.FC = () => {
     if (pathname === '/wallet') {
       history.push('/wallet/transactions');
     }
-  }, [pathname]);
+  }, [pathname, history]);
 
   return (
     <div className="page-container wallet">
+      <h2>Wallet</h2>
       <Tabs onSelectionChange={handleTabChange} selected={selectedIndex}>
         <Tab href="/transactions" id="tab-1" label="Transactions">
           <Route path="/wallet/transactions">
-            <div>transactions</div>
+            <Transactions />
           </Route>
         </Tab>
         <Tab href="/orders" id="tab-2" label="Market Orders">

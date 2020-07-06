@@ -7,6 +7,7 @@
 @import './components/CharacterTile/CharacterTile';
 @import './components/DataTable/DataTable';
 @import './components/OverflowMultiselect/OverflowMultiselect';
+@import './components/ItemCell/ItemCell';
 
 @import './pages/Login/Login';
 @import './pages/Characters/Characters';
@@ -27,4 +28,8 @@
   margin-bottom: $layout-05;
   padding-left: $layout-02;
   padding-right: $layout-02;
+}
+
+.page-container > h2 {
+  margin-bottom: $layout-02;
 }

@@ -1,6 +1,5 @@
 import {
   DataTable as CarbonTable,
-  DataTableCell,
   Table,
   TableBody,
   TableCell,
@@ -13,22 +12,24 @@ import {
   TableToolbarSearch,
 } from 'carbon-components-react';
 import { DataTableHeader, DataTableProps, DataTableRow } from 'carbon-components-react/lib/components/DataTable/DataTable';
-import React, { PropsWithChildren, ReactNode } from 'react';
+import React, { PropsWithChildren, ReactNode, useMemo } from 'react';
+import clsx from 'clsx';
 
-export interface IDataTableHeader<K extends string = string> extends DataTableHeader<K> {
-  customRender?: (cell: DataTableCell<any, DataTableHeader<string>>) => React.ReactNode;
+export interface IDataTableHeader<R extends DataTableRow, K extends string = string> extends DataTableHeader<K> {
+  customRender?: (row: R) => React.ReactNode;
+  alignRight?: boolean;
 }
 
-interface IDataTableProps<R extends DataTableRow, H extends IDataTableHeader> {
+interface IDataTableProps<R extends DataTableRow, H extends IDataTableHeader<R>> {
   withSearch?: boolean;
   description?: React.ReactNode;
-  columns: DataTableProps<R, H>['headers'];
+  columns: IDataTableHeader<R>[];
   rows: DataTableProps<R, H>['rows'];
   title?: React.ReactNode;
   toolbarItems?: ReactNode;
 }
 
-export const DataTable = <R extends DataTableRow = DataTableRow, H extends IDataTableHeader = IDataTableHeader>({
+export const DataTable = <R extends DataTableRow = DataTableRow, H extends IDataTableHeader<R> = IDataTableHeader<R>>({
   description,
   columns,
   rows,
@@ -37,6 +38,13 @@ export const DataTable = <R extends DataTableRow = DataTableRow, H extends IData
   toolbarItems,
 }: PropsWithChildren<IDataTableProps<R, H>>): React.ReactElement<PropsWithChildren<IDataTableProps<R, H>>> => {
   const withToolbar = !!(withSearch || toolbarItems);
+
+  const rowIdMap = useMemo(() => {
+    return rows.reduce<{ [key: string]: R }>((acc, row) => {
+      acc[row.id] = row;
+      return acc;
+    }, {});
+  }, [rows]);
 
   return (
     <CarbonTable
@@ -56,20 +64,37 @@ export const DataTable = <R extends DataTableRow = DataTableRow, H extends IData
             <Table {...getTableProps()}>
               <TableHead>
                 <TableRow>
-                  {headers.map((header) => (
-                    <TableHeader {...getHeaderProps({ header })} key={header.key}>
-                      {header.header}
-                    </TableHeader>
-                  ))}
+                  {headers.map((header) => {
+                    const className = clsx({
+                      'align-right': header.alignRight,
+                    });
+
+                    return (
+                      <TableHeader className={className} {...getHeaderProps({ header })} key={header.key}>
+                        {header.header}
+                      </TableHeader>
+                    );
+                  })}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows.map((row) => (
                   <TableRow {...getRowProps({ row })} key={row.id}>
                     {row.cells.map((cell, cellIndex) => {
+                      const header = headers[cellIndex];
+
+                      const className = clsx({
+                        'align-right': header.alignRight,
+                      });
+
                       const customRender = headers[cellIndex].customRender;
-                      const value = customRender ? customRender(cell) : cell.value;
-                      return <TableCell key={cell.id}>{value}</TableCell>;
+                      const originalRow = rowIdMap[row.id];
+                      const value = customRender ? customRender(originalRow) : cell.value;
+                      return (
+                        <TableCell className={className} key={cell.id}>
+                          {value}
+                        </TableCell>
+                      );
                     })}
                   </TableRow>
                 ))}

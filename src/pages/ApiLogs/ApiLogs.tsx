@@ -76,9 +76,9 @@ export const ApiLogs: React.FC = () => {
 
   return (
     <div className="page-container api-logs">
+      <h2>API Logs</h2>
       {loading && <Loading description="Active loading indicator" withOverlay={true} />}
-      <DataTable<ILogRow, IDataTableHeader<keyof ILogRow>>
-        title="API Logs"
+      <DataTable<ILogRow>
         columns={[
           { header: 'Date', key: 'date' },
           { header: 'Character', key: 'character' },
@@ -86,7 +86,7 @@ export const ApiLogs: React.FC = () => {
           {
             header: 'Status',
             key: 'success',
-            customRender: (cell) => <Checkbox id={'check-' + cell.id} checked={cell.value} labelText="" readOnly={true} />,
+            customRender: (cell) => <Checkbox id={'check-' + cell.id} checked={cell.success} labelText="" readOnly={true} />,
           },
           { header: 'Message', key: 'message' },
         ]}

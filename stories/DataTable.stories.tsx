@@ -81,11 +81,11 @@ export const Default = () => {
     },
   ];
 
-  const columns: IDataTableHeader<keyof IRow>[] = [
+  const columns: IDataTableHeader<IRow, keyof IRow>[] = [
     {
       header: 'Color',
       key: 'color',
-      customRender: (cell) => <span>{cell.value}</span>,
+      customRender: (cell) => <span>{cell.color}</span>,
     },
     {
       header: 'Category',
@@ -97,13 +97,5 @@ export const Default = () => {
     },
   ];
 
-  return (
-    <DataTable<IRow, IDataTableHeader<keyof IRow>>
-      withSearch={true}
-      columns={columns}
-      rows={sampleData}
-      title="Sample Table"
-      description="Table description goes here"
-    />
-  );
+  return <DataTable<IRow> withSearch={true} columns={columns} rows={sampleData} title="Sample Table" description="Table description goes here" />;
 };

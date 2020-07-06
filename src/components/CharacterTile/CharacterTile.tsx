@@ -38,7 +38,7 @@ export const CharacterTile: React.FC<ICharacterTile> = ({ character, onUpdate, o
         </div>
         <div className="character-tile-header-action">
           <OverflowMenu ariaLabel="Character Menu" direction="bottom" iconDescription="" flipped={true}>
-            <OverflowMenuItem itemText="Update Scopes" primaryFocus onClick={handleUpdate} />
+            <OverflowMenuItem itemText="Update Scopes" onClick={handleUpdate} />
             <OverflowMenuItem itemText="Remove" isDelete={true} onClick={handleRemove} />
           </OverflowMenu>
         </div>

@@ -1,0 +1,9 @@
+.item-cell {
+  display: flex;
+  align-items: center;
+
+  & > div {
+    display: inline-block;
+    padding-right: 0.125rem;
+  }
+}
