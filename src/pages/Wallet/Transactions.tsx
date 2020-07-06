@@ -1,18 +1,18 @@
 import { DataTable, IDataTableHeader } from '../../components/DataTable/DataTable';
-import { DataTableRow, Loading } from 'carbon-components-react';
+import { DataTableRow, Loading, Pagination } from 'carbon-components-react';
+import { getItemImageUrl } from '../../utils/getItemImageUrl';
 import {
   GetTransactions,
   GetTransactionsVariables,
   GetTransactions_walletTransactions_transactions as WalletTransaction,
 } from '../../__generated__/GetTransactions';
+import { ItemCell } from '../../components/ItemCell/ItemCell';
 import { loader } from 'graphql.macro';
 import { Order, WalletTransactionOrderBy } from '../../__generated__/globalTypes';
 import { useNotification } from '../../components/Notifications/useNotifications';
 import { useQuery } from '@apollo/react-hooks';
 import moment from 'moment';
-import React, { useMemo, useState } from 'react';
-import { getItemImageUrl } from '../../utils/getItemImageUrl';
-import { ItemCell } from '../../components/ItemCell/ItemCell';
+import React, { useCallback, useMemo, useState } from 'react';
 
 const getTransactionsQuery = loader('../../queries/getTransactions.graphql');
 
@@ -75,6 +75,14 @@ export const Transactions: React.FC = () => {
     });
   }, [transactionsResponse]);
 
+  const handlePagingChange = useCallback(
+    (data: { page: number; pageSize: number }) => {
+      setPage(data.page - 1);
+      setRowsPerPage(data.pageSize);
+    },
+    [setPage, setRowsPerPage]
+  );
+
   const loading = transactionsLoading;
 
   return (
@@ -92,6 +100,13 @@ export const Transactions: React.FC = () => {
           { header: 'Station', key: 'station' },
         ]}
         rows={tableData}
+      />
+      <Pagination
+        onChange={handlePagingChange}
+        pageSizes={[10, 20, 30, 40]}
+        page={page + 1}
+        pageSize={rowsPerPage}
+        totalItems={transactionsResponse?.walletTransactions.total}
       />
     </React.Fragment>
   );
