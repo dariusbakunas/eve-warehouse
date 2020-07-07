@@ -12,12 +12,13 @@ import {
   TableToolbarSearch,
 } from 'carbon-components-react';
 import { DataTableHeader, DataTableProps, DataTableRow } from 'carbon-components-react/lib/components/DataTable/DataTable';
-import React, { PropsWithChildren, ReactNode, useMemo } from 'react';
 import clsx from 'clsx';
+import React, { PropsWithChildren, ReactNode, useMemo } from 'react';
 
 export interface IDataTableHeader<R extends DataTableRow, K extends string = string> extends DataTableHeader<K> {
   customRender?: (row: R) => React.ReactNode;
   alignRight?: boolean;
+  cellClassName?: (row: R) => React.HTMLAttributes<HTMLElement>['className'];
 }
 
 interface IDataTableProps<R extends DataTableRow, H extends IDataTableHeader<R>> {
@@ -82,13 +83,14 @@ export const DataTable = <R extends DataTableRow = DataTableRow, H extends IData
                   <TableRow {...getRowProps({ row })} key={row.id}>
                     {row.cells.map((cell, cellIndex) => {
                       const header = headers[cellIndex];
+                      const originalRow = rowIdMap[row.id];
+                      const cellClassName = header.cellClassName ? header.cellClassName(originalRow) : null;
 
-                      const className = clsx({
+                      const className = clsx(cellClassName, {
                         'align-right': header.alignRight,
                       });
 
                       const customRender = headers[cellIndex].customRender;
-                      const originalRow = rowIdMap[row.id];
                       const value = customRender ? customRender(originalRow) : cell.value;
                       return (
                         <TableCell className={className} key={cell.id}>

@@ -1,11 +1,7 @@
-import { DataTable, IDataTableHeader } from '../../components/DataTable/DataTable';
+import { DataTable } from '../../components/DataTable/DataTable';
 import { DataTableRow, Loading, Pagination } from 'carbon-components-react';
 import { getItemImageUrl } from '../../utils/getItemImageUrl';
-import {
-  GetTransactions,
-  GetTransactionsVariables,
-  GetTransactions_walletTransactions_transactions as WalletTransaction,
-} from '../../__generated__/GetTransactions';
+import { GetTransactions, GetTransactionsVariables } from '../../__generated__/GetTransactions';
 import { ItemCell } from '../../components/ItemCell/ItemCell';
 import { loader } from 'graphql.macro';
 import { Order, WalletTransactionOrderBy } from '../../__generated__/globalTypes';
@@ -26,14 +22,15 @@ interface ITransactionRow extends DataTableRow {
   quantity: string;
   credit: string;
   station: string;
+  isBuy: boolean;
 }
 
 export const Transactions: React.FC = () => {
   const { enqueueNotification } = useNotification();
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [order, setOrder] = useState<Order>(Order.desc);
-  const [orderBy, setOrderBy] = useState<WalletTransactionOrderBy>(WalletTransactionOrderBy.date);
+  const [order] = useState<Order>(Order.desc);
+  const [orderBy] = useState<WalletTransactionOrderBy>(WalletTransactionOrderBy.date);
 
   const { loading: transactionsLoading, data: transactionsResponse } = useQuery<GetTransactions, GetTransactionsVariables>(getTransactionsQuery, {
     variables: {
@@ -71,6 +68,7 @@ export const Transactions: React.FC = () => {
         unitPrice: entry.unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2 }),
         quantity: entry.quantity.toLocaleString(),
         station: entry.location.name,
+        isBuy: entry.isBuy,
       };
     });
   }, [transactionsResponse]);
@@ -96,14 +94,16 @@ export const Transactions: React.FC = () => {
           { header: 'Group', key: 'group' },
           { header: 'Price', key: 'unitPrice', alignRight: true },
           { header: 'Quantity', key: 'quantity', alignRight: true },
-          { header: 'Credit', key: 'credit', alignRight: true },
+          { header: 'Credit', key: 'credit', alignRight: true, cellClassName: (row) => (row.isBuy ? 'negative' : 'positive') },
           { header: 'Station', key: 'station' },
         ]}
         rows={tableData}
       />
       <Pagination
+        backwardText="Previous page"
+        forwardText="Next page"
         onChange={handlePagingChange}
-        pageSizes={[10, 20, 30, 40]}
+        pageSizes={[10, 20, 30, 40, 50]}
         page={page + 1}
         pageSize={rowsPerPage}
         totalItems={transactionsResponse?.walletTransactions.total}

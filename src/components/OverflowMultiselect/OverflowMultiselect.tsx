@@ -9,12 +9,11 @@ import React, { PropsWithChildren, useCallback, useEffect, useState } from 'reac
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type ListBoxBaseItemType = object | string;
-type ReactAttr<T = HTMLElement> = React.HTMLAttributes<T>;
 
 interface IOverflowMultiselectProps<Item extends ListBoxBaseItemType> {
-  className?: ReactAttr['className'];
+  className?: React.HTMLAttributes<HTMLElement>['className'];
   flipped?: OverflowMenuProps['flipped'];
-  id: NonNullable<ReactAttr['id']>;
+  id: NonNullable<React.HTMLAttributes<HTMLElement>['id']>;
   initialSelectedItems: Item[];
   items: Item[];
   itemToString: (item: Item | null) => string;

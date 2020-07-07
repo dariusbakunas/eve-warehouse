@@ -1,6 +1,6 @@
 import { GetCharacterNames_characters as Character, GetCharacterNames } from '../../__generated__/GetCharacterNames';
 import { Checkbox, DataTableRow, Loading } from 'carbon-components-react';
-import { DataTable, IDataTableHeader } from '../../components/DataTable/DataTable';
+import { DataTable } from '../../components/DataTable/DataTable';
 import { GetProcessingLogs, GetProcessingLogsVariables } from '../../__generated__/GetProcessingLogs';
 import { loader } from 'graphql.macro';
 import { OverflowMultiselect } from '../../components/OverflowMultiselect/OverflowMultiselect';
