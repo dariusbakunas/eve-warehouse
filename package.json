@@ -66,7 +66,7 @@
     "build:client": "react-scripts build && cp -R ./build ./build-server/client && rm -rf ./build",
     "start": "node --max-http-header-size=80000 build-server/server/index.js",
     "start:client": "react-scripts start",
-    "test": "react-scripts test",
+    "test": "TZ=UTC react-scripts test",
     "eject": "react-scripts eject",
     "schema:types": "apollo client:codegen --target=typescript --config=apollo.config.js --outputFlat ./src/__generated__",
     "schema:update": "apollo client:download-schema --endpoint=http://localhost:4000/graphql src/__generated__/schema.graphql",
@@ -92,6 +92,13 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!<rootDir>/node_modules/",
+      "!src/__generated__"
     ]
   },
   "devDependencies": {
