@@ -1,4 +1,4 @@
-import { DataTable, IDataTableHeader } from '../../components/DataTable/DataTable';
+import { DataTable } from '../../components/DataTable/DataTable';
 import { DataTableRow, Loading, Pagination } from 'carbon-components-react';
 import { DataTableSortState } from 'carbon-components-react/lib/components/DataTable/state/sorting';
 import { getItemImageUrl } from '../../utils/getItemImageUrl';
