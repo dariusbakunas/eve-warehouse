@@ -12,32 +12,40 @@ import {
   TableToolbarSearch,
 } from 'carbon-components-react';
 import { DataTableHeader, DataTableProps, DataTableRow } from 'carbon-components-react/lib/components/DataTable/DataTable';
+import { DataTableSortState } from 'carbon-components-react/lib/components/DataTable/state/sorting';
 import clsx from 'clsx';
-import React, { PropsWithChildren, ReactNode, useMemo } from 'react';
+import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 
-export interface IDataTableHeader<R extends DataTableRow, K extends string = string> extends DataTableHeader<K> {
+export interface IDataTableHeader<R extends DataTableRow> extends DataTableHeader<Extract<keyof R, string>> {
   customRender?: (row: R) => React.ReactNode;
   alignRight?: boolean;
   cellClassName?: (row: R) => React.HTMLAttributes<HTMLElement>['className'];
+  isSortable?: boolean;
 }
 
-interface IDataTableProps<R extends DataTableRow, H extends IDataTableHeader<R>> {
+interface IDataTableProps<R extends DataTableRow> {
   withSearch?: boolean;
   description?: React.ReactNode;
   columns: IDataTableHeader<R>[];
-  rows: DataTableProps<R, H>['rows'];
+  rows: DataTableProps<R, IDataTableHeader<R>>['rows'];
   title?: React.ReactNode;
   toolbarItems?: ReactNode;
+  onOrderChange?: (orderBy: Extract<keyof R, string>) => void;
+  orderBy?: Extract<keyof R, string>;
+  sortDirection?: DataTableSortState;
 }
 
-export const DataTable = <R extends DataTableRow = DataTableRow, H extends IDataTableHeader<R> = IDataTableHeader<R>>({
+export const DataTable = <R extends DataTableRow = DataTableRow>({
   description,
   columns,
   rows,
   title,
   withSearch,
   toolbarItems,
-}: PropsWithChildren<IDataTableProps<R, H>>): React.ReactElement<PropsWithChildren<IDataTableProps<R, H>>> => {
+  orderBy,
+  sortDirection,
+  onOrderChange,
+}: PropsWithChildren<IDataTableProps<R>>): React.ReactElement<PropsWithChildren<IDataTableProps<R>>> => {
   const withToolbar = !!(withSearch || toolbarItems);
 
   const rowIdMap = useMemo(() => {
@@ -46,6 +54,15 @@ export const DataTable = <R extends DataTableRow = DataTableRow, H extends IData
       return acc;
     }, {});
   }, [rows]);
+
+  const handleHeaderClick = useCallback(
+    (header: IDataTableHeader<R>) => {
+      if (header.isSortable && onOrderChange) {
+        onOrderChange(header.key);
+      }
+    },
+    [onOrderChange]
+  );
 
   return (
     <CarbonTable
@@ -62,7 +79,7 @@ export const DataTable = <R extends DataTableRow = DataTableRow, H extends IData
                 </TableToolbarContent>
               </TableToolbar>
             )}
-            <Table {...getTableProps()}>
+            <Table {...getTableProps()} isSortable={true}>
               <TableHead>
                 <TableRow>
                   {headers.map((header) => {
@@ -70,8 +87,20 @@ export const DataTable = <R extends DataTableRow = DataTableRow, H extends IData
                       'align-right': header.alignRight,
                     });
 
+                    const isSortHeader = header.isSortable && header.key === orderBy;
+                    const areaSort = sortDirection === 'ASC' ? 'ascending' : sortDirection === 'DESC' ? 'descending' : 'none';
+
                     return (
-                      <TableHeader className={className} {...getHeaderProps({ header })} key={header.key}>
+                      <TableHeader
+                        className={className}
+                        {...getHeaderProps({ header })}
+                        key={header.key}
+                        isSortHeader={isSortHeader}
+                        sortDirection={sortDirection}
+                        aria-sort={areaSort}
+                        isSortable={header.isSortable}
+                        onClick={(e) => handleHeaderClick(header)}
+                      >
                         {header.header}
                       </TableHeader>
                     );

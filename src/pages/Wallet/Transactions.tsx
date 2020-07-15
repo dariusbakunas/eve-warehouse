@@ -1,10 +1,11 @@
-import { DataTable } from '../../components/DataTable/DataTable';
+import { DataTable, IDataTableHeader } from '../../components/DataTable/DataTable';
 import { DataTableRow, Loading, Pagination } from 'carbon-components-react';
+import { DataTableSortState } from 'carbon-components-react/lib/components/DataTable/state/sorting';
 import { getItemImageUrl } from '../../utils/getItemImageUrl';
 import { GetTransactions, GetTransactionsVariables } from '../../__generated__/GetTransactions';
 import { ItemCell } from '../../components/ItemCell/ItemCell';
 import { loader } from 'graphql.macro';
-import { Order, WalletTransactionOrderBy } from '../../__generated__/globalTypes';
+import { Order, WalletTransactionOrderBy, WalletTransactionOrderByInput } from '../../__generated__/globalTypes';
 import { useNotification } from '../../components/Notifications/useNotifications';
 import { useQuery } from '@apollo/react-hooks';
 import moment from 'moment';
@@ -29,8 +30,34 @@ export const Transactions: React.FC = () => {
   const { enqueueNotification } = useNotification();
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [order] = useState<Order>(Order.desc);
-  const [orderBy] = useState<WalletTransactionOrderBy>(WalletTransactionOrderBy.date);
+  const [sortDirection, setSortDirection] = useState<DataTableSortState>('DESC');
+  const [orderBy, setOrderBy] = useState<Extract<keyof ITransactionRow, string>>(WalletTransactionOrderBy.date);
+
+  const gqlOrderBy: WalletTransactionOrderByInput | null = useMemo(() => {
+    let column;
+
+    if (orderBy in WalletTransactionOrderBy) {
+      column = orderBy as WalletTransactionOrderBy;
+    }
+
+    switch (orderBy) {
+      case 'itemName':
+        column = WalletTransactionOrderBy.item;
+        break;
+      case 'group':
+        column = WalletTransactionOrderBy.invGroup;
+        break;
+    }
+
+    if (column && sortDirection !== 'NONE') {
+      return {
+        column: column,
+        order: sortDirection === 'ASC' ? Order.asc : Order.desc,
+      };
+    } else {
+      return null;
+    }
+  }, [sortDirection, orderBy]);
 
   const { loading: transactionsLoading, data: transactionsResponse } = useQuery<GetTransactions, GetTransactionsVariables>(getTransactionsQuery, {
     variables: {
@@ -41,10 +68,7 @@ export const Transactions: React.FC = () => {
       filter: {
         characterId: null,
       },
-      orderBy: {
-        column: orderBy,
-        order: order,
-      },
+      orderBy: gqlOrderBy,
     },
     onError: (error) => {
       enqueueNotification(`Wallet transactions failed to load: ${error.message}`, null, { kind: 'error' });
@@ -81,6 +105,32 @@ export const Transactions: React.FC = () => {
     [setPage, setRowsPerPage]
   );
 
+  const handleOrderChange = useCallback(
+    (key: Extract<keyof ITransactionRow, string>) => {
+      let newSortDirection: DataTableSortState;
+
+      if (key === orderBy) {
+        switch (sortDirection) {
+          case 'ASC':
+            newSortDirection = 'DESC';
+            break;
+          case 'DESC':
+            newSortDirection = 'NONE';
+            break;
+          case 'NONE':
+            newSortDirection = 'ASC';
+        }
+      } else {
+        newSortDirection = 'ASC';
+        setOrderBy(key);
+      }
+
+      setPage(0);
+      setSortDirection(newSortDirection);
+    },
+    [sortDirection, orderBy]
+  );
+
   const loading = transactionsLoading;
 
   return (
@@ -88,16 +138,19 @@ export const Transactions: React.FC = () => {
       {loading && <Loading description="Active loading indicator" withOverlay={true} />}
       <DataTable<ITransactionRow>
         columns={[
-          { header: 'Date', key: 'date' },
-          { header: 'Character', key: 'character' },
-          { header: 'Item', key: 'item', customRender: (row) => <ItemCell imageUrl={row.imageUrl} name={row.itemName} /> },
-          { header: 'Group', key: 'group' },
-          { header: 'Price', key: 'unitPrice', alignRight: true },
-          { header: 'Quantity', key: 'quantity', alignRight: true },
-          { header: 'Credit', key: 'credit', alignRight: true, cellClassName: (row) => (row.isBuy ? 'negative' : 'positive') },
-          { header: 'Station', key: 'station' },
+          { header: 'Date', key: 'date', isSortable: true },
+          { header: 'Character', key: 'character', isSortable: true },
+          { header: 'Item', key: 'itemName', customRender: (row) => <ItemCell imageUrl={row.imageUrl} name={row.itemName} />, isSortable: true },
+          { header: 'Group', key: 'group', isSortable: true },
+          { header: 'Price', key: 'unitPrice', alignRight: true, isSortable: true },
+          { header: 'Quantity', key: 'quantity', alignRight: true, isSortable: true },
+          { header: 'Credit', key: 'credit', alignRight: true, cellClassName: (row) => (row.isBuy ? 'negative' : 'positive'), isSortable: true },
+          { header: 'Station', key: 'station', isSortable: true },
         ]}
         rows={tableData}
+        orderBy={orderBy}
+        sortDirection={sortDirection}
+        onOrderChange={handleOrderChange}
       />
       <Pagination
         backwardText="Previous page"
