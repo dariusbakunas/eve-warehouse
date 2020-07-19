@@ -113,14 +113,14 @@ export const DataTable = <R extends DataTableRow = DataTableRow>({
                     {row.cells.map((cell, cellIndex) => {
                       const header = headers[cellIndex];
                       const originalRow = rowIdMap[row.id];
-                      const cellClassName = header.cellClassName ? header.cellClassName(originalRow) : null;
+                      const cellClassName = header.cellClassName && originalRow ? header.cellClassName(originalRow) : null;
 
                       const className = clsx(cellClassName, {
                         'align-right': header.alignRight,
                       });
 
                       const customRender = headers[cellIndex].customRender;
-                      const value = customRender ? customRender(originalRow) : cell.value;
+                      const value = customRender && originalRow ? customRender(originalRow) : cell.value;
                       return (
                         <TableCell className={className} key={cell.id}>
                           {value}
