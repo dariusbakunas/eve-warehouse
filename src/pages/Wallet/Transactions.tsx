@@ -8,13 +8,13 @@ import { GetTransactions, GetTransactionsVariables } from '../../__generated__/G
 import { ItemCell } from '../../components/ItemCell/ItemCell';
 import { loader } from 'graphql.macro';
 import { Order, WalletTransactionOrderBy, WalletTransactionOrderByInput } from '../../__generated__/globalTypes';
+import { OverflowMultiselect } from '../../components/OverflowMultiselect/OverflowMultiselect';
 import { useLazyQuery, useQuery } from '@apollo/react-hooks';
 import { useNotification } from '../../components/Notifications/useNotifications';
+import { User32 } from '@carbon/icons-react';
 import _ from 'lodash';
 import moment from 'moment';
 import React, { useCallback, useMemo, useState } from 'react';
-import { OverflowMultiselect } from '../../components/OverflowMultiselect/OverflowMultiselect';
-import { SettingsAdjust32 } from '@carbon/icons-react';
 
 const getCharacterNamesQuery = loader('../../queries/getCharacterNames.graphql');
 const getTransactionsQuery = loader('../../queries/getTransactions.graphql');
@@ -221,7 +221,7 @@ export const Transactions: React.FC = () => {
         itemToString={(character) => character?.name || ''}
         items={characterResponse ? characterResponse.characters : []}
         onChange={handleCharacterFilterChange}
-        renderIcon={SettingsAdjust32}
+        renderIcon={User32}
       />
     </React.Fragment>
   );

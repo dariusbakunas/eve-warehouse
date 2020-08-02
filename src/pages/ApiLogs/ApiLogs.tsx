@@ -4,7 +4,7 @@ import { DataTable } from '../../components/DataTable/DataTable';
 import { GetProcessingLogs, GetProcessingLogsVariables } from '../../__generated__/GetProcessingLogs';
 import { loader } from 'graphql.macro';
 import { OverflowMultiselect } from '../../components/OverflowMultiselect/OverflowMultiselect';
-import { SettingsAdjust32 } from '@carbon/icons-react';
+import { User32 } from '@carbon/icons-react';
 import { useNotification } from '../../components/Notifications/useNotifications';
 import { useQuery } from '@apollo/react-hooks';
 import moment from 'moment';
@@ -69,7 +69,7 @@ export const ApiLogs: React.FC = () => {
         itemToString={(character) => character?.name || ''}
         items={characterResponse ? characterResponse.characters : []}
         onChange={handleCharacterFilterChange}
-        renderIcon={SettingsAdjust32}
+        renderIcon={User32}
       />
     </React.Fragment>
   );
