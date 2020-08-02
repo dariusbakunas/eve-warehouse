@@ -4,9 +4,9 @@ import { DataTable } from '../../components/DataTable/DataTable';
 import { GetProcessingLogs, GetProcessingLogsVariables } from '../../__generated__/GetProcessingLogs';
 import { loader } from 'graphql.macro';
 import { OverflowMultiselect } from '../../components/OverflowMultiselect/OverflowMultiselect';
-import { User32 } from '@carbon/icons-react';
 import { useNotification } from '../../components/Notifications/useNotifications';
 import { useQuery } from '@apollo/react-hooks';
+import { User32 } from '@carbon/icons-react';
 import moment from 'moment';
 import React, { useCallback, useMemo, useState } from 'react';
 
