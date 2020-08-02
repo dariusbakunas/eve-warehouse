@@ -1,3 +1,4 @@
+import { GetCharacterNames_characters as Character, GetCharacterNames } from '../../__generated__/GetCharacterNames';
 import { DataTable } from '../../components/DataTable/DataTable';
 import { DataTableRow, Loading, Pagination } from 'carbon-components-react';
 import { DataTableSortState } from 'carbon-components-react/lib/components/DataTable/state/sorting';
@@ -12,7 +13,10 @@ import { useNotification } from '../../components/Notifications/useNotifications
 import _ from 'lodash';
 import moment from 'moment';
 import React, { useCallback, useMemo, useState } from 'react';
+import { OverflowMultiselect } from '../../components/OverflowMultiselect/OverflowMultiselect';
+import { SettingsAdjust32 } from '@carbon/icons-react';
 
+const getCharacterNamesQuery = loader('../../queries/getCharacterNames.graphql');
 const getTransactionsQuery = loader('../../queries/getTransactions.graphql');
 const getTransactionIdsQuery = loader('../../queries/getTransactionIds.graphql');
 
@@ -31,12 +35,13 @@ interface ITransactionRow extends DataTableRow {
 
 export const Transactions: React.FC = () => {
   const { enqueueNotification } = useNotification();
+  const [selectedCharacters, setSelectedCharacters] = useState<string[]>([]);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sortDirection, setSortDirection] = useState<DataTableSortState>('DESC');
   const [orderBy, setOrderBy] = useState<Extract<keyof ITransactionRow, string>>(WalletTransactionOrderBy.date);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
-  const [itemFilter, setItemFilter] = useState<string>();
+  const [itemFilter, setItemFilter] = useState<string | null>();
 
   const gqlOrderBy: WalletTransactionOrderByInput | null = useMemo(() => {
     let column;
@@ -64,6 +69,8 @@ export const Transactions: React.FC = () => {
     }
   }, [sortDirection, orderBy]);
 
+  const { loading: characterNamesLoading, data: characterResponse } = useQuery<GetCharacterNames>(getCharacterNamesQuery);
+
   const { loading: transactionsLoading, data: transactionsResponse } = useQuery<GetTransactions, GetTransactionsVariables>(getTransactionsQuery, {
     variables: {
       page: {
@@ -72,7 +79,7 @@ export const Transactions: React.FC = () => {
       },
       filter: {
         item: itemFilter,
-        characterId: null,
+        characterIds: selectedCharacters,
       },
       orderBy: gqlOrderBy,
     },
@@ -82,6 +89,12 @@ export const Transactions: React.FC = () => {
   });
 
   const [getTransactionIds, { loading: idsLoading }] = useLazyQuery<GetTransactionIds, GetTransactionIdsVariables>(getTransactionIdsQuery, {
+    variables: {
+      filter: {
+        item: itemFilter,
+        characterIds: selectedCharacters,
+      },
+    },
     fetchPolicy: 'no-cache',
     onCompleted: (data) => {
       setSelectedRows(new Set(data.walletTransactionIds));
@@ -164,8 +177,12 @@ export const Transactions: React.FC = () => {
   );
 
   const handleSearch = useCallback(
-    _.debounce((input: string) => {
-      setItemFilter(input);
+    _.debounce((input: string | null) => {
+      if (input && input.length) {
+        setItemFilter(input);
+      } else {
+        setItemFilter(null);
+      }
     }, 500),
     [setItemFilter]
   );
@@ -190,7 +207,26 @@ export const Transactions: React.FC = () => {
     [tableData, totalRows, getTransactionIds]
   );
 
-  const loading = transactionsLoading || idsLoading;
+  const handleCharacterFilterChange = useCallback(({ selectedItems }: { selectedItems: Character[] }) => {
+    setSelectedCharacters(selectedItems.map((character) => character.id));
+  }, []);
+
+  const toolbarItems = (
+    <React.Fragment>
+      <OverflowMultiselect<Character>
+        className="bx--toolbar-action"
+        flipped={true}
+        id="character-filter"
+        initialSelectedItems={[]}
+        itemToString={(character) => character?.name || ''}
+        items={characterResponse ? characterResponse.characters : []}
+        onChange={handleCharacterFilterChange}
+        renderIcon={SettingsAdjust32}
+      />
+    </React.Fragment>
+  );
+
+  const loading = transactionsLoading || idsLoading || characterNamesLoading;
 
   return (
     <React.Fragment>
@@ -216,6 +252,7 @@ export const Transactions: React.FC = () => {
         onAllSelect={handleSelectAllRows}
         onSearch={handleSearch}
         withSearch={true}
+        toolbarItems={toolbarItems}
       />
       <Pagination
         backwardText="Previous page"

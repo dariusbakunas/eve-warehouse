@@ -36,7 +36,7 @@ interface IDataTableProps<R extends DataTableRow> {
   title?: React.ReactNode;
   toolbarItems?: ReactNode;
   onOrderChange?: (orderBy: Extract<keyof R, string>) => void;
-  onSearch?: (input: string) => void;
+  onSearch?: (input: string | null) => void;
   orderBy?: Extract<keyof R, string>;
   sortDirection?: DataTableSortState;
   totalRows: number;
@@ -101,7 +101,7 @@ export const DataTable = <R extends DataTableRow = DataTableRow>({
   const handleSearch = useCallback(
     (event: React.SyntheticEvent<HTMLInputElement, Event>) => {
       if (onSearch) {
-        onSearch(event.currentTarget.value);
+        onSearch(event.currentTarget ? event.currentTarget.value : null);
       }
     },
     [onSearch]
