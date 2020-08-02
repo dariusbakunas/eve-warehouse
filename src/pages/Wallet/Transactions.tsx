@@ -14,7 +14,7 @@ import { useNotification } from '../../components/Notifications/useNotifications
 import { User32 } from '@carbon/icons-react';
 import _ from 'lodash';
 import moment from 'moment';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 const getCharacterNamesQuery = loader('../../queries/getCharacterNames.graphql');
 const getTransactionsQuery = loader('../../queries/getTransactions.graphql');
@@ -42,6 +42,10 @@ export const Transactions: React.FC = () => {
   const [orderBy, setOrderBy] = useState<Extract<keyof ITransactionRow, string>>(WalletTransactionOrderBy.date);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [itemFilter, setItemFilter] = useState<string | null>();
+
+  useEffect(() => {
+    setPage(0);
+  }, [selectedCharacters, itemFilter, sortDirection, orderBy]);
 
   const gqlOrderBy: WalletTransactionOrderByInput | null = useMemo(() => {
     let column;
@@ -154,7 +158,6 @@ export const Transactions: React.FC = () => {
         setOrderBy(key);
       }
 
-      setPage(0);
       setSortDirection(newSortDirection);
     },
     [sortDirection, orderBy]
@@ -178,7 +181,7 @@ export const Transactions: React.FC = () => {
 
   const handleSearch = useCallback(
     _.debounce((input: string | null) => {
-      setPage(0);
+
       if (input && input.length) {
         setItemFilter(input);
       } else {
@@ -209,7 +212,6 @@ export const Transactions: React.FC = () => {
   );
 
   const handleCharacterFilterChange = useCallback(({ selectedItems }: { selectedItems: Character[] }) => {
-    setPage(0);
     setSelectedCharacters(selectedItems.map((character) => character.id));
   }, []);
 
