@@ -3,3 +3,4 @@ coverage/
 charts/
 src/
 !src/.next
+node_modules/
