@@ -9,6 +9,7 @@ import { loader } from 'graphql.macro';
 import { Order, WalletTransactionOrderBy, WalletTransactionOrderByInput } from '../../__generated__/globalTypes';
 import { useLazyQuery, useQuery } from '@apollo/react-hooks';
 import { useNotification } from '../../components/Notifications/useNotifications';
+import _ from 'lodash';
 import moment from 'moment';
 import React, { useCallback, useMemo, useState } from 'react';
 
@@ -35,6 +36,7 @@ export const Transactions: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<DataTableSortState>('DESC');
   const [orderBy, setOrderBy] = useState<Extract<keyof ITransactionRow, string>>(WalletTransactionOrderBy.date);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const [itemFilter, setItemFilter] = useState<string>();
 
   const gqlOrderBy: WalletTransactionOrderByInput | null = useMemo(() => {
     let column;
@@ -69,6 +71,7 @@ export const Transactions: React.FC = () => {
         size: rowsPerPage,
       },
       filter: {
+        item: itemFilter,
         characterId: null,
       },
       orderBy: gqlOrderBy,
@@ -160,6 +163,13 @@ export const Transactions: React.FC = () => {
     [setSelectedRows]
   );
 
+  const handleSearch = useCallback(
+    _.debounce((input: string) => {
+      setItemFilter(input);
+    }, 500),
+    [setItemFilter]
+  );
+
   const totalRows = transactionsResponse?.walletTransactions.total ?? 0;
 
   const handleSelectAllRows = useCallback(
@@ -204,6 +214,8 @@ export const Transactions: React.FC = () => {
         onRowSelect={handleRowSelect}
         totalRows={totalRows}
         onAllSelect={handleSelectAllRows}
+        onSearch={handleSearch}
+        withSearch={true}
       />
       <Pagination
         backwardText="Previous page"

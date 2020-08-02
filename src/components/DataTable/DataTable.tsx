@@ -36,6 +36,7 @@ interface IDataTableProps<R extends DataTableRow> {
   title?: React.ReactNode;
   toolbarItems?: ReactNode;
   onOrderChange?: (orderBy: Extract<keyof R, string>) => void;
+  onSearch?: (input: string) => void;
   orderBy?: Extract<keyof R, string>;
   sortDirection?: DataTableSortState;
   totalRows: number;
@@ -54,6 +55,7 @@ export const DataTable = <R extends DataTableRow = DataTableRow>({
   selectedRows,
   onRowSelect,
   onAllSelect,
+  onSearch,
   totalRows,
 }: PropsWithChildren<IDataTableProps<R>>): React.ReactElement<PropsWithChildren<IDataTableProps<R>>> => {
   const withToolbar = !!(withSearch || toolbarItems);
@@ -96,6 +98,15 @@ export const DataTable = <R extends DataTableRow = DataTableRow>({
 
   const selectionEnabled = !!selectedRows;
 
+  const handleSearch = useCallback(
+    (event: React.SyntheticEvent<HTMLInputElement, Event>) => {
+      if (onSearch) {
+        onSearch(event.currentTarget.value);
+      }
+    },
+    [onSearch]
+  );
+
   return (
     <CarbonTable
       headers={columns}
@@ -109,12 +120,14 @@ export const DataTable = <R extends DataTableRow = DataTableRow>({
           onSelect: handleSelectAll,
         };
 
+        const searchHandler = onSearch ? handleSearch : onInputChange;
+
         return (
           <TableContainer title={title} description={description}>
             {withToolbar && (
               <TableToolbar>
                 <TableToolbarContent>
-                  {withSearch && <TableToolbarSearch onChange={onInputChange} />}
+                  {withSearch && <TableToolbarSearch onChange={searchHandler} />}
                   {toolbarItems}
                 </TableToolbarContent>
               </TableToolbar>
