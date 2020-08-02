@@ -91,7 +91,7 @@ export const DataTable = <R extends DataTableRow = DataTableRow>({
         onAllSelect(event.currentTarget.checked && noneSelected);
       }
     },
-    [selectedRows, totalRows]
+    [selectedRows, totalRows, onAllSelect]
   );
 
   const selectionEnabled = !!selectedRows;

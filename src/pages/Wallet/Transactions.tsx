@@ -177,7 +177,7 @@ export const Transactions: React.FC = () => {
         setSelectedRows(new Set());
       }
     },
-    [tableData, totalRows]
+    [tableData, totalRows, getTransactionIds]
   );
 
   const loading = transactionsLoading || idsLoading;
