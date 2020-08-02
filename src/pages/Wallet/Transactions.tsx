@@ -2,16 +2,18 @@ import { DataTable } from '../../components/DataTable/DataTable';
 import { DataTableRow, Loading, Pagination } from 'carbon-components-react';
 import { DataTableSortState } from 'carbon-components-react/lib/components/DataTable/state/sorting';
 import { getItemImageUrl } from '../../utils/getItemImageUrl';
+import { GetTransactionIds, GetTransactionIdsVariables } from '../../__generated__/GetTransactionIds';
 import { GetTransactions, GetTransactionsVariables } from '../../__generated__/GetTransactions';
 import { ItemCell } from '../../components/ItemCell/ItemCell';
 import { loader } from 'graphql.macro';
 import { Order, WalletTransactionOrderBy, WalletTransactionOrderByInput } from '../../__generated__/globalTypes';
+import { useLazyQuery, useQuery } from '@apollo/react-hooks';
 import { useNotification } from '../../components/Notifications/useNotifications';
-import { useQuery } from '@apollo/react-hooks';
 import moment from 'moment';
 import React, { useCallback, useMemo, useState } from 'react';
 
 const getTransactionsQuery = loader('../../queries/getTransactions.graphql');
+const getTransactionIdsQuery = loader('../../queries/getTransactionIds.graphql');
 
 interface ITransactionRow extends DataTableRow {
   date: string;
@@ -32,6 +34,7 @@ export const Transactions: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sortDirection, setSortDirection] = useState<DataTableSortState>('DESC');
   const [orderBy, setOrderBy] = useState<Extract<keyof ITransactionRow, string>>(WalletTransactionOrderBy.date);
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
   const gqlOrderBy: WalletTransactionOrderByInput | null = useMemo(() => {
     let column;
@@ -72,6 +75,16 @@ export const Transactions: React.FC = () => {
     },
     onError: (error) => {
       enqueueNotification(`Wallet transactions failed to load: ${error.message}`, null, { kind: 'error' });
+    },
+  });
+
+  const [getTransactionIds, { loading: idsLoading }] = useLazyQuery<GetTransactionIds, GetTransactionIdsVariables>(getTransactionIdsQuery, {
+    fetchPolicy: 'no-cache',
+    onCompleted: (data) => {
+      setSelectedRows(new Set(data.walletTransactionIds));
+    },
+    onError: (error) => {
+      enqueueNotification(`Wallet transactions ids failed to load: ${error.message}`, null, { kind: 'error' });
     },
   });
 
@@ -131,7 +144,43 @@ export const Transactions: React.FC = () => {
     [sortDirection, orderBy]
   );
 
-  const loading = transactionsLoading;
+  const handleRowSelect = useCallback(
+    (rowId: string, selected: boolean) => {
+      setSelectedRows((prevRows) => {
+        const newSelected = new Set(prevRows);
+        if (selected) {
+          newSelected.add(rowId);
+        } else {
+          newSelected.delete(rowId);
+        }
+
+        return newSelected;
+      });
+    },
+    [setSelectedRows]
+  );
+
+  const totalRows = transactionsResponse?.walletTransactions.total ?? 0;
+
+  const handleSelectAllRows = useCallback(
+    (select: boolean) => {
+      if (select) {
+        if (totalRows > tableData.length) {
+          // we have paged data, get all row ids
+          getTransactionIds();
+        } else {
+          // we only have single page, use existing ids
+          const ids = tableData.map((row) => row.id);
+          setSelectedRows(new Set(ids));
+        }
+      } else {
+        setSelectedRows(new Set());
+      }
+    },
+    [tableData, totalRows]
+  );
+
+  const loading = transactionsLoading || idsLoading;
 
   return (
     <React.Fragment>
@@ -151,6 +200,10 @@ export const Transactions: React.FC = () => {
         orderBy={orderBy}
         sortDirection={sortDirection}
         onOrderChange={handleOrderChange}
+        selectedRows={selectedRows}
+        onRowSelect={handleRowSelect}
+        totalRows={totalRows}
+        onAllSelect={handleSelectAllRows}
       />
       <Pagination
         backwardText="Previous page"
@@ -159,7 +212,7 @@ export const Transactions: React.FC = () => {
         pageSizes={[10, 20, 30, 40, 50]}
         page={page + 1}
         pageSize={rowsPerPage}
-        totalItems={transactionsResponse?.walletTransactions.total}
+        totalItems={totalRows}
       />
     </React.Fragment>
   );

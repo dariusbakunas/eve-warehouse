@@ -93,6 +93,7 @@ export const ApiLogs: React.FC = () => {
         rows={tableData}
         toolbarItems={toolbarItems}
         withSearch={true}
+        totalRows={tableData.length}
       />
     </div>
   );

@@ -7,6 +7,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableSelectAll,
+  TableSelectRow,
   TableToolbar,
   TableToolbarContent,
   TableToolbarSearch,
@@ -28,11 +30,15 @@ interface IDataTableProps<R extends DataTableRow> {
   description?: React.ReactNode;
   columns: IDataTableHeader<R>[];
   rows: DataTableProps<R, IDataTableHeader<R>>['rows'];
+  selectedRows?: Set<string>;
+  onRowSelect?: (id: string, selected: boolean) => void;
+  onAllSelect?: (select: boolean) => void;
   title?: React.ReactNode;
   toolbarItems?: ReactNode;
   onOrderChange?: (orderBy: Extract<keyof R, string>) => void;
   orderBy?: Extract<keyof R, string>;
   sortDirection?: DataTableSortState;
+  totalRows: number;
 }
 
 export const DataTable = <R extends DataTableRow = DataTableRow>({
@@ -45,6 +51,10 @@ export const DataTable = <R extends DataTableRow = DataTableRow>({
   orderBy,
   sortDirection,
   onOrderChange,
+  selectedRows,
+  onRowSelect,
+  onAllSelect,
+  totalRows,
 }: PropsWithChildren<IDataTableProps<R>>): React.ReactElement<PropsWithChildren<IDataTableProps<R>>> => {
   const withToolbar = !!(withSearch || toolbarItems);
 
@@ -64,11 +74,41 @@ export const DataTable = <R extends DataTableRow = DataTableRow>({
     [onOrderChange]
   );
 
+  const handleRowSelect = useCallback(
+    (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+      if (onRowSelect) {
+        const rowId = event.currentTarget.name.replace(new RegExp('^select-row-'), '');
+        onRowSelect(rowId, event.currentTarget.checked);
+      }
+    },
+    [onRowSelect]
+  );
+
+  const handleSelectAll = useCallback(
+    (event: React.SyntheticEvent<HTMLInputElement, Event>) => {
+      if (onAllSelect) {
+        const noneSelected = selectedRows?.size === 0;
+        onAllSelect(event.currentTarget.checked && noneSelected);
+      }
+    },
+    [selectedRows, totalRows]
+  );
+
+  const selectionEnabled = !!selectedRows;
+
   return (
     <CarbonTable
       headers={columns}
       rows={rows}
-      render={({ rows, headers, getHeaderProps, getRowProps, getTableProps, onInputChange }) => {
+      render={({ rows, headers, getHeaderProps, getRowProps, getTableProps, onInputChange, getSelectionProps }) => {
+        const numSelected = selectedRows?.size ?? 0;
+        const selectionProps = {
+          ...getSelectionProps(),
+          checked: numSelected === totalRows,
+          indeterminate: numSelected > 0 && numSelected < totalRows,
+          onSelect: handleSelectAll,
+        };
+
         return (
           <TableContainer title={title} description={description}>
             {withToolbar && (
@@ -82,6 +122,7 @@ export const DataTable = <R extends DataTableRow = DataTableRow>({
             <Table {...getTableProps()} isSortable={true}>
               <TableHead>
                 <TableRow>
+                  {selectionEnabled && <TableSelectAll {...selectionProps} />}
                   {headers.map((header) => {
                     const className = clsx({
                       'align-right': header.alignRight,
@@ -108,27 +149,42 @@ export const DataTable = <R extends DataTableRow = DataTableRow>({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
-                  <TableRow {...getRowProps({ row })} key={row.id}>
-                    {row.cells.map((cell, cellIndex) => {
-                      const header = headers[cellIndex];
-                      const originalRow = rowIdMap[row.id];
-                      const cellClassName = header.cellClassName && originalRow ? header.cellClassName(originalRow) : null;
+                {rows.map((row) => {
+                  const selected = selectedRows ? selectedRows.has(row.id) : false;
+                  const ariaLabel = selected ? 'Unselect row' : 'Select row';
+                  const rowProps = {
+                    ...getRowProps({ row }),
+                    isSelected: selected,
+                  };
+                  const selectionProps = {
+                    ...getSelectionProps({ row }),
+                    checked: selected,
+                    ariaLabel,
+                    onSelect: handleRowSelect,
+                  };
+                  return (
+                    <TableRow {...rowProps} key={row.id}>
+                      {selectionEnabled && <TableSelectRow {...selectionProps} />}
+                      {row.cells.map((cell, cellIndex) => {
+                        const header = headers[cellIndex];
+                        const originalRow = rowIdMap[row.id];
+                        const cellClassName = header.cellClassName && originalRow ? header.cellClassName(originalRow) : null;
 
-                      const className = clsx(cellClassName, {
-                        'align-right': header.alignRight,
-                      });
+                        const className = clsx(cellClassName, {
+                          'align-right': header.alignRight,
+                        });
 
-                      const customRender = headers[cellIndex].customRender;
-                      const value = customRender && originalRow ? customRender(originalRow) : cell.value;
-                      return (
-                        <TableCell className={className} key={cell.id}>
-                          {value}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                ))}
+                        const customRender = headers[cellIndex].customRender;
+                        const value = customRender && originalRow ? customRender(originalRow) : cell.value;
+                        return (
+                          <TableCell className={className} key={cell.id}>
+                            {value}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>
