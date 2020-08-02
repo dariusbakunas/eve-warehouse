@@ -178,7 +178,7 @@ export const Transactions: React.FC = () => {
 
   const handleSearch = useCallback(
     _.debounce((input: string | null) => {
-      setPage(1);
+      setPage(0);
       if (input && input.length) {
         setItemFilter(input);
       } else {
@@ -209,7 +209,7 @@ export const Transactions: React.FC = () => {
   );
 
   const handleCharacterFilterChange = useCallback(({ selectedItems }: { selectedItems: Character[] }) => {
-    setPage(1);
+    setPage(0);
     setSelectedCharacters(selectedItems.map((character) => character.id));
   }, []);
 
