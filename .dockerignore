@@ -1,5 +1,4 @@
 stories/
 coverage/
 charts/
-src/
-!src/.next
+client/
