@@ -27,8 +27,6 @@
     "start": "node --max-http-header-size=80000 build-server/server/index.js",
     "start:client": "cd client && yarn start",
     "test": "cd client && yarn test",
-    "storybook": "cd client && start-storybook -p 9009 -s public",
-    "build-storybook": "cd client && build-storybook -s public",
     "analyse": "source-map-explorer build-server/client/static/js/*.js"
   },
   "husky": {

@@ -33,7 +33,7 @@ jobs:
       - name: Test
         run: yarn test -- --coverage --watchAll=false
       - name: Coveralls GitHub Action
-        uses: coverallsapp/github-action@v1.0.1
+        uses: coverallsapp/github-action@v1.1.1
         with:
           base-path: client
           github-token: ${{ secrets.GITHUB_TOKEN }}
