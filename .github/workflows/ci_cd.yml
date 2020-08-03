@@ -28,6 +28,7 @@ jobs:
       - name: Build
         run: |
           yarn
+          cd client && yarn && cd ..
           yarn build
       - name: Test
         run: yarn test -- --coverage --watchAll=false

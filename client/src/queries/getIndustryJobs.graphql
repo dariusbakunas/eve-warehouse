@@ -1,0 +1,20 @@
+query GetIndustryJobs($filter: IndustryJobFilter, $page: PageInput, $order: IndustryJobOrderByInput) {
+  industryJobs(filter: $filter, page: $page, orderBy: $order) {
+    jobs {
+      id
+      activity {
+        id
+        name
+      }
+      status
+      startDate
+      endDate
+      runs
+      product {
+        id
+        name
+      }
+    }
+    total
+  }
+}
