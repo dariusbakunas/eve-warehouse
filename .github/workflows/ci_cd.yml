@@ -36,6 +36,7 @@ jobs:
         uses: coverallsapp/github-action@v1.1.1
         with:
           base-path: client
+          path-to-lcov: client/coverage/lcov.info
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Cleanup node_modules
         run: |
