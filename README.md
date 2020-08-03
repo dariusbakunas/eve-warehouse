@@ -2,7 +2,7 @@
 
 Eve Online web application for character monitoring, industry
 
-![CI](https://github.com/dariusbakunas/eve-warehouse/workflows/CI/badge.svg)
+![CI/CD](https://github.com/dariusbakunas/eve-warehouse/workflows/CI/CD/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/dariusbakunas/eve-warehouse/badge.svg?branch=master)](https://coveralls.io/github/dariusbakunas/eve-warehouse?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/944a469892934f52b9d13dd41c697f34)](https://www.codacy.com/manual/dariusbakunas/eve-warehouse?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dariusbakunas/eve-warehouse&amp;utm_campaign=Badge_Grade)
 
