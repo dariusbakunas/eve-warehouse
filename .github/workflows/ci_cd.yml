@@ -47,7 +47,7 @@ jobs:
   cd:
     runs-on: ubuntu-latest
     needs: ci
-    if: github.event == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - name: Setup gcloud CLI
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@0.1.3
