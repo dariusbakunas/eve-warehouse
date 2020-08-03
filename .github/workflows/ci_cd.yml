@@ -35,6 +35,7 @@ jobs:
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v1.0.1
         with:
+          base-path: client
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Cleanup node_modules
         run: |
