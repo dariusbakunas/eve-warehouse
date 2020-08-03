@@ -1,5 +1,5 @@
 import { createApolloClient } from '../lib/createApolloClient';
-import { GetUserByEmail, GetUserByEmailVariables } from '../../src/__generated__/GetUserByEmail';
+import { GetUserByEmail, GetUserByEmailVariables } from '../../client/src/__generated__/GetUserByEmail';
 import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 import ApolloClient from 'apollo-client';
 import gql from 'graphql-tag';

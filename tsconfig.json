@@ -1,26 +1,18 @@
 {
+  "extends": "./client/tsconfig.json",
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "outDir": "build-server",
     "allowJs": true,
     "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
+    "noEmit": false,
+    "module": "commonjs",
+    "isolatedModules": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react"
+    "types": ["node"],
+    "typeRoots": ["node_modules/@types"]
   },
-  "include": [
-    "src",
-    "server/*.ts"
-  ]
+  "include": ["./server"],
+  "exclude": ["./server/**/*.test.ts"]
 }

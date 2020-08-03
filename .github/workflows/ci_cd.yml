@@ -28,12 +28,15 @@ jobs:
       - name: Build
         run: |
           yarn
+          cd client && yarn && cd ..
           yarn build
       - name: Test
         run: yarn test -- --coverage --watchAll=false
       - name: Coveralls GitHub Action
-        uses: coverallsapp/github-action@v1.0.1
+        uses: coverallsapp/github-action@v1.1.1
         with:
+          base-path: client
+          path-to-lcov: client/coverage/lcov.info
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Cleanup node_modules
         run: |

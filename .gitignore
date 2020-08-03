@@ -25,14 +25,15 @@ yarn-error.log*
 
 # dependencies
 /node_modules
+client/node_modules
 /.pnp
 .pnp.js
 
 # testing
-/coverage
+client/coverage
 
 # production
-/build
+/client/build
 /build-server
 
 # misc
@@ -49,5 +50,5 @@ yarn-error.log*
 .env
 src/.next
 .next
-src/__generated__/*.ts
+client/src/__generated__/*.ts
 old/

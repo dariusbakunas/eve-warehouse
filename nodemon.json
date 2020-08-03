@@ -2,5 +2,5 @@
   "watch": ["server/*"],
   "ignore": ["node_modules"],
   "ext": "ts",
-  "exec": "cross-env NODE_ENV=development ts-node -P tsconfig.server.json -r 'dotenv/config' server/index.ts"
+  "exec": "cross-env NODE_ENV=development ts-node -P tsconfig.json -r 'dotenv/config' server/index.ts"
 }
