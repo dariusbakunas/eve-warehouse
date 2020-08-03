@@ -44,6 +44,21 @@ jobs:
             -f Dockerfile.ci \
             --build-arg GITHUB_SHA="$GITHUB_SHA" \
             --build-arg GITHUB_REF="$GITHUB_REF" .
+      - name: Setup gcloud CLI
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@0.1.3
+        with:
+          version: '278.0.0'
+          service_account_email: ${{ secrets.GCP_SA_EMAIL }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+      - name: Configure docker registry
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          gcloud auth configure-docker
+      - name: Publish image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          docker push gcr.io/$GC_PROJECT_ID/$IMAGE:$GITHUB_SHA
   cd:
     runs-on: ubuntu-latest
     needs: ci
@@ -55,12 +70,6 @@ jobs:
           version: '278.0.0'
           service_account_email: ${{ secrets.GCP_SA_EMAIL }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
-      - name: Configure docker registry
-        run: |
-          gcloud auth configure-docker
-      - name: Publish image
-        run: |
-          docker push gcr.io/$GC_PROJECT_ID/$IMAGE:$GITHUB_SHA
       - name: Set gcloud project id
         run: |
           gcloud config set project $GC_PROJECT_ID
