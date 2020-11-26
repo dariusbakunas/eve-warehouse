@@ -13,7 +13,6 @@ charts/
 coverage/
 stories/
 nodemon.json
-Dockerfile.ci
 .travis.yml
 .graphqlconfig
 .prittierrc.js
