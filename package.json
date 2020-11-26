@@ -28,7 +28,7 @@
     "gcp-build": "yarn build",
     "postinstall": "cd client && yarn",
     "build:server": "tsc --project ./tsconfig.json",
-    "build:client": "cd client && yarn build && cp -R ./build/ ../build-server/client && rm -rf ./build",
+    "build:client": "cd client && yarn build && cp -R ./build/* ../build-server/client && rm -rf ./build",
     "start": "node --max-http-header-size=80000 build-server/server/index.js",
     "start:client": "cd client && yarn start",
     "test": "cd client && yarn test",
