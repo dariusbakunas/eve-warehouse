@@ -26,6 +26,7 @@
     "dev": "concurrently --kill-others-on-fail \"nodemon\" \"yarn start:client\"",
     "build": "rm -rf ./build-server/ && cd client && yarn schema:types && cd .. && yarn run build:server && yarn run build:client",
     "gcp-build": "yarn build",
+    "postinstall": "cd client && yarn",
     "build:server": "tsc --project ./tsconfig.json",
     "build:client": "cd client && yarn build && cp -R ./build/ ../build-server/client && rm -rf ./build",
     "start": "node --max-http-header-size=80000 build-server/server/index.js",

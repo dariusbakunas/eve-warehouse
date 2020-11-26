@@ -136,7 +136,12 @@ Sentry.init({
     return done(null, user);
   });
 
-  server.get('/health-check', (req, res) => {
+  server.get('/liveness_check', (req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Status: OK!');
+  });
+
+  server.get('/readiness_check', (req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('Status: OK!');
   });
