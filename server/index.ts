@@ -12,7 +12,7 @@ import morgan from 'morgan';
 import passport from 'passport';
 import path from 'path';
 import pJson from '../package.json';
-import session from 'cookie-session';
+import session from 'express-session';
 
 export interface IClientEnv {
   EVE_API_HOST: string;
