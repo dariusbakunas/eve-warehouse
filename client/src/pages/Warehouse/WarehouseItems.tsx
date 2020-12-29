@@ -3,8 +3,10 @@ import { DataTableRow } from 'carbon-components-react/lib/components/DataTable/D
 import { GetWarehouseItems, GetWarehouseItemsVariables } from '../../__generated__/GetWarehouseItems';
 import { loader } from 'graphql.macro';
 import { Loading } from 'carbon-components-react';
-import { useLazyQuery, useQuery } from '@apollo/react-hooks';
+import { useLazyQuery } from '@apollo/react-hooks';
 import React, { useEffect, useMemo } from 'react';
+import { getItemImageUrl } from '../../utils/getItemImageUrl';
+import { ItemCell } from '../../components/ItemCell/ItemCell';
 
 interface IWarehouseItemsProps {
   open: boolean;
@@ -13,6 +15,7 @@ interface IWarehouseItemsProps {
 
 interface IWarehouseItemRow extends DataTableRow {
   itemName: string;
+  imageUrl: string;
   quantity: string;
   cost: string;
   costClassName: string;
@@ -44,15 +47,16 @@ export const WarehouseItems: React.FC<IWarehouseItemsProps> = ({ open, warehouse
       return [];
     }
 
-    return warehouseItemsResponse.warehouse.items.map((item) => ({
-      id: item.item.id,
-      itemName: item.item.name,
-      quantity: item.quantity.toLocaleString(),
-      cost: item.unitCost.toLocaleString(undefined, { maximumFractionDigits: 2 }),
-      costClassName: item.item.jitaPrice?.buy ? (item.item.jitaPrice.buy < item.unitCost ? 'negative' : 'positive') : '',
-      volume: (item.quantity * item.item.volume).toLocaleString(),
-      jitaCost: item.item.jitaPrice?.buy?.toLocaleString(undefined, { maximumFractionDigits: 2 }) ?? null,
-      total: (item.unitCost * item.quantity).toLocaleString(undefined, { maximumFractionDigits: 2 }),
+    return warehouseItemsResponse.warehouse.items.map((entry) => ({
+      id: entry.item.id,
+      itemName: entry.item.name,
+      quantity: entry.quantity.toLocaleString(),
+      imageUrl: getItemImageUrl(entry.item.id, entry.item.name),
+      cost: entry.unitCost.toLocaleString(undefined, { maximumFractionDigits: 2 }),
+      costClassName: entry.item.jitaPrice?.buy ? (entry.item.jitaPrice.buy < entry.unitCost ? 'negative' : 'positive') : '',
+      volume: (entry.quantity * entry.item.volume).toLocaleString(),
+      jitaCost: entry.item.jitaPrice?.buy?.toLocaleString(undefined, { maximumFractionDigits: 2 }) ?? null,
+      total: (entry.unitCost * entry.quantity).toLocaleString(undefined, { maximumFractionDigits: 2 }),
     }));
   }, [warehouseItemsResponse]);
 
@@ -68,7 +72,7 @@ export const WarehouseItems: React.FC<IWarehouseItemsProps> = ({ open, warehouse
       <div className="warehouse-items">
         <DataTable<IWarehouseItemRow>
           columns={[
-            { header: 'Name', key: 'itemName', isSortable: true },
+            { header: 'Name', key: 'itemName', isSortable: true, customRender: (row) => <ItemCell imageUrl={row.imageUrl} name={row.itemName} /> },
             { header: 'Quantity', key: 'quantity', isSortable: true, alignRight: true },
             { header: 'Unit Cost, ISK', key: 'cost', isSortable: true, alignRight: true, cellClassName: (row) => row.costClassName },
             { header: 'Jita Cost, ISK', key: 'jitaCost', isSortable: true, alignRight: true },
