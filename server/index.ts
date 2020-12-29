@@ -64,7 +64,8 @@ Sentry.init({
     morgan('short', {
       skip: (req: Request, res: Response) => {
         return (
-          req.url === '/health-check' ||
+          req.url === '/liveness_check' ||
+          req.url === '/readiness_check' ||
           req.url === '/favicon.ico' ||
           req.originalUrl === '/.well-known/apollo/server-health' ||
           req.originalUrl === '/favicon.ico' ||
@@ -79,7 +80,8 @@ Sentry.init({
     morgan('short', {
       skip: (req: Request, res: Response) => {
         return (
-          req.url === '/health-check' ||
+          req.url === '/liveness_check' ||
+          req.url === '/readiness_check' ||
           req.url === '/favicon.ico' ||
           req.originalUrl === '/.well-known/apollo/server-health' ||
           req.originalUrl === '/favicon.ico' ||
