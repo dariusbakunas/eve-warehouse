@@ -48,7 +48,7 @@ export const Warehouse: React.FC = () => {
                     })} ISK`}</div>
                     <div>{`Volume: ${warehouse.summary.totalVolume.toLocaleString(undefined, {
                       maximumFractionDigits: 2,
-                    })}`}</div>
+                    })} m³`}</div>
                   </div>
                 }
               >
