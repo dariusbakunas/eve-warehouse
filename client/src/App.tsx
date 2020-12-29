@@ -11,6 +11,7 @@ import { setAppConfig, setUser } from './redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import React, { useEffect, useState } from 'react';
 import { Wallet } from './pages/Wallet/Wallet';
+import { Warehouse } from './pages/Warehouse/Warehouse';
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -56,6 +57,7 @@ function App() {
         <Route path="/register" exact component={Register} />
         <Route path="/api-logs" exact component={ApiLogs} />
         <Route path="/wallet" component={Wallet} />
+        <Route path="/warehouse" component={Warehouse} />
       </Switch>
     </div>
   );
