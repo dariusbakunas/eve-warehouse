@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eve-warehouse-app-v1
+spec:
+  template:
+    spec:
+      containers:
+        - name: app
+          env:
+            - name: LOG_LEVEL
+              value: debug
+            - name: BASE_URL
+              value: 'https://staging.evewarehouse.com'
+            - name: EVE_CHARACTER_REDIRECT_URL
+              value: 'https://staging.evewarehouse.com/characters'
+            - name: AUTH0_CALLBACK_URL
+              value: 'https://staging.evewarehouse.com/auth/callback'
+            - name: EVE_API_HOST
+              value: 'http://staging-eve-warehouse-api:4000/graphql'
