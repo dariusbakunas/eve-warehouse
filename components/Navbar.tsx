@@ -8,6 +8,11 @@ export const Navbar = () => {
   const { user, isLoading } = useUser();
   const router = useRouter();
 
+  const routes = [
+    { pathname: "/characters", label: "Characters" },
+    { pathname: "/wallet", label: "Wallet" },
+  ]
+
   const handleMenuClick = useCallback((actionKey: Key) => {
     if (actionKey == "logout") {
       router.push("/api/auth/logout")
@@ -18,12 +23,14 @@ export const Navbar = () => {
     <NextBar isBordered variant="sticky" isCompact={true} maxWidth="fluid">
       <NextBar.Brand>
         <NextBar.Toggle aria-label="toggle navigation" />
-        <Text b color="inherit" hideIn="xs">
+        <Text b color="inherit" hideIn="xs" css={{ marginLeft: "20px" }}>
           Eve Warehouse
         </Text>
       </NextBar.Brand>
       <NextBar.Content hideIn="xs" variant="underline">
-        <NextBar.Link href="/characters">Characters</NextBar.Link>
+        {routes.map(({ pathname, label }) => (
+          <NextBar.Link href={pathname} isActive={router.pathname==pathname} key={pathname}>{label}</NextBar.Link>
+        ))}
       </NextBar.Content>
       <NextBar.Content>
         {!isLoading && !user && (
@@ -78,17 +85,19 @@ export const Navbar = () => {
         )}
       </NextBar.Content>
       <NextBar.Collapse>
-        <NextBar.CollapseItem>
-          <Link
-            color="inherit"
-            css={{
-              minWidth: "100%",
-            }}
-            href="#"
-          >
-            Characters
-          </Link>
-        </NextBar.CollapseItem>
+        {routes.map(({ pathname, label }) => (
+          <NextBar.CollapseItem key={pathname}>
+            <Link
+              color="inherit"
+              css={{
+                minWidth: "100%",
+              }}
+              href="#"
+            >
+              {label}
+            </Link>
+          </NextBar.CollapseItem>
+        ))}
       </NextBar.Collapse>
     </NextBar>
   )
