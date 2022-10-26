@@ -1,9 +1,0 @@
-query GetInvItems($filter: InvItemFilter) {
-  invItems(filter: $filter) {
-    id
-    name
-    invGroup {
-      name
-    }
-  }
-}

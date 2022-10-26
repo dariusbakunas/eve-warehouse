@@ -1,6 +1,0 @@
-mutation AddWarehouse($name: String!) {
-  addWarehouse(name: $name) {
-    id
-    name
-  }
-}

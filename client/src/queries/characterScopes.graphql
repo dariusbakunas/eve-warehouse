@@ -1,6 +1,0 @@
-query CharacterScopes {
-  scopes {
-    id
-    name
-  }
-}

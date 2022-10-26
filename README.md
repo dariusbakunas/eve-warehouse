@@ -1,34 +1,34 @@
-## Eve Warehouse
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-Eve Online web application for character monitoring, industry
+## Getting Started
 
-![CI/CD](https://github.com/dariusbakunas/eve-warehouse/workflows/CI/CD/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/dariusbakunas/eve-warehouse/badge.svg?branch=master)](https://coveralls.io/github/dariusbakunas/eve-warehouse?branch=master)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/944a469892934f52b9d13dd41c697f34)](https://www.codacy.com/manual/dariusbakunas/eve-warehouse?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dariusbakunas/eve-warehouse&amp;utm_campaign=Badge_Grade)
+First, run the development server:
 
-See also: 
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-  * [Eve GraphQL API](https://github.com/dariusbakunas/eve-api)
-  * [Background processing](https://github.com/dariusbakunas/eve-processors)
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-### Features
+You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 
-#### Multiple characters
+[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
 
-Add multiple characters:
+The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-![characters](docs/img/characters.png)
+## Learn More
 
-#### Wallet
+To learn more about Next.js, take a look at the following resources:
 
-Combined transactions, custom filters:
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-![transactions](docs/img/transactions.png)
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-![filters](docs/img/transaction_filters.png)
+## Deploy on Vercel
 
-#### Industry
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-List of blueprints:
-
-![blueprints](docs/img/blueprints.png)
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
