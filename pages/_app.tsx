@@ -1,11 +1,14 @@
 import type { AppProps } from 'next/app'
 
 import { UserProvider } from '@auth0/nextjs-auth0'
-import { createTheme, NextUIProvider } from '@nextui-org/react';
+import { createTheme, Dropdown, Link, NextUIProvider, Text, Avatar } from '@nextui-org/react';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import { Layout } from '../components/Layout';
+import { Navbar } from '../components/Navbar';
+
 
 export default function App({ Component, pageProps }: AppProps) {
-  const { user } = pageProps;
+  const { user, isLoading } = pageProps;
 
   const lightTheme = createTheme({
     type: 'light',
@@ -25,9 +28,12 @@ export default function App({ Component, pageProps }: AppProps) {
           dark: darkTheme.className
         }}
       >
-      <NextUIProvider>
-        <Component {...pageProps} />
-      </NextUIProvider>
+        <NextUIProvider>
+          <Layout>
+            <Navbar />
+            <Component {...pageProps} />
+          </Layout>
+        </NextUIProvider>
       </NextThemesProvider>
     </UserProvider>
   )
