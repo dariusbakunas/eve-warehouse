@@ -1,5 +1,6 @@
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useState } from 'react';
 import {
+  Avatar,
   Burger,
   Button,
   Group,
@@ -7,9 +8,24 @@ import {
   Text,
   Header as MantineHeader,
   useMantineTheme,
-  createStyles
+  UnstyledButton,
+  createStyles, Menu
 } from '@mantine/core';
+
+import {
+  IconLogout,
+  IconHeart,
+  IconStar,
+  IconMessage,
+  IconSettings,
+  IconPlayerPause,
+  IconTrash,
+  IconSwitchHorizontal,
+  IconChevronDown,
+} from '@tabler/icons';
+
 import { useUser } from '@auth0/nextjs-auth0';
+import { useRouter } from 'next/router'
 
 const useStyles = createStyles((theme) => ({
   hiddenMobile: {
@@ -23,11 +39,32 @@ const useStyles = createStyles((theme) => ({
       display: 'none',
     },
   },
+
+  user: {
+    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
+    padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
+    borderRadius: theme.radius.sm,
+    transition: 'background-color 100ms ease',
+
+    '&:hover': {
+      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.white,
+    },
+
+    [theme.fn.smallerThan('xs')]: {
+      display: 'none',
+    },
+  },
+
+  userActive: {
+    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.white,
+  },
 }));
 
 const Header: FC<{ onBurgerClick?: () => void, opened: boolean }> = ({ onBurgerClick, opened }) => {
   const { user, isLoading } = useUser();
-  const { classes, theme } = useStyles();
+  const router = useRouter()
+  const [userMenuOpened, setUserMenuOpened] = useState(false);
+  const { classes, theme, cx } = useStyles();
 
   const handleBurgerClick = useCallback(() => {
     if (onBurgerClick) {
@@ -49,11 +86,42 @@ const Header: FC<{ onBurgerClick?: () => void, opened: boolean }> = ({ onBurgerC
         </MediaQuery>
 
         <Text>Eve Warehouse</Text>
-        {!user &&
+        {!user && !isLoading &&
           <Group className={classes.hiddenMobile}>
-            <Button variant="default">Log in</Button>
+            <Button variant="default" onClick={() => router.push('/api/auth/login')}>Log in</Button>
             <Button>Sign up</Button>
           </Group>
+        }
+        {user &&
+          <Menu
+            width={260}
+            position="bottom-end"
+            transition="pop-top-right"
+            onClose={() => setUserMenuOpened(false)}
+            onOpen={() => setUserMenuOpened(true)}
+          >
+            <Menu.Target>
+              <UnstyledButton
+                className={cx(classes.user, { [classes.userActive]: userMenuOpened })}
+              >
+                <Group spacing={7}>
+                  {user.picture && <Avatar src={user.picture} alt={user.name || user.nickname || "Unknown User"} radius="xl" size={20} />}
+                  <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
+                    {user.name}
+                  </Text>
+                  <IconChevronDown size={12} stroke={1.5} />
+                </Group>
+              </UnstyledButton>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Label>Settings</Menu.Label>
+              <Menu.Item icon={<IconSettings size={14} stroke={1.5} />}>Account settings</Menu.Item>
+              <Menu.Item icon={<IconSwitchHorizontal size={14} stroke={1.5} />}>
+                Change account
+              </Menu.Item>
+              <Menu.Item icon={<IconLogout size={14} stroke={1.5}/>} onClick={() => router.push('/api/auth/logout')}>Logout</Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
         }
       </Group>
     </MantineHeader>
